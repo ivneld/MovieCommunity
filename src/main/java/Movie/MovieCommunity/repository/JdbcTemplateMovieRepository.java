@@ -106,6 +106,7 @@ public class JdbcTemplateMovieRepository implements MovieRepository{
         int cnt = jdbcTemplate.update(sql, etcData.getSales_acc(), etcData.getAudi_acc(), etcData.getTop_score(), movieCd);
         return cnt;
     }
+
     private RowMapper<Movie> movieRowMapper() {
         return BeanPropertyRowMapper.newInstance(Movie.class);
     }

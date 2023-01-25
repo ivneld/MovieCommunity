@@ -52,14 +52,12 @@ public class JdbcTemplateActorRepository {
         return cnt;
     }
 
-    /**
-     *
-     * @param movieCd
-     * movieCd에 참여한 배우들의 cnt 증가
-     */
-    public void setTopMovieCnt(String movieCd) {
-//        String sql = "select * from actor where"
+
+    public void increaseCnt(Actor actor) {
+        jdbcTemplate.update("update actor set top_movie_cnt = top_movie_cnt + 1 where id = ?",
+                actor.getId());
     }
+
     private RowMapper<Actor> actorRowMapper() {
         return BeanPropertyRowMapper.newInstance(Actor.class);
     }

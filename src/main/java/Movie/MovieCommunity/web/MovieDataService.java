@@ -365,6 +365,13 @@ public class MovieDataService {
         }
     }
 
+
+    /**
+     *  movieCd -> movie (movie table)
+     *  movie -> actor_id (movie with actor table)
+     *  actor_id -> set top_movie (actor table)
+     * @param targetDt
+     */
     private void setMovieEtcData(String targetDt){
         List<WeeklyBoxOffice> list = jdbcTemplateWeeklyBoxOfficeRepository.selectAll();
 
@@ -374,19 +381,33 @@ public class MovieDataService {
             Long audiAcc = list.get(i).getAudiAcc();
             Integer rank = list.get(i).getRanking();
 
+
             EtcData etc = etcData.get(movieCd);
 
 
             if(etc != null) {
+
+                if (rank <= 10) {
+                    etc.setTop_score(etc.getTop_score() + 11 - rank);
+                    etc.setTop_movie_cnt(etc.getTop_movie_cnt() + 1);
+
+                    if (etc.getSales_acc().intValue() == 0) {
+                        Movie movie = movieRepository.findByMovieCd(movieCd).get();
+                        List<Actor> actors = jdbcTemplateMovieWithActorRepository.findActorByMovie(movie);
+
+                        for (Actor actor : actors) {
+                            jdbcTemplateActorRepository.increaseCnt(actor);
+                        }
+                    }
+
+
                 if (salesAcc.intValue() > etc.getSales_acc().intValue()) {
                     etc.setSales_acc(salesAcc);
                 }
                 if (audiAcc.intValue() > etc.getAudi_acc().intValue()) {
                     etc.setAudi_acc(audiAcc);
                 }
-                if (rank <= 10) {
-                    etc.setTop_score(etc.getTop_score() + 11 - rank);
-                    etc.setTop_movie_cnt(etc.getTop_movie_cnt() + 1);
+
                 }
 
                 etcData.put(movieCd, etc);
