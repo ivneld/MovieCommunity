@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Ranking</title>
+</head>
+<body>
+<ul>
+  <li><span th:text="${boxofficeType}"></span></li>
+</ul>
+<table border="1">
+  <tr>
+    <th>ranking</th>
+    <th>movieName</th>
+    <th>rankInten</th>
+  </tr>
+  <tr th:each="movie : ${weeklyBoxOffices}">
+    <td th:text="${movie.ranking}">ranking</td>
+    <td th:text="${movie.movieNm}">movieName/td>
+    <td th:text="${movie.rankInten}">rankInten</td>
+  </tr>
+
+</table>
+</body>
+</html>
