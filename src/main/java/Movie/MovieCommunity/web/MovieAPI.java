@@ -110,7 +110,7 @@ public class MovieAPI {
             Iterator<Object> iter = dailyBoxOfficeList.iterator();
             while(iter.hasNext()) {
                 JSONObject boxOffice = (JSONObject) iter.next();
-                weeklyBoxOffices.add(new WeeklyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt(String.valueOf( boxOffice.get("rank"))), Integer.parseInt(String.valueOf(boxOffice.get("rankInten"))),  Integer.parseInt(String.valueOf(boxOffice.get("rnum")))));
+//                weeklyBoxOffices.add(new WeeklyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt(String.valueOf( boxOffice.get("rank"))), Integer.parseInt(String.valueOf(boxOffice.get("rankInten"))),  Integer.parseInt(String.valueOf(boxOffice.get("rnum")))));
 
 //                model.addAttribute("rankInten",boxOffice.get("rankInten"));
 //                System.out.printf("  %s - %s\n", boxOffice.get("rnum"), boxOffice.get("movieNm"));
