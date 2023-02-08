@@ -140,6 +140,7 @@ public class JpaMovie {
 
     @OneToMany(mappedBy = "movie")
     private List<JpaMovieWithActor> movieWithActors = new ArrayList<>();
+
     @OneToMany(mappedBy = "movie")
     private List<JpaMovieWithCompany> movieWithCompanies = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
@@ -160,4 +161,15 @@ public class JpaMovie {
         movieWithGenre.setMovie(this);
     }
 
+    public void setTopScore(int topScore) {
+        this.topScore = topScore;
+    }
+
+    public void setSalesAcc(Long salesAcc) {
+        this.salesAcc = salesAcc;
+    }
+
+    public void setAudiAcc(Long audiAcc) {
+        this.audiAcc = audiAcc;
+    }
 }
