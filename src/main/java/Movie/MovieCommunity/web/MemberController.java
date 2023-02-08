@@ -46,7 +46,7 @@ public class MemberController {
     @GetMapping("/member/login")
     public String loginForm(@ModelAttribute LoginForm loginForm,@SessionAttribute(name="loginMember", required = false) Member loginMember){
         if (loginMember != null){
-            return "redirect:/member/add";
+            return "redirect:/";
         }
         return "login";
     }
