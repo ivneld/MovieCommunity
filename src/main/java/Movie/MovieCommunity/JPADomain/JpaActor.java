@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 peopleCd	문자열	영화인 코드를 출력합니다.
@@ -28,7 +30,8 @@ public class JpaActor {
         this.actorNm = actorNm;
     }
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "actor_id")
     private Long id;
     private String actorNm;
@@ -45,6 +48,10 @@ public class JpaActor {
     //    peopleNmEn	문자열	배우명(영문)을 출력합니다.
     //private String cast;//	문자열	배역명을 출력합니다.
     private int topMovieCnt;
+
+    @OneToMany(mappedBy = "actor")
+    private List<JpaMovieWithActor> movieWithActors = new ArrayList<>();
+
 /*    private String peopleCd;//	문자열	영화인 코드를 출력합니다.
     private String actorNm;//	문자열	영화인명을 출력합니다.
     //peopleNmEn	문자열	영화인명(영문)을 출력합니다.

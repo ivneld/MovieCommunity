@@ -41,8 +41,8 @@ public class MovieDataService {
     private final MovieWithCompanyRepository movieWithCompanyRepository;
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
-
-    private final String key = "1d52608621856574e9228c92b7dfa738";
+    private final EntityManager em;
+    private final String key = "633a3302093ec75c112d1afac4eb1ba5";
     private String response;
 //    private Company company = new Company();
 //    private Genre genre = new Genre();
@@ -70,6 +70,7 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
+//        setMovieEtc();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
@@ -295,14 +296,14 @@ public class MovieDataService {
 
 
         LocalDate date = LocalDate.parse(targetDt, formatter);
-        int nextYear = date.getYear()+1;
+        int nextYear = date.getYear() + 1;
         threadStartDay.set(date);
         Map<String, String> param = new HashMap<>();
         param.put("targetDt", targetDt);
-        param.put("weekGb","0");
+        param.put("weekGb", "0");
         int targetYear = date.getYear();
 
-        while(threadStartDay.get().getYear() != nextYear){
+        while (threadStartDay.get().getYear() != nextYear) {
             WeeklyBoxOfficeDto weeklyBoxOfficeDto = new WeeklyBoxOfficeDto();
 //            WeeklyBoxOffice weeklyBoxOffice = new WeeklyBoxOffice();
 
@@ -329,7 +330,7 @@ public class MovieDataService {
                 weeklyBoxOfficeDto.setShowRange(showRange);
                 weeklyBoxOfficeDto.setYearWeekTime(yearWeekTime);
                 JSONArray weeklyBoxOfficeList = (JSONArray) boxOfficeResult.get("weeklyBoxOfficeList");
-               // log.info("{}", weeklyBoxOfficeList);
+                // log.info("{}", weeklyBoxOfficeList);
                 for (int i = 0; i < weeklyBoxOfficeList.size(); i++) {
                     JSONObject weekly = (JSONObject) weeklyBoxOfficeList.get(i);
 
@@ -341,6 +342,7 @@ public class MovieDataService {
                     LocalDate openDt = LocalDate.parse((String) weekly.get("openDt"));
                     Long salesAcc = Long.valueOf((String) weekly.get("salesAcc"));
                     Long audiAcc = Long.valueOf((String) weekly.get("audiAcc"));
+
 
                     weeklyBoxOfficeDto.setRnum(rnum);
                     weeklyBoxOfficeDto.setRanking(ranking);
@@ -354,9 +356,9 @@ public class MovieDataService {
 
 
                     JpaWeeklyBoxOffice jpaWeeklyBoxOffice = new JpaWeeklyBoxOffice(weeklyBoxOfficeDto);
+
                     weeklyBoxOfficeRepository.save(jpaWeeklyBoxOffice);
-                    log.info("weeklyBoxOffice = {}",jpaWeeklyBoxOffice);
-                    //log.info("{}",movie);
+                    log.info("weeklyBoxOffice = {}", jpaWeeklyBoxOffice);
 
                 }
 
@@ -366,89 +368,35 @@ public class MovieDataService {
 
         }
         threadStartDay.remove();
-
-    }
-
-    /**
-     * movie table 에서 targetDt의 년도와 일치하는 movieCd 저장
-     * weeklyBoxOffice table에서 movieCd와 일치하는 데이터들을 내림차순 정렬 후 가장 앞의 값을 저장
-     */
-    private void setMovieCd(String targetDt) {
-        List<JpaMovie> movies = movieRepository.findAll();
-
-        for (int i = 0; i < movies.size(); i++) {
-            String year = "";
-            if (movies.get(i).getAuditNo() != null) {
-                year = movies.get(i).getAuditNo().substring(0, 4);
-            }
-
-            if (targetDt.equals(year)) {
-                EtcData data = new EtcData();
-                data.setAudi_acc(0L);
-                data.setSales_acc(0L);
-                data.setTop_movie_cnt(0);
-                data.setTop_score(0);
-                etcData.put(movies.get(i).getMovieCd(), data);
-
-            }
-        }
     }
 
 
     /**
-     *  movieCd -> movie (movie table)
-     *  movie -> actor_id (movie with actor table)
-     *  actor_id -> set top_movie (actor table)
-     * @param targetDt
+     * weeklyBoxOfficeList 에서 각 movieCd에 해당하는 sales_acc, audi_acc 값을 movie table의 두 컬럼과 비교하여
+     * 크면 갱신 시키기
      */
-    private void setMovieEtcData(String targetDt){
-        List<WeeklyBoxOffice> list = jdbcTemplateWeeklyBoxOfficeRepository.selectAll();
+    @Transactional
+    public void setMovieEtc() {
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 
-        for (int i = 0; i < list.size(); i++) {
-            String movieCd = list.get(i).getMovieCd();
-            Long salesAcc = list.get(i).getSalesAcc();
-            Long audiAcc = list.get(i).getAudiAcc();
-            Integer rank = list.get(i).getRanking();
+        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
 
+            if(movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
 
-            EtcData etc = etcData.get(movieCd);
-
-
-            if(etc != null) {
-
-                if (rank <= 10) {
-                    etc.setTop_score(etc.getTop_score() + 11 - rank);
-                    etc.setTop_movie_cnt(etc.getTop_movie_cnt() + 1);
-
-                    if (etc.getSales_acc().intValue() == 0) {
-                        JpaMovie movie = movieRepository.findByMovieCd(movieCd).get();
-                        //List<Actor> actors = jdbcTemplateMovieWithActorRepository.findActorByMovie(movie);
-
-//                        for (Actor actor : actors) {
-//                            jdbcTemplateActorRepository.increaseCnt(actor);
-//                        }
-                    }
-
-
-                if (salesAcc.intValue() > etc.getSales_acc().intValue()) {
-                    etc.setSales_acc(salesAcc);
+                if (movie.getSalesAcc() == null || movie.getSalesAcc() < weeklyBoxOffice.getSalesAcc()) {
+                    movie.setSalesAcc(weeklyBoxOffice.getSalesAcc());
                 }
-                if (audiAcc.intValue() > etc.getAudi_acc().intValue()) {
-                    etc.setAudi_acc(audiAcc);
+                if (movie.getAudiAcc() == null || movie.getAudiAcc() < weeklyBoxOffice.getAudiAcc()) {
+                    movie.setAudiAcc(weeklyBoxOffice.getAudiAcc());
+                }
+                if (weeklyBoxOffice.getRanking() <= 10) {
+                    movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
                 }
 
-                }
-
-                etcData.put(movieCd, etc);
-
-
-                log.info("movieCd={}, etc={}",movieCd, etcData.get(movieCd));
-
-                //movieRepository.setEtcData(movieCd, etcData.get(movieCd));
+                movieRepository.save(movie);
+                log.info("movie={}", movie);
             }
-
         }
     }
-
-
 }

@@ -2,7 +2,9 @@ package Movie.MovieCommunity.JPARepository;
 
 import Movie.MovieCommunity.JPADomain.DTO.MovieDto;
 import Movie.MovieCommunity.JPADomain.JpaMovie;
+import Movie.MovieCommunity.JPADomain.JpaMovieWithActor;
 import Movie.MovieCommunity.domain.Movie;
+import Movie.MovieCommunity.domain.MovieWithActor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MovieRepositoryTest {
     @Autowired
     private MovieRepository movieRepository;
+    @Autowired
+    private MovieWithActorRepository movieWithActorRepository;
     @Autowired
     private EntityManager em;
     @Test
@@ -39,4 +44,6 @@ em.clear();
 
 
     }
+
+
 }

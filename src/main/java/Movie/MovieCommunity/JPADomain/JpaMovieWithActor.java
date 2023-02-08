@@ -27,6 +27,7 @@ public class JpaMovieWithActor {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
     private JpaMovie movie;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actor_id")
     private JpaActor actor;
