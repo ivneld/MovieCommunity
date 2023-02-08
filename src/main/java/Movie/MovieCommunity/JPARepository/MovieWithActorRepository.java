@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface MovieWithActorRepository extends JpaRepository<JpaMovieWithActor, Long> {
-//    @Query("select mwa from moviewithactor mwa")
-//    List<JpaMovieWithActor> findByMovieId(Long movieId);
+    @Query("select mwa from moviewithactor mwa")
+    List<JpaMovieWithActor> findByMovieId(Long movieId);
 }
