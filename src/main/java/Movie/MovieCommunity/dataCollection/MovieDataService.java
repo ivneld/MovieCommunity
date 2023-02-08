@@ -178,7 +178,7 @@ public class MovieDataService {
         log.info("movie = {}",movie);
         threadMovie.remove();
     }
-@Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     private void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
         MovieWithCompany movieWithCompany = new MovieWithCompany();
@@ -216,7 +216,7 @@ public class MovieDataService {
                             JpaGenre savedGenre = genreRepository.save(genre);
                             jpaMovieWithGenre = new JpaMovieWithGenre(movie, savedGenre);
                         }
-                        movie.addMovieWithGenre(jpaMovieWithGenre);
+                        //movie.addMovieWithGenre(jpaMovieWithGenre);
                         movieWithGenreRepository.save(jpaMovieWithGenre);
 
                     }

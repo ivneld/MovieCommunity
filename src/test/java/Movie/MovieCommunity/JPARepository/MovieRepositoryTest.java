@@ -45,8 +45,5 @@ em.clear();
 
     }
 
-    @Test
-    public void test() {
-        List<JpaMovieWithActor> list = movieWithActorRepository.findByMovieId(1L);
-    }
+
 }
