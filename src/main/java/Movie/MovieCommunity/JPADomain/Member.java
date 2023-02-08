@@ -1,5 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
+import Movie.MovieCommunity.web.form.AddMemberForm;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,4 +24,9 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
 
+    public Member(AddMemberForm memberForm) {
+        this.name = memberForm.getName();
+        this.email = memberForm.getEmail();
+        this.password = memberForm.getPassword();
+    }
 }

@@ -60,7 +60,7 @@ public class MovieDataService {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
 //        movieDataCollection("2022");
-        yearWeeklyBoxOfficeData("20220101");
+//        yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -177,7 +177,7 @@ public class MovieDataService {
         log.info("movie = {}",movie);
         threadMovie.remove();
     }
-@Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)
     private void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
         MovieWithCompany movieWithCompany = new MovieWithCompany();
@@ -215,7 +215,7 @@ public class MovieDataService {
                             JpaGenre savedGenre = genreRepository.save(genre);
                             jpaMovieWithGenre = new JpaMovieWithGenre(movie, savedGenre);
                         }
-                        movie.addMovieWithGenre(jpaMovieWithGenre);
+                        //movie.addMovieWithGenre(jpaMovieWithGenre);
                         movieWithGenreRepository.save(jpaMovieWithGenre);
 
                     }

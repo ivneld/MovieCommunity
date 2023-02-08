@@ -155,9 +155,6 @@ public class JpaMovie {
         System.out.println("=============================== 업데이트 완료 ================================");
 
     }
-    public void addMovieWithGenre(JpaMovieWithGenre movieWithGenre){
-        movieWithGenres.add(movieWithGenre);
-        movieWithGenre.setMovie(this);
-    }
+
 
 }
