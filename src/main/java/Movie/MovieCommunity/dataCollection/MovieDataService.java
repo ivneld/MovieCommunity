@@ -375,7 +375,6 @@ public class MovieDataService {
      * weeklyBoxOfficeList 에서 각 movieCd에 해당하는 sales_acc, audi_acc 값을 movie table의 두 컬럼과 비교하여
      * 크면 갱신 시키기
      */
-    @Transactional
     public void setMovieEtc() {
         List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 
@@ -392,6 +391,9 @@ public class MovieDataService {
                 }
                 if (weeklyBoxOffice.getRanking() <= 10) {
                     movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
+
+                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
+                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
                 }
 
                 movieRepository.save(movie);
