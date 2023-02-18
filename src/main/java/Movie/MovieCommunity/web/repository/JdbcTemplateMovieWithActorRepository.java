@@ -1,36 +1,46 @@
-package Movie.MovieCommunity.repository;
+package Movie.MovieCommunity.web.repository;
 
 import Movie.MovieCommunity.domain.Actor;
-import Movie.MovieCommunity.domain.Movie;
-import Movie.MovieCommunity.domain.MovieWithActor;
-import Movie.MovieCommunity.web.repository.JdbcTemplateActorRepository;
-import org.junit.jupiter.api.Test;
+import Movie.MovieCommunity.domain.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-
 import java.util.ArrayList;
 import java.util.List;
 
-class JdbcTemplateMovieWithActorRepositoryTest {
-
+@Slf4j
+@Repository
+public class JdbcTemplateMovieWithActorRepository {
     private final NamedParameterJdbcTemplate template;
     private final SimpleJdbcInsert jdbcInsert;
 
     JdbcTemplateActorRepository actorRepository;
 
-    public JdbcTemplateMovieWithActorRepositoryTest(DataSource dataSource) {
+    public JdbcTemplateMovieWithActorRepository(DataSource dataSource) {
         this.template = new NamedParameterJdbcTemplate(dataSource);
         this.jdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withTableName("moviewithactor")
                 .usingGeneratedKeyColumns("id");
     }
+    public MovieWithActor save(MovieWithActor movieWithActor ) {
+        SqlParameterSource param = new BeanPropertySqlParameterSource(movieWithActor);
+        Number key = jdbcInsert.executeAndReturnKey(param);
+        movieWithActor.setId(key.longValue());
+        return movieWithActor;
+    }
 
-    @Test
+    /**
+     * movie -> actors
+     * @param movie
+     * @return
+     */
     public List<Actor> findActorByMovie(Movie movie) {
         String sql = "select * from moviewithactor where movie_id=:id";
         BeanPropertySqlParameterSource param = new BeanPropertySqlParameterSource(movie);
@@ -45,7 +55,9 @@ class JdbcTemplateMovieWithActorRepositoryTest {
         return actorList;
     }
 
+
     private RowMapper<MovieWithActor> movieWithActorRowMapper() {
         return BeanPropertyRowMapper.newInstance(MovieWithActor.class);
     }
+
 }

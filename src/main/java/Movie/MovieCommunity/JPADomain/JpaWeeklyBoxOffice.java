@@ -1,6 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.JPADomain.DTO.WeeklyBoxOfficeDto;
+import Movie.MovieCommunity.JPADomain.dto.WeeklyBoxOfficeDto;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
