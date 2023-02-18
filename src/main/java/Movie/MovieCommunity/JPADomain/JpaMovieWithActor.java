@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name="moviewithactor")
 @Getter
 @Setter
 @Table(name="moviewithactor")
