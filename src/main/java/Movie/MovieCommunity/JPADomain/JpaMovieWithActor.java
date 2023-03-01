@@ -32,6 +32,16 @@ public class JpaMovieWithActor {
     @JoinColumn(name = "actor_id")
     private JpaActor actor;
     private String cast;
+
+    @Override
+    public String toString() {
+        return "JpaMovieWithActor{" +
+                "id=" + id +
+                ", movie=" + movie +
+                ", actor=" + actor +
+                ", cast='" + cast + '\'' +
+                '}';
+    }
 //    public void setMovieId(Long movieId){
 //        this.movieId = movieId;
 //    }

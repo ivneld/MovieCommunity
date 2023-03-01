@@ -1,13 +1,7 @@
-package Movie.MovieCommunity.JPADomain.DTO;
+package Movie.MovieCommunity.JPADomain.dto;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.NumberFormat;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.time.LocalDate;
 
 @Data

@@ -1,4 +1,4 @@
-package Movie.MovieCommunity.JPADomain.DTO;
+package Movie.MovieCommunity.JPADomain.dto;
 
 import lombok.Data;
 

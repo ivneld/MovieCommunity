@@ -1,18 +1,18 @@
 package Movie.MovieCommunity.dataCollection;
 
 import Movie.MovieCommunity.JPADomain.*;
-import Movie.MovieCommunity.JPADomain.DTO.*;
+import Movie.MovieCommunity.JPADomain.dto.*;
 import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.domain.*;
-import Movie.MovieCommunity.repository.*;
+
+import Movie.MovieCommunity.web.repository.*;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

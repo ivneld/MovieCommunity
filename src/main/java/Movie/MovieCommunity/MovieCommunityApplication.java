@@ -1,5 +1,7 @@
 package Movie.MovieCommunity;
 
+import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.web.SessionConst;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,10 +19,6 @@ public class MovieCommunityApplication {
 		SpringApplication.run(MovieCommunityApplication.class, args);
 	}
 
-//	@Bean
-//	public AuditorAware<String> auditorProvider(HttpServletRequest request){
-//		HttpSession session = request.getSession();
-////		session.getAttribute()
-//		return () -> Optional.of(UUID.randomUUID().toString());
-//	}
+
+
 }

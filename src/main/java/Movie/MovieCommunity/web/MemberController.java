@@ -18,16 +18,16 @@ import javax.validation.Valid;
 
 @Slf4j
 @Controller
-@RequestMapping
+@RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/member/add")
+    @GetMapping("/add")
     public String addForm(@ModelAttribute("member") AddMemberForm memberForm){
         return "addMember";
     }
-    @PostMapping("/member/add")
+    @PostMapping("/add")
     public String save(@ModelAttribute("member") @Valid AddMemberForm memberForm, BindingResult bindingResult, HttpServletRequest request){
         log.info("member = {}", memberForm);
             if (bindingResult.hasErrors()){
@@ -43,14 +43,14 @@ public class MemberController {
             return "redirect:/";
     }
 
-    @GetMapping("/member/login")
+    @GetMapping("/login")
     public String loginForm(@ModelAttribute LoginForm loginForm,@SessionAttribute(name="loginMember", required = false) Member loginMember){
         if (loginMember != null){
             return "redirect:/";
         }
         return "login";
     }
-    @PostMapping("/member/login")
+    @PostMapping("/login")
     public String login(@ModelAttribute @Valid LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request){
         if (bindingResult.hasErrors()){
             return "login";
@@ -62,6 +62,15 @@ public class MemberController {
         }
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, login);
+        return "redirect:/";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request){
+        HttpSession session = request.getSession(false);
+        if (session != null){
+            session.invalidate();
+        }
         return "redirect:/";
     }
 
