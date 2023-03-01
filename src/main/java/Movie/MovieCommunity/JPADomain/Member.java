@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.JPADomain;
 
 import Movie.MovieCommunity.web.form.AddMemberForm;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,8 +20,12 @@ public class Member {
     private String name;
     private String email;
     private String password;
+
+
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Board> boards = new ArrayList<>();
+//    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
 

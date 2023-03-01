@@ -1,8 +1,7 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.JPADomain.DTO.CompanyDto;
+import Movie.MovieCommunity.JPADomain.dto.CompanyDto;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

@@ -1,8 +1,7 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.JPADomain.DTO.MovieDto;
+import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.NumberFormat;
@@ -111,7 +110,10 @@ public class JpaMovie {
         this.openDt = movieDto.getOpenDt();
         this.prdtStatNm = movieDto.getPrdtStatNm();
         this.typeNm = movieDto.getTypeNm();
-
+        this.nationNm = movieDto.getNationNm();
+        this.directorNm = movieDto.getDirectorNm();
+        this.auditNo = movieDto.getAuditNo();
+        this.watchGradeNm = movieDto.getWatchGradeNm();
     }
 
     //    companys	문자열	참여 영화사를 나타냅니다.
