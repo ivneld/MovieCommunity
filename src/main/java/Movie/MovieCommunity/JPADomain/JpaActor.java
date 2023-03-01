@@ -21,6 +21,7 @@ movieNm	문자열	참여 영화명을 출력합니다.
 moviePartNm	문자열	참여분야를 나타냅니다.
 homepages	문자열	관련 URL을 출력합니다.
  */
+
 @Entity
 @Getter
 @Table(name = "actor")

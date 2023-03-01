@@ -59,8 +59,8 @@ public class MovieDataService {
     public void Testing() throws Exception {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
-//        movieDataCollection("2022");
-//        yearWeeklyBoxOfficeData("20220101");
+//        movieDataCollection("2022");        // 1
+//        yearWeeklyBoxOfficeData("20220101");          // 2
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -70,9 +70,12 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
-//        setMovieEtc();
+        setMovieEtc();        // 3
     }
 
+    /**
+     *  movieDataCollection with movieDetailData
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     private void movieDataCollection(String openStartDt) throws Exception {
         Map<String, String> param = new HashMap<>();
@@ -119,7 +122,6 @@ public class MovieDataService {
         // 임의로 ID 생성
         //movie.setId(1L);
         response = service.getMovieInfo(true, movieCd);
-
 
         JSONParser jsonParser = new JSONParser();
         Object parse = jsonParser.parse(response);
@@ -178,6 +180,10 @@ public class MovieDataService {
         log.info("movie = {}",movie);
         threadMovie.remove();
     }
+
+
+
+
     @Transactional(propagation = Propagation.REQUIRED)
     private void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
@@ -371,10 +377,6 @@ public class MovieDataService {
     }
 
 
-    /**
-     * weeklyBoxOfficeList 에서 각 movieCd에 해당하는 sales_acc, audi_acc 값을 movie table의 두 컬럼과 비교하여
-     * 크면 갱신 시키기
-     */
     public void setMovieEtc() {
         List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 
