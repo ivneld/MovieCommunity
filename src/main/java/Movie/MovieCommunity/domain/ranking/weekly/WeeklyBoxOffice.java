@@ -1,14 +1,9 @@
-package Movie.MovieCommunity.JPADomain;
+package Movie.MovieCommunity.domain.ranking.weekly;
 
-import Movie.MovieCommunity.JPADomain.dto.WeeklyBoxOfficeDto;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
 /*
@@ -35,14 +30,8 @@ audiAcc	문자열	누적관객수를 출력합니다.
 scrnCnt	문자열	해당일자에 상영한 스크린수를 출력합니다.
 showCnt	문자열	해당일자에 상영된 횟수를 출력합니다.
  */
-@Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="weeklyboxoffice")
-@ToString
-public class JpaWeeklyBoxOffice {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "weekly_box_office_id")
+@Data
+public class WeeklyBoxOffice {
     private Long id;
     private String boxofficeType;
     private String showRange;
@@ -72,19 +61,4 @@ public class JpaWeeklyBoxOffice {
     private Long audiAcc;
 /*    scrnCnt	문자열	해당일자에 상영한 스크린수를 출력합니다.
     showCnt	문자열	해당일자에 상영된 횟수를 출력합니다.*/
-
-
-    public JpaWeeklyBoxOffice(WeeklyBoxOfficeDto weeklyBoxOfficeDto) {
-        this.boxofficeType = weeklyBoxOfficeDto.getBoxofficeType();
-        this.showRange = weeklyBoxOfficeDto.getShowRange();
-        this.yearWeekTime = weeklyBoxOfficeDto.getYearWeekTime();
-        this.rnum = weeklyBoxOfficeDto.getRnum();
-        this.ranking = weeklyBoxOfficeDto.getRanking();
-        this.rankInten = weeklyBoxOfficeDto.getRankInten();
-        this.rankOldAndNew = weeklyBoxOfficeDto.getRankOldAndNew();
-        this.movieCd = weeklyBoxOfficeDto.getMovieCd();
-        this.openDt = weeklyBoxOfficeDto.getOpenDt();
-        this.salesAcc = weeklyBoxOfficeDto.getSalesAcc();
-        this.audiAcc = weeklyBoxOfficeDto.getAudiAcc();
-    }
 }

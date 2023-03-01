@@ -14,38 +14,31 @@
   </nav>
   </div>
 </ul>
-  <section id="panel" class="panel">
-    <div class="genre">
+<ul>
+  <li><span th:text="${boxofficeType}"></span></li>
+</ul>
+<p th:text="'전체' + ${boxofficeType}" >일별 박스오피스</p>
 
-    </div>
-    <div class="board">
-
-    </div>
-  </section>
-  <ul>
-    <li><span th:text="${boxofficeType}"></span></li>
-  </ul>
-  <p th:text="'전체' + ${boxofficeType}" >일별 박스오피스</p>
 
 <button type="button" th:onclick="|location.href='@{/basic/koreaMovieRanking}'|" th:text="국내영화"></button>
 <button type="button" th:onclick="|location.href='@{/basic/foreignMovieRanking}'|" th:text="외국영화"></button>
 <button type="button" th:onclick="|location.href='/'|" th:text="전체영화"></button>
 
 
+<p th:text="'외국' + ${boxofficeType}" >일별 박스오피스</p>
 <table border="1">
   <tr>
     <th>ranking</th>
     <th>movieName</th>
     <th>rankInten</th>
   </tr>
-  <tr th:each="movie : ${dailyBoxOffices}">
+  <tr th:each="movie : ${foreignDailyBoxOffices}">
     <td th:text="${movie.ranking}">ranking</td>
     <td th:text="${movie.movieNm}">movieName/td>
     <td th:text="${movie.rankInten}">rankInten</td>
   </tr>
 
 </table>
-
 
 </body>
 </html>
