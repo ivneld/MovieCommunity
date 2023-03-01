@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="loginJoin" th:fragment="bodyHeader">
+    <button type="button" th:onclick="|location.href='@{/member/login}'|"  method="post" th:text="로그인">Login</button>
+    <button type="button" th:onclick="|location.href='@{/member/add}'|"  method="post" th:text="회원가입">Join</button>
+</div>

@@ -1,14 +1,10 @@
-package Movie.MovieCommunity.JPADomain;
+package Movie.MovieCommunity.domain.ranking.daily;
 
-import Movie.MovieCommunity.JPADomain.dto.WeeklyBoxOfficeDto;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import Movie.MovieCommunity.domain.ranking.MovieNationType;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 
 /*
@@ -35,18 +31,13 @@ audiAcc	문자열	누적관객수를 출력합니다.
 scrnCnt	문자열	해당일자에 상영한 스크린수를 출력합니다.
 showCnt	문자열	해당일자에 상영된 횟수를 출력합니다.
  */
-@Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name="weeklyboxoffice")
-@ToString
-public class JpaWeeklyBoxOffice {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "weekly_box_office_id")
+@Data
+public class DailyBoxOffice {
     private Long id;
     private String boxofficeType;
     private String showRange;
     private String yearWeekTime;
+    private String movieNm;	// 문자열	영화명(국문)을 출력합니다.
     @NumberFormat
     private Integer rnum;
     @NumberFormat
@@ -65,6 +56,8 @@ public class JpaWeeklyBoxOffice {
    // salesChange	문자열	전일 대비 매출액 증감 비율을 출력합니다.
     @NumberFormat(pattern = "###,###")
     private Long salesAcc;
+
+    private MovieNationType movieNationType;
    // private Long audiCnt;
   //  audiInten	문자열	전일 대비 관객수 증감분을 출력합니다.
   //  audiChange	문자열	전일 대비 관객수 증감 비율을 출력합니다.
@@ -73,18 +66,16 @@ public class JpaWeeklyBoxOffice {
 /*    scrnCnt	문자열	해당일자에 상영한 스크린수를 출력합니다.
     showCnt	문자열	해당일자에 상영된 횟수를 출력합니다.*/
 
+    public DailyBoxOffice(){
 
-    public JpaWeeklyBoxOffice(WeeklyBoxOfficeDto weeklyBoxOfficeDto) {
-        this.boxofficeType = weeklyBoxOfficeDto.getBoxofficeType();
-        this.showRange = weeklyBoxOfficeDto.getShowRange();
-        this.yearWeekTime = weeklyBoxOfficeDto.getYearWeekTime();
-        this.rnum = weeklyBoxOfficeDto.getRnum();
-        this.ranking = weeklyBoxOfficeDto.getRanking();
-        this.rankInten = weeklyBoxOfficeDto.getRankInten();
-        this.rankOldAndNew = weeklyBoxOfficeDto.getRankOldAndNew();
-        this.movieCd = weeklyBoxOfficeDto.getMovieCd();
-        this.openDt = weeklyBoxOfficeDto.getOpenDt();
-        this.salesAcc = weeklyBoxOfficeDto.getSalesAcc();
-        this.audiAcc = weeklyBoxOfficeDto.getAudiAcc();
     }
+
+    public DailyBoxOffice(String movieNm, int ranking, int rankInten , int rnum ){
+        this.movieNm=movieNm;
+        this.ranking=ranking;
+        this.rankInten=rankInten;
+        this.rnum=rnum;
+    }
+
+
 }
