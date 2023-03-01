@@ -24,6 +24,16 @@ public class BoardDao {
         this.memberNm = memberNm;
     }
 
+    public BoardDao(Board board) {
+        this.id = board.getId();
+        this.title = board.getTitle();
+        this.like = board.getLikeCnt();
+        this.movieId = board.getMovie().getId();
+        this.memberId = board.getMember().getId();
+        this.movieNm = board.getMovie().getMovieNm();
+        this.memberNm = board.getMember().getName();
+    }
+
     public BoardDao() {
     }
 }

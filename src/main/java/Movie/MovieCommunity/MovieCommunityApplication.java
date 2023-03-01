@@ -20,11 +20,5 @@ public class MovieCommunityApplication {
 	}
 
 
-//    @Bean
-//    public AuditorAware<String> auditorProvider(HttpServletRequest request){
-//        HttpSession session = request.getSession(false);
-//        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-//        return () -> Optional.of(UUID.randomUUID().toString());
-////		return () -> Optional.of(member.getName());
-//    }
+
 }
