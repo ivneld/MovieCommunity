@@ -70,7 +70,7 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
-        setMovieEtc();        // 3
+//        setMovieEtc();        // 3
     }
 
     /**
@@ -394,13 +394,33 @@ public class MovieDataService {
                 if (weeklyBoxOffice.getRanking() <= 10) {
                     movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
 
-                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
-                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
+//
                 }
 
                 movieRepository.save(movie);
                 log.info("movie={}", movie);
             }
         }
+    }
+
+    public void setTopMovieCnt() {
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByRankingLessThan(11);
+
+        weeklyBoxOffices.stream().forEach(weeklyBoxOffice -> {
+            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+
+                List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findAllActor(movie.getId());
+                movieWithActors.stream().forEach(movieWithActor -> {
+                    JpaActor actor = movieWithActor.getActor();
+                    actor.plusTopMovieCnt();
+
+
+                    log.info("actor id={}", actor.getId());
+                    log.info("-> cnt={}", actor.getTopMovieCnt());
+                });
+            }
+        });
+
     }
 }

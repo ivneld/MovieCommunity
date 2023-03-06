@@ -64,7 +64,8 @@ public class JpaActor {
     moviePartNm	문자열	참여분야를 나타냅니다.
     homepages	문자열	관련 URL을 출력합니다.*/
 
-    public void setTopMovieCnt(int topMovieCnt) {
-        this.topMovieCnt = topMovieCnt;
+    public int plusTopMovieCnt() {
+        topMovieCnt = this.getTopMovieCnt() + 1;
+        return topMovieCnt;
     }
 }
