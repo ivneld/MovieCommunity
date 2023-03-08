@@ -49,7 +49,7 @@ staffRoleNm	문자열	스텝역할명을 출력합니다.
  */
 @Getter
 @Table(name="movie")
-@Entity
+@Entity(name="movie")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JpaMovie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

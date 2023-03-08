@@ -7,12 +7,14 @@ import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.domain.*;
 
 import Movie.MovieCommunity.web.repository.*;
+import com.querydsl.core.Tuple;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +42,10 @@ public class MovieDataService {
     private final MovieWithActorRepository movieWithActorRepository;
     private final MovieWithCompanyRepository movieWithCompanyRepository;
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
+    private final WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
+
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
+    @Autowired
     private final EntityManager em;
     private final String key = "633a3302093ec75c112d1afac4eb1ba5";
     private String response;
@@ -403,6 +408,11 @@ public class MovieDataService {
         }
     }
 
+    public void setMovieEtcV2() {
+        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
+        Tuple tuple1 = tuples.get(0);
+        tuple1.get(QJpaMovie.jpaMovie.movieCd);
+    }
     public void setTopMovieCnt() {
         List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByRankingLessThan(11);
 

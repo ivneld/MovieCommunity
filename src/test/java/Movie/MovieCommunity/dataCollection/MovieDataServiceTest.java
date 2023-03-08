@@ -4,11 +4,9 @@ import Movie.MovieCommunity.JPADomain.JpaActor;
 import Movie.MovieCommunity.JPADomain.JpaMovie;
 import Movie.MovieCommunity.JPADomain.JpaMovieWithActor;
 import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
-import Movie.MovieCommunity.JPARepository.ActorRepository;
-import Movie.MovieCommunity.JPARepository.MovieRepository;
-import Movie.MovieCommunity.JPARepository.MovieWithActorRepository;
-import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
+import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.domain.WeeklyBoxOffice;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -34,9 +32,11 @@ class MovieDataServiceTest {
 
     @Autowired WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
 
+    @Autowired
+    WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
+
     @Test
     @Transactional
-    @Rollback(value = false)
     public void actorTopCntTest() {
         List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(1904L);
 
@@ -86,5 +86,13 @@ class MovieDataServiceTest {
                 });
             }
         });
+    }
+
+    @Test
+    public void testCustom() {
+        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly().subList(0,50);
+        for (Tuple tuple : tuples) {
+            log.info("tuple={}", tuple);
+        }
     }
 }

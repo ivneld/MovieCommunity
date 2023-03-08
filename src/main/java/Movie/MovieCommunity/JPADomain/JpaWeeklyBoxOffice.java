@@ -35,7 +35,7 @@ audiAcc	문자열	누적관객수를 출력합니다.
 scrnCnt	문자열	해당일자에 상영한 스크린수를 출력합니다.
 showCnt	문자열	해당일자에 상영된 횟수를 출력합니다.
  */
-@Entity
+@Entity(name ="weeklyboxoffice")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name="weeklyboxoffice")
