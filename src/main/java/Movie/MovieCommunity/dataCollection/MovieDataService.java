@@ -408,6 +408,7 @@ public class MovieDataService {
         }
     }
 
+    // update
     public void setMovieEtcV2() {
         List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
         Tuple tuple1 = tuples.get(0);
