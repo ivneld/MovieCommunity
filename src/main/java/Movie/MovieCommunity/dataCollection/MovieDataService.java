@@ -42,7 +42,7 @@ public class MovieDataService {
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
     private final EntityManager em;
-    private final String key = "633a3302093ec75c112d1afac4eb1ba5";
+    private final String key = "d3308138031d929442172734065bdb89";
     private String response;
 //    private Company company = new Company();
 //    private Genre genre = new Genre();
@@ -59,7 +59,7 @@ public class MovieDataService {
     public void Testing() throws Exception {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
-//        movieDataCollection("2022");
+        movieDataCollection("2023");
 //        yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
