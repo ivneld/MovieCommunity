@@ -163,7 +163,10 @@ public class RankingController {
 //                System.out.printf("  %s - %s\n", boxOffice.get("rnum"), boxOffice.get("movieNm"));
 //                System.out.printf("  %s \n", boxOffice.get("openDt"));
 //                System.out.printf("  %s \n", boxOffice.get("rankInten"));
+
             }
+
+            log.info("dailyBoxOfficeList={}",dailyBoxOfficeList);
         } catch (IOException e) {
             e.printStackTrace();
         }

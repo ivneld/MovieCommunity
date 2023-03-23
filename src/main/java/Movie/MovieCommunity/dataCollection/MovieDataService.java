@@ -7,12 +7,14 @@ import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.domain.*;
 
 import Movie.MovieCommunity.web.repository.*;
+import com.querydsl.core.Tuple;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +42,10 @@ public class MovieDataService {
     private final MovieWithActorRepository movieWithActorRepository;
     private final MovieWithCompanyRepository movieWithCompanyRepository;
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
+    private final WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
+
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
+    @Autowired
     private final EntityManager em;
     private final String key = "633a3302093ec75c112d1afac4eb1ba5";
     private String response;
@@ -59,8 +64,8 @@ public class MovieDataService {
     public void Testing() throws Exception {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
-        movieDataCollection("2022");
-//        yearWeeklyBoxOfficeData("20220101");
+//        movieDataCollection("2022");        // 1
+//        yearWeeklyBoxOfficeData("20220101");          // 2
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -70,9 +75,12 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
-//        setMovieEtc();
+//        setMovieEtc();        // 3
     }
 
+    /**
+     *  movieDataCollection with movieDetailData
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     private void movieDataCollection(String openStartDt) throws Exception {
         Map<String, String> param = new HashMap<>();
@@ -119,7 +127,6 @@ public class MovieDataService {
         // 임의로 ID 생성
         //movie.setId(1L);
         response = service.getMovieInfo(true, movieCd);
-
 
         JSONParser jsonParser = new JSONParser();
         Object parse = jsonParser.parse(response);
@@ -178,6 +185,10 @@ public class MovieDataService {
         log.info("movie = {}",movie);
         threadMovie.remove();
     }
+
+
+
+
     @Transactional(propagation = Propagation.REQUIRED)
     private void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
@@ -371,10 +382,6 @@ public class MovieDataService {
     }
 
 
-    /**
-     * weeklyBoxOfficeList 에서 각 movieCd에 해당하는 sales_acc, audi_acc 값을 movie table의 두 컬럼과 비교하여
-     * 크면 갱신 시키기
-     */
     public void setMovieEtc() {
         List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 
@@ -392,13 +399,39 @@ public class MovieDataService {
                 if (weeklyBoxOffice.getRanking() <= 10) {
                     movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
 
-                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
-                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
+//
                 }
 
                 movieRepository.save(movie);
                 log.info("movie={}", movie);
             }
         }
+    }
+
+    // update
+    public void setMovieEtcV2() {
+        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
+        Tuple tuple1 = tuples.get(0);
+        tuple1.get(QJpaMovie.jpaMovie.movieCd);
+    }
+    public void setTopMovieCnt() {
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByRankingLessThan(11);
+
+        weeklyBoxOffices.stream().forEach(weeklyBoxOffice -> {
+            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+
+                List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findAllActor(movie.getId());
+                movieWithActors.stream().forEach(movieWithActor -> {
+                    JpaActor actor = movieWithActor.getActor();
+                    actor.plusTopMovieCnt();
+
+
+                    log.info("actor id={}", actor.getId());
+                    log.info("-> cnt={}", actor.getTopMovieCnt());
+                });
+            }
+        });
+
     }
 }
