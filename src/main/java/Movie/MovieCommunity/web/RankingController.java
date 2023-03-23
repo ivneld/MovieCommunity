@@ -156,6 +156,7 @@ public class RankingController {
             Iterator<Object> iter = dailyBoxOfficeList.iterator();
             while(iter.hasNext()) {
                 JSONObject boxOffice = (JSONObject) iter.next();
+
                 dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt(String.valueOf( boxOffice.get("rank"))), Integer.parseInt(String.valueOf(boxOffice.get("rankInten"))),  Integer.parseInt(String.valueOf(boxOffice.get("rnum")))));
 
 //                model.addAttribute("rankInten",boxOffice.get("rankInten"));
