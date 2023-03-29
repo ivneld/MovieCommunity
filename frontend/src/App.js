@@ -1,20 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import React from "react";
+import loadable from '@loadable/component';
+import { Routes, Route } from 'react-router-dom';
 
-function App() {
-   const [hello, setHello] = useState('')
+const Board = loadable(() => import('./pages/Board'));
+const Main = loadable(() => import('./pages/Main'));
 
-    useEffect(() => {
-        axios.get('/api/hello')
-        .then(response => setHello(response.data))
-        .catch(error => console.log(error))
-    }, []);
-
-    return (
-        <div>
-            백엔드에서 가져온 데이터입니다 : {hello}
-        </div>
-    );
+function App({}) {
+  return (
+    <Routes>
+      <Route path="/" element={<Main/>}/>
+      <Route path="/boards" element={<Board/>}/>
+    </Routes>
+  )
 }
 
 export default App;
