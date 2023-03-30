@@ -142,6 +142,7 @@ public class BoardController {
         }
 //        return "redirect:/boards";
     //    log.info("4{}", boardDetail);
+        log.info("보드 id 못찾음1");
         return null;
     }
 

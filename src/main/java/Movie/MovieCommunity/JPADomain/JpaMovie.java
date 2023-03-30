@@ -49,14 +49,35 @@ staffRoleNm	문자열	스텝역할명을 출력합니다.
  */
 @Getter
 @Table(name="movie")
-@Entity
+@Entity(name = "movie")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+
 public class JpaMovie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
     private Long id;
     private String movieCd;
     private String movieNm;
+
+    public JpaMovie(Long id, String movieCd, String movieNm, Integer showTm, Integer openDt, String prdtStatNm, String typeNm, String nationNm, String directorNm, String auditNo, String watchGradeNm, int topScore, Long salesAcc, Long audiAcc, List<JpaMovieWithActor> movieWithActors, List<JpaMovieWithCompany> movieWithCompanies, List<JpaMovieWithGenre> movieWithGenres) {
+        this.id = id;
+        this.movieCd = movieCd;
+        this.movieNm = movieNm;
+        this.showTm = showTm;
+        this.openDt = openDt;
+        this.prdtStatNm = prdtStatNm;
+        this.typeNm = typeNm;
+        this.nationNm = nationNm;
+        this.directorNm = directorNm;
+        this.auditNo = auditNo;
+        this.watchGradeNm = watchGradeNm;
+        this.topScore = topScore;
+        this.salesAcc = salesAcc;
+        this.audiAcc = audiAcc;
+        this.movieWithActors = movieWithActors;
+        this.movieWithCompanies = movieWithCompanies;
+        this.movieWithGenres = movieWithGenres;
+    }
 
     @Override
     public String toString() {

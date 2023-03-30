@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,9 @@ public class MovieDataService {
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
     private final EntityManager em;
-    private final String key = "633a3302093ec75c112d1afac4eb1ba5";
+
+//    @Value("${movie-api-key}")
+    private String key = "633a3302093ec75c112d1afac4eb1ba5";
     private String response;
 //    private Company company = new Company();
 //    private Genre genre = new Genre();
@@ -59,7 +62,7 @@ public class MovieDataService {
     public void Testing() throws Exception {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
-//        movieDataCollection("2022");
+       // movieDataCollection("2022");
 //        yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);

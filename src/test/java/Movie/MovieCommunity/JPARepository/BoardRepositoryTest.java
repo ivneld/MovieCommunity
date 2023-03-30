@@ -62,4 +62,12 @@ class BoardRepositoryTest {
 
     }
 
+//    @Test
+//    public void findQueryList(){
+//        List<Board> boardList = boardRepository.findBoardList();
+//        for (Board board : boardList) {
+//            System.out.println("board = " + board);
+//        }
+//    }
+
 }

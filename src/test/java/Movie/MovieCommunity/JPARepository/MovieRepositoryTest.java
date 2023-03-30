@@ -9,6 +9,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -22,8 +23,8 @@ class MovieRepositoryTest {
     private EntityManager em;
     @Test
     public void selectOne(){
-em.flush();
-em.clear();
+        em.flush();
+        em.clear();
 //        Optional<JpaMovie> byId = movieRepository.findById(140l);
         MovieDto movieDto = new MovieDto();
         movieDto.setNationNm("1234");
@@ -57,6 +58,15 @@ em.clear();
 
 
     }
+    @Test
+    public void movieList(){
+        List<JpaMovie> list = movieRepository.findList();
+        for (JpaMovie jpaMovie : list) {
+            System.out.println("jpaMovie = " + jpaMovie);
+        }
+    }
+
+
 
 
 }
