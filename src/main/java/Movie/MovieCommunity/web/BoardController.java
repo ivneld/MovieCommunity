@@ -46,6 +46,7 @@ import static Movie.MovieCommunity.web.SessionConst.*;
 @RequestMapping("/boards")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin
 public class BoardController {
     private final BoardRepository boardRepository;
     private final MovieRepository movieRepository;
@@ -111,9 +112,9 @@ public class BoardController {
 
 
 
-    @ResponseBody
+//    @ResponseBody
     @GetMapping("/{boardId}")
-    public  BoardDetail boardDetail(@PathVariable Long boardId, Model model, @ModelAttribute CommentForm commentForm, HttpServletRequest request){
+    public  String boardDetail(@PathVariable Long boardId, Model model, @ModelAttribute CommentForm commentForm, HttpServletRequest request){
         Board board = boardService.findOne(boardId);
         BoardDetail boardDetail = new BoardDetail();
        // log.info("1{}", boardDetail);
@@ -136,8 +137,9 @@ public class BoardController {
 
 
             boardDetail.setComment(commentPage);
-            return boardDetail;
-//            return "boardDetail";
+
+//            return boardDetail;
+            return "boardDetail";
 
         }
 //        return "redirect:/boards";

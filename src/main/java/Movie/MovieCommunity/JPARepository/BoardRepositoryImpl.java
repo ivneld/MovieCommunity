@@ -34,7 +34,7 @@ public class BoardRepositoryImpl implements QuerydslBoardRepository{
     @Override
     public Page<BoardDao> searchBoardList(BoardSearchCond boardSearchCond, Pageable pageable) {
         List<BoardDao> content = queryFactory.select(new QBoardDao(
-                                board.id, board.title, board.likeCnt,
+                                board.id, board.title, board.content, board.likeCnt,
                                 member.id.as("memberId"), member.name.as("memberNm"),
                                 jpaMovie.id.as("movieId"), jpaMovie.movieNm
                         )
@@ -44,7 +44,7 @@ public class BoardRepositoryImpl implements QuerydslBoardRepository{
                 where(movieNmContain(boardSearchCond.getMovieNm()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                //.orderBy
+                .orderBy(board.createdDt.desc())
                 .fetch();
 
         Long count = queryFactory.select(board.count())
