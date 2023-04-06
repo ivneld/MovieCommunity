@@ -8,10 +8,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,10 +19,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping
 public class RankingController {
 
@@ -50,7 +52,7 @@ public class RankingController {
 
     // 전체 영화 API요청
     @GetMapping
-    public String requestAPI(Model model) {
+    public List<DailyBoxOffice> requestAPI(Model model) {
         // 변수설정
         //   - 하루전 닐찌
         Calendar cal = Calendar.getInstance();
@@ -59,17 +61,18 @@ public class RankingController {
 
         cal.add(Calendar.DATE, -1);
         Map<String, String> paramMap = new HashMap<String, String>();
+
         paramMap = paramMapSet(cal, paramMap,"10");
 
-        model.addAttribute("dailyBoxOffices",extracted(model, dailyBoxOffices, paramMap));
+        List<DailyBoxOffice> total = extracted(model, dailyBoxOffices, paramMap);
 
-        return  "/basic/movieRanking";
+        return total;
     }
 
 
     // 외국 영화 API요청
-    @GetMapping("/basic/foreignMovieRanking")
-    public String requestAPIForeign(Model model) {
+    @GetMapping("/foreign")
+    public List<DailyBoxOffice> requestAPIForeign(Model model) {
         // 변수설정
         //   - 하루전 닐찌
         Calendar cal = Calendar.getInstance();
@@ -82,14 +85,13 @@ public class RankingController {
 
         foreignParamMap = paramMapSet(cal, foreignParamMap,"10");
         foreignParamMap.put("repNationCd" , "F");
-        model.addAttribute("foreignDailyBoxOffices",extracted(model, ForeignDailyBoxOffices, foreignParamMap));
-
-        return "/basic/foreignMovieRanking";
+        List<DailyBoxOffice> foreign = extracted(model, ForeignDailyBoxOffices, foreignParamMap);
+        return foreign;
     }
 
     // API요청
-    @GetMapping("basic/koreaMovieRanking")
-    public String requestAPIKorea(Model model) {
+    @GetMapping("/korea")
+    public List<DailyBoxOffice> requestAPIKorea(Model model) {
         // 변수설정
         //   - 하루전 닐찌
         Calendar cal = Calendar.getInstance();
@@ -101,9 +103,9 @@ public class RankingController {
         Map<String, String> koreaParamMap = new HashMap<String, String>();
         koreaParamMap = paramMapSet(cal, koreaParamMap,"10");
         koreaParamMap.put("repNationCd" , "K");                             // K:한국영화, F:외국영화, Default:전체
-        model.addAttribute("koreaDailyBoxOffices",extracted(model, KoreaDailyBoxOffices, koreaParamMap));
+        List<DailyBoxOffice> korea = extracted(model, KoreaDailyBoxOffices, koreaParamMap);
 
-        return "basic/koreaMovieRanking";
+        return korea;
     }
 
     private Map<String, String> paramMapSet(Calendar cal, Map<String, String> paramMap, String itemPerPage ) {
@@ -149,19 +151,15 @@ public class RankingController {
             // 박스오피스 주제 출력
             String boxofficeType = (String) boxOfficeResult.get("boxofficeType");
             model.addAttribute("boxofficeType",(String) boxOfficeResult.get("boxofficeType"));
-            System.out.println(boxofficeType);
+
 
             // 박스오피스 목록 출력
             JSONArray dailyBoxOfficeList = (JSONArray) boxOfficeResult.get("dailyBoxOfficeList");
             Iterator<Object> iter = dailyBoxOfficeList.iterator();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
             while(iter.hasNext()) {
                 JSONObject boxOffice = (JSONObject) iter.next();
-                dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt(String.valueOf( boxOffice.get("rank"))), Integer.parseInt(String.valueOf(boxOffice.get("rankInten"))),  Integer.parseInt(String.valueOf(boxOffice.get("rnum")))));
-
-//                model.addAttribute("rankInten",boxOffice.get("rankInten"));
-//                System.out.printf("  %s - %s\n", boxOffice.get("rnum"), boxOffice.get("movieNm"));
-//                System.out.printf("  %s \n", boxOffice.get("openDt"));
-//                System.out.printf("  %s \n", boxOffice.get("rankInten"));
+                dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt((String) boxOffice.get("rank")), Integer.parseInt((String) boxOffice.get("rankInten")), boxOffice.get("openDt"), Long.parseLong((String) boxOffice.get("audiAcc"))));
             }
         } catch (IOException e) {
             e.printStackTrace();

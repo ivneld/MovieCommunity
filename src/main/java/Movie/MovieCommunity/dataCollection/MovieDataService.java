@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +40,10 @@ public class MovieDataService {
     private final MovieWithActorRepository movieWithActorRepository;
     private final MovieWithCompanyRepository movieWithCompanyRepository;
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
+    private final WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
+
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
+    @Autowired
     private final EntityManager em;
 
 //    @Value("${movie-api-key}")
@@ -76,6 +78,9 @@ public class MovieDataService {
 //        setMovieEtc();
     }
 
+    /**
+     *  movieDataCollection with movieDetailData
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     private void movieDataCollection(String openStartDt) throws Exception {
         Map<String, String> param = new HashMap<>();
@@ -122,7 +127,6 @@ public class MovieDataService {
         // 임의로 ID 생성
         //movie.setId(1L);
         response = service.getMovieInfo(true, movieCd);
-
 
         JSONParser jsonParser = new JSONParser();
         Object parse = jsonParser.parse(response);
@@ -374,10 +378,6 @@ public class MovieDataService {
     }
 
 
-    /**
-     * weeklyBoxOfficeList 에서 각 movieCd에 해당하는 sales_acc, audi_acc 값을 movie table의 두 컬럼과 비교하여
-     * 크면 갱신 시키기
-     */
     public void setMovieEtc() {
         List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 
@@ -403,5 +403,32 @@ public class MovieDataService {
                 log.info("movie={}", movie);
             }
         }
+    }
+
+    // update
+    public void setMovieEtcV2() {
+        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
+        Tuple tuple1 = tuples.get(0);
+        tuple1.get(QJpaMovie.jpaMovie.movieCd);
+    }
+    public void setTopMovieCnt() {
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByRankingLessThan(11);
+
+        weeklyBoxOffices.stream().forEach(weeklyBoxOffice -> {
+            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+
+                List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findAllActor(movie.getId());
+                movieWithActors.stream().forEach(movieWithActor -> {
+                    JpaActor actor = movieWithActor.getActor();
+                    actor.plusTopMovieCnt();
+
+
+                    log.info("actor id={}", actor.getId());
+                    log.info("-> cnt={}", actor.getTopMovieCnt());
+                });
+            }
+        });
+
     }
 }

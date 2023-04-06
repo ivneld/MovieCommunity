@@ -23,6 +23,12 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.Optional;
 
+
+/**
+ * movieWithgenre table
+ * movie : movie_id ,movie_nm, open_dt
+ * genre : genre_id, genre_nm
+ */
 @Controller
 @RequestMapping("/comment")
 @RequiredArgsConstructor
