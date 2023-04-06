@@ -1,31 +1,52 @@
-import React, { useEffect } from 'react';
+import React, { useCallback } from 'react';
 import useSWR from 'swr';
 import fetcher from '../../utils/fetcher';
-import { Body } from './styles';
+import { Body, LinkContainer, Label, Form, Input, Button } from './styles';
+import useInput from '../../hooks/useInput';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const Board = () => {
+    const [title, onChangeTitle] = useInput('');
+    const navigate = useNavigate();
+
     const { data : boardData } = useSWR('http://localhost:8080/boards', fetcher, {
         dedupingInterval: 100000,
     });
+    const onSubmit = useCallback(
+        (e) => {
+          e.preventDefault();
+          navigate(`/?movienm=${title}`);
+        },
+        [title],
+      );
+
     if (!boardData){
         return <div>데이터가 없습니다</div>
     }
-    console.log(boardData)
 
     return(
         <>
             <Body>
-                <div>게시판</div>
+                {/* <SearchMovie chat={chat} onChangeChat={onChangeChat}/> */}
+                
+                <Form onSubmit={onSubmit}>
+                    <Label>
+                    <div>
+                        <Input type="text" placeholder='영화 제목 검색' value={title} onChange={onChangeTitle} />
+                    </div>
+                    </Label>
+                    <Button type="submit">검색</Button>
+                </Form>
                 <hr/>
+
                 {boardData.content.map((data)=>{
-                    return(
-                        <div>
-                            {Object.entries(data).map(([key,value])=>(
-                                <span>{key}:{value}&nbsp;&nbsp;&nbsp;</span>
-                            ))}
-                       </div>
-                    )}
-                )
+                        return(
+                            <LinkContainer>
+                                <Link to={`/boards/${data.id}/comment`} key={data.id} state={{detail : data}}>게시글 : {data.title}</Link>
+                            </LinkContainer>
+                        )}
+                    )
                 }
                 <hr/>
                 <div>pageable 일단 생략&nbsp;&nbsp;&nbsp;
@@ -43,8 +64,6 @@ const Board = () => {
                     empty:{boardData.empty}&nbsp;&nbsp;&nbsp;</div>
                 <hr/>
                 <div>- 최신글 순이면, 시간 표시할 건지? 그러면 게시글 작성 시 시간데이터 넘겨줘야 되는지? -</div>
-                <div>- 로그인을 메인 페이지에 넣을건지, 로그인페이지 따로 할건지? -</div>
-                <div>- 회원가입도 마찬가지 -</div>
                 <div>- pageable의 sort 데이터 빼기 -</div>
             </Body>
         </>
@@ -52,52 +71,3 @@ const Board = () => {
 };
 
 export default Board;
-
-// 타입 object, boolean, number 등
-// {
-//     "content":[
-//                 {
-//                     "id":1,
-//                     "title":"123,1231242",
-//                     "like":213,
-//                     "movieId":318,
-//                     "memberId":1,
-//                     "movieNm":"궁지에 몰린 쥐는 치즈 꿈을 꾼다",
-//                     "memberNm":"123"
-//                 },
-//                ],
-//     "pageable":{
-//                 "sort":{
-//                         "empty":true,
-//                         "unsorted":true,
-//                         "sorted":false
-//                        },
-//                 "offset":0,
-//                 "pageSize":20,
-//                 "pageNumber":0,
-//                 "unpaged":false,
-//                 "paged":true},
-//     "last":true,
-//     "totalElements":5,
-//     "totalPages":1,
-//     "size":20,
-//     "number":0,
-//     "sort":{
-//             "empty":true,
-//             "unsorted":true,
-//             "sorted":false
-//             },
-//     "first":true,
-//     "numberOfElements":5,
-//     "empty":false
-// }
-
-
-
-    // const fetchedata = async () => {
-    //     const res = await axios.get("http://localhost:8080/boards");
-    //     console.log(res.data);
-    // }
-    // useEffect(() => {
-    //     fetchedata()
-    // },[])
