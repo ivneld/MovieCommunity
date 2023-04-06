@@ -17,15 +17,15 @@ const BoardDetail = () => {
       e.preventDefault();
       setPostCommentError(false); // 초기화 (요청 연달아 날릴 때 남아있는 결과 다시가는거 방지)
       setPostCommentSuccess(false);
-      const toJSON = JSON.stringify(comment)
-      console.log(toJSON)
+      const comments = JSON.stringify(comment)
+      console.log(comments)
       axios
         .post(
-          '/create',
-          { toJSON },
-          {
-            withCredentials: true,
-          },
+          'http://localhost:8080/comment/create',
+          { comments },
+          // {
+          //   withCredentials: true,
+          // },
         )
         .then((response) => {
             console.log(response)

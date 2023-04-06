@@ -2,12 +2,16 @@ package Movie.MovieCommunity.web;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.service.MemberService;
+import Movie.MovieCommunity.web.dto.ChangePasswordRequestDto;
+import Movie.MovieCommunity.web.dto.MemberRequestDto;
+import Movie.MovieCommunity.web.dto.MemberResponseDto;
 import Movie.MovieCommunity.web.form.AddMemberForm;
 import Movie.MovieCommunity.web.form.LoginForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +22,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @Controller
-@RequestMapping("")
+@RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
@@ -27,6 +31,31 @@ public class MemberController {
     public String addForm(@ModelAttribute("member") AddMemberForm memberForm){
         return "addMember";
     }
+
+
+
+
+
+
+
+
+    @GetMapping("/me")
+    public ResponseEntity<MemberResponseDto> getMyMemberInfo() {
+        MemberResponseDto myInfoBySecurity = memberService.getMyInfoBySecurity();
+        System.out.println(myInfoBySecurity.getNickname());
+        return ResponseEntity.ok((myInfoBySecurity));
+        // return ResponseEntity.ok(memberService.getMyInfoBySecurity());
+    }
+
+    @PostMapping("/nickname")
+    public ResponseEntity<MemberResponseDto> setMemberNickname(@RequestBody MemberRequestDto request) {
+        return ResponseEntity.ok(memberService.changeMemberNickname(request.getEmail(), request.getNickname()));
+    }
+
+//    @PostMapping("/password")
+//    public ResponseEntity<MemberResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
+//        return ResponseEntity.ok(memberService.changeMemberPassword(request.getExPassword(), request.getNewPassword()));
+//    }
 //    @PostMapping("/add")
 //    public String save(@ModelAttribute("member") @Valid AddMemberForm memberForm, BindingResult bindingResult, HttpServletRequest request){
 //        log.info("member = {}", memberForm);
