@@ -1,40 +1,33 @@
-import React from "react";
-import loadable from '@loadable/component';
-import { Routes, Route } from 'react-router-dom';
-import Navbar from "./components/NavBar";
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Profile from './pages/Profile';
-import SignUp from './pages/SignUp';
+import { BrowserRouter } from "react-router-dom";
 
-// const Board = loadable(() => import('./pages/Board'));
-// const Main = loadable(() => import('./pages/Main'));
-// const BoardDetail = loadable(() => import('./pages/BoardDetail'));
-// const PostingBoard = loadable(() => import('./pages/PostingBoard'));
+import Header from "./common/Header"
+import Nav from "./common/Nav"
+import Main from "./common/Main"
+import Footer from "./common/Footer"
+import AuthProvider from "./context/AuthProvider"
+import HttpHeadersProvider from "./context/HttpHeadersProvider"
+import "./style.css"
 
-// const Login = loadable(() => import('./pages/Login'));
-// const SignUp = loadable(() => import('./pages/SignUp'));
+function App() {
 
-function App({}) {
   return (
-    <>
-      <Navbar/>
-      <Routes>
-        {/* <Route path="/" element={<Main/>}/>
-        <Route path="/boards" element={<Board/>}/>
-        <Route path="/boards/:id/comment" element={<BoardDetail/>}/>
-        <Route path="/movienm/:title" element={<Main/>}/>
-        <Route path="/boards/create/:movieid" element={<PostingBoard/>}/> */}
+    <div>
+      <BrowserRouter>
+        
+        <Header />
+        
+        <AuthProvider>
+          <HttpHeadersProvider>
+            <Nav />
+            <Main />
+          </HttpHeadersProvider>
+        </AuthProvider>
 
-        {/* <Route path="/auth/login" element={<Login/>}/>
-        <Route path="/auth/signup" element={<SignUp/>}/> */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
-    </>
-  )
+        <Footer />
+
+      </BrowserRouter>
+    </div>
+  );
 }
 
 export default App;
