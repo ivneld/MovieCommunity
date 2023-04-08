@@ -66,7 +66,7 @@ function Join() {
 			// id: id,
 			email: email,
 			password: password,
-			nickname, nickname,
+			nickname: nickname,
 			// checkpassword: checkpassword,
 		}
 

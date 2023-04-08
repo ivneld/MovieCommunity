@@ -2,10 +2,7 @@ package Movie.MovieCommunity.web.dto;
 
 import Movie.MovieCommunity.JPADomain.Authority;
 import Movie.MovieCommunity.JPADomain.Member;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 public class MemberRequestDto {
 
     private String email;
