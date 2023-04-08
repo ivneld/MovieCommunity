@@ -54,61 +54,77 @@ public class RankingController {
 
     // 전체 영화 API요청
     @GetMapping
-    public List<DailyBoxOffice> requestAPI(Model model) {
+    public JSONArray requestAPI(Model model) {
         // 변수설정
         //   - 하루전 닐찌
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
+
+        JSONArray array= new JSONArray();
         List<DailyBoxOffice> dailyBoxOffices= new ArrayList<>();
+        List<DailyBoxOffice> ForeignDailyBoxOffices= new ArrayList<>();
+        List<DailyBoxOffice> KoreaDailyBoxOffices= new ArrayList<>();
 
         cal.add(Calendar.DATE, -1);
         Map<String, String> paramMap = new HashMap<String, String>();
+        Map<String, String> foreignParamMap = new HashMap<String, String>();
+        Map<String, String> koreaParamMap = new HashMap<String, String>();
 
         paramMap = paramMapSet(cal, paramMap,"10");
+        foreignParamMap = paramMapSet(cal, foreignParamMap,"10");
+        koreaParamMap = paramMapSet(cal, koreaParamMap,"10");
+
+        foreignParamMap.put("repNationCd" , "F");
+        koreaParamMap.put("repNationCd" , "K");
 
         List<DailyBoxOffice> total = extracted(model, dailyBoxOffices, paramMap);
-
-        return total;
-    }
-
-
-    // 외국 영화 API요청
-    @GetMapping("/foreign")
-    public List<DailyBoxOffice> requestAPIForeign(Model model) {
-        // 변수설정
-        //   - 하루전 닐찌
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        List<DailyBoxOffice> ForeignDailyBoxOffices= new ArrayList<>();
-        cal.add(Calendar.DATE, -1);
-
-
-        Map<String, String> foreignParamMap = new HashMap<String, String>();
-
-        foreignParamMap = paramMapSet(cal, foreignParamMap,"10");
-        foreignParamMap.put("repNationCd" , "F");
         List<DailyBoxOffice> foreign = extracted(model, ForeignDailyBoxOffices, foreignParamMap);
-        return foreign;
-    }
-
-    // API요청
-    @GetMapping("/korea")
-    public List<DailyBoxOffice> requestAPIKorea(Model model) {
-        // 변수설정
-        //   - 하루전 닐찌
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        List<DailyBoxOffice> KoreaDailyBoxOffices= new ArrayList<>();
-        cal.add(Calendar.DATE, -1);
-
-
-        Map<String, String> koreaParamMap = new HashMap<String, String>();
-        koreaParamMap = paramMapSet(cal, koreaParamMap,"10");
-        koreaParamMap.put("repNationCd" , "K");                             // K:한국영화, F:외국영화, Default:전체
         List<DailyBoxOffice> korea = extracted(model, KoreaDailyBoxOffices, koreaParamMap);
 
-        return korea;
+        array.add(0, total);      // 전체 영화
+        array.add(1, foreign);    // 외국 영화
+        array.add(2, korea);      // 한국 영화
+        return array;
     }
+
+
+//    // 외국 영화 API요청
+//    @GetMapping("/foreign")
+//    public List<DailyBoxOffice> requestAPIForeign(Model model) {
+//        // 변수설정
+//        //   - 하루전 닐찌
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(new Date());
+//        List<DailyBoxOffice> ForeignDailyBoxOffices= new ArrayList<>();
+//        cal.add(Calendar.DATE, -1);
+//
+//
+//        Map<String, String> foreignParamMap = new HashMap<String, String>();
+//
+//        foreignParamMap = paramMapSet(cal, foreignParamMap,"10");
+//        foreignParamMap.put("repNationCd" , "F");
+//        List<DailyBoxOffice> foreign = extracted(model, ForeignDailyBoxOffices, foreignParamMap);
+//        return foreign;
+//    }
+//
+//    // API요청
+//    @GetMapping("/korea")
+//    public List<DailyBoxOffice> requestAPIKorea(Model model) {
+//        // 변수설정
+//        //   - 하루전 닐찌
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(new Date());
+//        List<DailyBoxOffice> KoreaDailyBoxOffices= new ArrayList<>();
+//        cal.add(Calendar.DATE, -1);
+//
+//
+//        Map<String, String> koreaParamMap = new HashMap<String, String>();
+//        koreaParamMap = paramMapSet(cal, koreaParamMap,"10");
+//        koreaParamMap.put("repNationCd" , "K");                             // K:한국영화, F:외국영화, Default:전체
+//        List<DailyBoxOffice> korea = extracted(model, KoreaDailyBoxOffices, koreaParamMap);
+//
+//        return korea;
+//    }
 
     private Map<String, String> paramMapSet(Calendar cal, Map<String, String> paramMap, String itemPerPage ) {
         paramMap.put("key"          , AUTH_KEY);                        // 발급받은 인증키

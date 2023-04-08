@@ -85,7 +85,7 @@ public class MovieDataService {
      *  movieDataCollection with movieDetailData
      */
     @Transactional(propagation = Propagation.REQUIRED)
-    private void movieDataCollection(String openStartDt) throws Exception {
+    public void movieDataCollection(String openStartDt) throws Exception {
         Map<String, String> param = new HashMap<>();
         //param.put("curPage", "1");
         //param.put("itemPerPage","0");
@@ -123,7 +123,7 @@ public class MovieDataService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    private void movieDetailData(String movieCd) throws Exception {
+    public void movieDetailData(String movieCd) throws Exception {
 
         List<String> keyNames = new ArrayList<>();
 
@@ -189,7 +189,7 @@ public class MovieDataService {
         threadMovie.remove();
     }
     @Transactional(propagation = Propagation.REQUIRED)
-    private void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
+    public void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
         MovieWithCompany movieWithCompany = new MovieWithCompany();
 
@@ -294,7 +294,7 @@ public class MovieDataService {
     }
 
     @Transactional
-    private void yearWeeklyBoxOfficeData(String targetDt) {
+    public void yearWeeklyBoxOfficeData(String targetDt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate startDate = LocalDate.parse("20220101", formatter);
 /*        LocalDate nextDate = startDate.plusDays(7);

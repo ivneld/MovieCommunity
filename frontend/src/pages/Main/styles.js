@@ -17,3 +17,6 @@ export const LinkContainer = styled.p`
 export const MovieSpan = styled.span`
   cursor: pointer;
 `
+export const CategorySpan = styled.span`
+  cursor: pointer;
+`
