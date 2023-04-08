@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LinkContainer, MovieSpan } from './styles';
+import { LinkContainer, MovieSpan, CategorySpan } from './styles';
 import useSWR from 'swr';
 import fetcher from '../../utils/fetcher';
 import MovieDetailModal from '../../components/MovieDetailModal';
@@ -10,8 +10,16 @@ const Main = () => {
     const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
     const [content, setContent] = useState('');
 
+    const [postingBoardMovieId, setPostingBoardMovieId] = useState('');
+
+    const [isEvery, setIsEvery] = useState(true);
+    const [isForeign, setIsForeign] = useState(false);
+    const [isKorea, setIsKorea] = useState(false);
+
 	const [searchParams, setSearchParams] = useSearchParams(); // 쿼리 스트링을 searchParams 형태로 가져오고
 	const movienm = searchParams.get('movienm'); // movienm 값 변수에 저장
+
+    const [posts, setPosts] = useState([]);
 
     const onCloseModal = useCallback(() => {
         setShowMovieDetailModal(false);
@@ -62,33 +70,66 @@ const Main = () => {
                     <span>장르별&nbsp;&nbsp;</span>
                     <Link to='/boards'>게시판&nbsp;&nbsp;</Link>
                     <span>My Page&nbsp;&nbsp;</span>
-                    <button>로그인</button>
+                    <Link to='/auth/login'>로그인</Link>
                 </LinkContainer>
                 <hr/>
                 <div>
-                    top 10 movie list (영화제목 click 시, 게시판 글 작성)
+                    Top 10 movie list
                 </div>
                 <hr/>
-                <LinkContainer>
-                    <Link to='/korea'>국내영화&nbsp;&nbsp;</Link>
-                    <Link to='/foreign'>해외영화</Link>
-                </LinkContainer>               
+                    <CategorySpan onClick={() => (setIsEvery(true), setIsForeign(false), setIsKorea(false))}>전체영화&nbsp;&nbsp;&nbsp;</CategorySpan>
+                    <CategorySpan onClick={() => (setIsEvery(false), setIsForeign(false), setIsKorea(true))}>국내영화&nbsp;&nbsp;&nbsp;</CategorySpan>
+                    <CategorySpan onClick={() => (setIsEvery(false), setIsForeign(true), setIsKorea(false))}>해외영화</CategorySpan>
                 <hr/>
-                <div>
-                    {mainData.map((data)=>{
-                            return(
-                                <div>
-                                    <MovieSpan onClick={onClickModal}>{data.movieNm}</MovieSpan>
-                                </div>
-                            )}
-                        )
-                    }
-                </div>
+         
+                {isEvery &&
+                    <div>
+                        {mainData[0].map((data)=>{
+                                return(
+                                    <div>
+                                        <MovieSpan onClick={() => (onClickModal(), setPostingBoardMovieId(data.movieNm))}>{data.movieNm}</MovieSpan>
+                                    </div>
+                                )}
+                            )
+                        }
+                    </div>                     
+                }
+                {isForeign &&
+                    <div>
+                        {mainData[1].map((data)=>{
+                                return(
+                                    <div>
+                                        <MovieSpan onClick={() => (onClickModal(), setPostingBoardMovieId(data.movieNm))}>{data.movieNm}</MovieSpan>
+                                    </div>
+                                )}
+                            )
+                        }
+                    </div>                     
+                }
+                {isKorea &&
+                    <div>
+                        {mainData[2].map((data)=>{
+                                return(
+                                    <div>
+                                        <MovieSpan onClick={() => (onClickModal(), setPostingBoardMovieId(data.movieNm))}>{data.movieNm}</MovieSpan>
+                                    </div>
+                                )}
+                            )
+                        }
+                    </div>                     
+                }
+                <hr/>
+                <h3>
+                    {posts.map((post, index) => (
+                    <div key={index}>{post.content}</div>
+                    ))}
+                </h3>
                 <MovieDetailModal
                     show={showMovieDetailModal}
                     onCloseModal={onCloseModal}
                     setShowMovieDetailModal={setShowMovieDetailModal}
                     content={content}
+                    postingBoardMovieId={postingBoardMovieId}
                 />
             </>
             }
