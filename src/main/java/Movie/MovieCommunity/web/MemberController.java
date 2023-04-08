@@ -1,24 +1,14 @@
 package Movie.MovieCommunity.web;
 
-import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.service.MemberService;
-import Movie.MovieCommunity.web.dto.ChangePasswordRequestDto;
 import Movie.MovieCommunity.web.dto.MemberRequestDto;
 import Movie.MovieCommunity.web.dto.MemberResponseDto;
 import Movie.MovieCommunity.web.form.AddMemberForm;
-import Movie.MovieCommunity.web.form.LoginForm;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 @Slf4j
 @Controller

@@ -20,12 +20,7 @@ public class MemberRequestDto {
     private String nickname;
 
     public Member toMember(PasswordEncoder passwordEncoder) {
-        return Member.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .nickname(nickname)
-                .authority(Authority.ROLE_USER)
-                .build();
+        return new Member(email, passwordEncoder.encode(password),nickname,Authority.ROLE_USER);
     }
 
     public UsernamePasswordAuthenticationToken toAuthentication() {

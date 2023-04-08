@@ -1,8 +1,6 @@
 package Movie.MovieCommunity.web.dto;
 
 import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.JpaMovie;
-import Movie.MovieCommunity.JPADomain.Member;
 import lombok.Data;
 
 

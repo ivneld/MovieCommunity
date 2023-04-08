@@ -1,7 +1,5 @@
 package Movie.MovieCommunity.JPARepository;
 
-import Movie.MovieCommunity.JPADomain.QJpaMovie;
-import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import Movie.MovieCommunity.JPARepository.dao.MovieDao;
 import Movie.MovieCommunity.JPARepository.dao.QMovieDao;
 import Movie.MovieCommunity.JPARepository.searchCond.MovieSearchCond;

@@ -1,27 +1,19 @@
 package Movie.MovieCommunity.web;
 
 import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.Comment;
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.BoardRepository;
-import Movie.MovieCommunity.JPARepository.dao.BoardDao;
 import Movie.MovieCommunity.service.CommentService;
-import Movie.MovieCommunity.web.form.BoardForm;
 import Movie.MovieCommunity.web.form.CommentForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
-import java.util.Optional;
 
 
 /**
@@ -33,14 +25,16 @@ import java.util.Optional;
 @RequestMapping("/comment")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("http://localhost:3000")
 public class CommentController {
     private final CommentService commentService;
     private final BoardRepository boardRepository;
 
     @PostMapping("/create")
-    public String create(@ModelAttribute @Valid CommentForm commentForm, BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes){
-
-
+    public String create(@RequestBody String comments, BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes){
+        System.out.println("comments = " + comments);
+        CommentForm commentForm = new CommentForm();
+        commentForm.setContent(comments);
         HttpSession session = request.getSession(false);
         Board board = (Board) session.getAttribute(SessionConst.BOARD);
         commentForm.setBoard(board);

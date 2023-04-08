@@ -4,14 +4,10 @@ import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.config.SecurityUtil;
 import Movie.MovieCommunity.web.dto.MemberResponseDto;
-import Movie.MovieCommunity.web.form.AddMemberForm;
-import Movie.MovieCommunity.web.form.LoginForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

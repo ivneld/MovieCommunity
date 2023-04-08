@@ -47,14 +47,14 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         Optional<Member> findMember = memberRepository.findByUsername(username);
         Member member = null;
         if(findMember.isEmpty()){
-//            member = Member.builder()
-//                    .username(username)
-//                    .name(name)
-//                    .email(email)
-//                    .provider(provider)
-//                    .providerId(providerId)
-//                    .build();
-//            memberRepository.save(member);
+            member = Member.builder()
+                    .username(username)
+                    .name(name)
+                    .email(email)
+                    .provider(provider)
+                    .providerId(providerId)
+                    .build();
+            memberRepository.save(member);
         }else{
             member=findMember.get();
         }

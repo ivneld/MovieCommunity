@@ -1,16 +1,13 @@
 package Movie.MovieCommunity.service;
 
 import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.BoardRepository;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.web.form.BoardForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
 import java.util.Optional;
 
 

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,19 +33,18 @@ public class Member  extends BaseTimeEntity{
 //    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
-//    @Builder
-//    public Member(String username, String name, String email, String password, String provider, String providerId) {
-//        this.username = username;
-//        this.name = name;
-//        this.email = email;
-//        this.password = password;
-//        this.provider = provider;
-//        this.providerId = providerId;
-//    }
-
     @Builder
-    public Member(Long id, String email, String password, String nickname, Authority authority) {
-        this.id = id;
+    public Member(String username, String name, String email, String password, String provider, String providerId) {
+        this.username = username;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
+
+
+    public Member(String email, String password, String nickname, Authority authority) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;

@@ -1,5 +1,6 @@
 package Movie.MovieCommunity.dataCollection;
 
+//import Movie.MovieCommunity.JPADomain.*;
 import Movie.MovieCommunity.JPADomain.*;
 import Movie.MovieCommunity.JPADomain.dto.*;
 import Movie.MovieCommunity.JPARepository.*;

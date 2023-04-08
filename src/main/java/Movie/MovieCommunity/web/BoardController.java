@@ -9,20 +9,15 @@ import Movie.MovieCommunity.JPARepository.CommentRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.JPARepository.dao.BoardDao;
 import Movie.MovieCommunity.JPARepository.searchCond.BoardSearchCond;
-import Movie.MovieCommunity.domain.Movie;
 import Movie.MovieCommunity.service.BoardService;
-import Movie.MovieCommunity.web.dto.BoardDto;
 import Movie.MovieCommunity.web.dto.CommentDto;
-import Movie.MovieCommunity.web.form.AddMemberForm;
 import Movie.MovieCommunity.web.form.BoardForm;
 import Movie.MovieCommunity.web.form.CommentForm;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -31,14 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static Movie.MovieCommunity.web.SessionConst.*;
 
@@ -112,9 +104,9 @@ public class BoardController {
 
 
 
-//    @ResponseBody
+    @ResponseBody
     @GetMapping("/{boardId}")
-    public  String boardDetail(@PathVariable Long boardId, Model model, @ModelAttribute CommentForm commentForm, HttpServletRequest request){
+    public  BoardDetail boardDetail(@PathVariable Long boardId, Model model, @ModelAttribute CommentForm commentForm, HttpServletRequest request){
         Board board = boardService.findOne(boardId);
         BoardDetail boardDetail = new BoardDetail();
        // log.info("1{}", boardDetail);
@@ -132,14 +124,44 @@ public class BoardController {
             boardDetail.setBoard(boardDao);
 
             //댓글 데이터 추가 필요
+
+
+            //댓글 데이터 추가 필요
             PageRequest pageRequest = PageRequest.of(0,10);
             Page<CommentDto> commentPage = commentRepository.findByBoardId(boardId, pageRequest);
 
 
             boardDetail.setComment(commentPage);
 
-//            return boardDetail;
-            return "boardDetail";
+
+
+            Pageable pageable = PageRequest.of(0, 10, Sort.by("createdDt").ascending());
+            Page<Comment> commentDtos = commentRepository.findByBoardIdAndParentIdIsNull(1l, pageable);
+
+            List<Comment> contents = commentDtos.getContent();
+
+
+            List<CommentDto> collect = contents.stream().map(comment -> new CommentDto(comment)).
+                    collect(Collectors.toList());
+
+
+            int size = commentDtos.getSize();
+            System.out.println("size = " + size);
+            for (CommentDto content : collect) {
+                System.out.println("content.getContent() = " + content.getContent());
+                List<CommentDto> children = content.getChildren();
+                System.out.println("children = " + children);
+                for (CommentDto child : children) {
+                    System.out.println("child = " + child);
+                }
+            }
+            //////////////////////////////
+            PageImpl<CommentDto> commentDtoPage = new PageImpl<CommentDto>(collect, pageable, pageable.getPageSize());
+
+            boardDetail.setComment(commentDtoPage);
+            System.out.println("boardDetail = " + boardDetail);
+            return boardDetail;
+//            return "boardDetail";
 
         }
 //        return "redirect:/boards";
