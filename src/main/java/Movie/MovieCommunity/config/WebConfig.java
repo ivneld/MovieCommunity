@@ -1,4 +1,4 @@
-package Movie.MovieCommunity;
+package Movie.MovieCommunity.config;
 
 import Movie.MovieCommunity.web.interceptor.LoginCheckInterceptor;
 import org.springframework.context.annotation.Configuration;

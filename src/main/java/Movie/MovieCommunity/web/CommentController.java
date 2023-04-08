@@ -65,6 +65,13 @@ public class CommentController {
         session.removeAttribute(SessionConst.BOARD);
         return "redirect:/boards/{boardId}";
     }
+    @PostMapping("/update")
+    public String update(HttpServletRequest request, RedirectAttributes redirectAttributes){
+        HttpSession session = request.getSession(false);
+        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
+
+        return "redirect:/boards/{boardId}";
+    }
 
 }
 

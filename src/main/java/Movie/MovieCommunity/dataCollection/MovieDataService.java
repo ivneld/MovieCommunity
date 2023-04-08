@@ -47,7 +47,9 @@ public class MovieDataService {
     private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
     @Autowired
     private final EntityManager em;
-    private final String key = "633a3302093ec75c112d1afac4eb1ba5";
+
+//    @Value("${movie-api-key}")
+    private String key = "633a3302093ec75c112d1afac4eb1ba5";
     private String response;
 //    private Company company = new Company();
 //    private Genre genre = new Genre();
@@ -64,8 +66,8 @@ public class MovieDataService {
     public void Testing() throws Exception {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
-//        movieDataCollection("2022");        // 1
-//        yearWeeklyBoxOfficeData("20220101");          // 2
+//        movieDataCollection("2022");
+//        yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -75,7 +77,7 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
-//        setMovieEtc();        // 3
+//        setMovieEtc();
     }
 
     /**
@@ -185,10 +187,6 @@ public class MovieDataService {
         log.info("movie = {}",movie);
         threadMovie.remove();
     }
-
-
-
-
     @Transactional(propagation = Propagation.REQUIRED)
     public void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
@@ -382,31 +380,32 @@ public class MovieDataService {
     }
 
 
-    public void setMovieEtc() {
-        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
-
-        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
-
-            if(movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
-                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
-
-                if (movie.getSalesAcc() == null || movie.getSalesAcc() < weeklyBoxOffice.getSalesAcc()) {
-                    movie.setSalesAcc(weeklyBoxOffice.getSalesAcc());
-                }
-                if (movie.getAudiAcc() == null || movie.getAudiAcc() < weeklyBoxOffice.getAudiAcc()) {
-                    movie.setAudiAcc(weeklyBoxOffice.getAudiAcc());
-                }
-                if (weeklyBoxOffice.getRanking() <= 10) {
-                    movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
-
+//    public void setMovieEtc() {
+//        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 //
-                }
-
-                movieRepository.save(movie);
-                log.info("movie={}", movie);
-            }
-        }
-    }
+//        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
+//
+//            if(movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+//                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+//
+//                if (movie.getSalesAcc() == null || movie.getSalesAcc() < weeklyBoxOffice.getSalesAcc()) {
+//                    movie.setSalesAcc(weeklyBoxOffice.getSalesAcc());
+//                }
+//                if (movie.getAudiAcc() == null || movie.getAudiAcc() < weeklyBoxOffice.getAudiAcc()) {
+//                    movie.setAudiAcc(weeklyBoxOffice.getAudiAcc());
+//                }
+//                if (weeklyBoxOffice.getRanking() <= 10) {
+//                    movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
+//
+//                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
+//                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
+//                }
+//
+//                movieRepository.save(movie);
+//                log.info("movie={}", movie);
+//            }
+//        }
+//    }
 
     // update
     public void setMovieEtcV2() {

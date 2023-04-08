@@ -3,11 +3,13 @@ package Movie.MovieCommunity.web.form;
 import Movie.MovieCommunity.JPADomain.Board;
 import Movie.MovieCommunity.JPADomain.Member;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Data
+@NoArgsConstructor
 public class CommentForm {
     private Long id;
     @NotEmpty(message = "필수 값입니다.")
