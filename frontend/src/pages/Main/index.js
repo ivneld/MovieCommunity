@@ -33,7 +33,7 @@ const Main = () => {
     const { data : mainData } = useSWR('http://localhost:8080', fetcher, {
         dedupingInterval: 100000,
     });
-    console.log(mainData)
+
     if (movienm){ // 게시판에서 영화 제목 검색 O 경우
         const result = mainData.filter(data => data.movieNm === `${movienm}`) // 검색한 영화 제목 filter해서 해당 영화 정보만 불러오기
         return (
@@ -66,17 +66,8 @@ const Main = () => {
         <>
             {!movienm && // 메인페이지 (게시판에서 영화 제목 검색 X 경우)
             <>
-                <LinkContainer>
-                    <span>장르별&nbsp;&nbsp;</span>
-                    <Link to='/boards'>게시판&nbsp;&nbsp;</Link>
-                    <span>My Page&nbsp;&nbsp;</span>
-                    <Link to='/auth/login'>로그인</Link>
-                </LinkContainer>
-                <hr/>
-                <div>
-                    Top 10 movie list
-                </div>
-                <hr/>
+
+                    Top 10&nbsp;&nbsp;&nbsp;
                     <CategorySpan onClick={() => (setIsEvery(true), setIsForeign(false), setIsKorea(false))}>전체영화&nbsp;&nbsp;&nbsp;</CategorySpan>
                     <CategorySpan onClick={() => (setIsEvery(false), setIsForeign(false), setIsKorea(true))}>국내영화&nbsp;&nbsp;&nbsp;</CategorySpan>
                     <CategorySpan onClick={() => (setIsEvery(false), setIsForeign(true), setIsKorea(false))}>해외영화</CategorySpan>

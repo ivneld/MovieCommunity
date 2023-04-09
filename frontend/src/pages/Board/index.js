@@ -62,9 +62,6 @@ const Board = () => {
                     first:{boardData.first}&nbsp;&nbsp;&nbsp;
                     numberOfElements:{boardData.numberOfElements}&nbsp;&nbsp;&nbsp;
                     empty:{boardData.empty}&nbsp;&nbsp;&nbsp;</div>
-                <hr/>
-                <div>- 최신글 순이면, 시간 표시할 건지? 그러면 게시글 작성 시 시간데이터 넘겨줘야 되는지? -</div>
-                <div>- pageable의 sort 데이터 빼기 -</div>
             </Body>
         </>
     )

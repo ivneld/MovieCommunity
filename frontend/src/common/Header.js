@@ -1,9 +1,10 @@
+import "./header.css"
+
 function Header() {
 	return (
-		<header className="py-4">
-			<div className="container text-center">
-				d
-			</div>
+		<header>
+			{/* <div className="container text-center">
+			</div> */}
 		</header>
 	);
 }

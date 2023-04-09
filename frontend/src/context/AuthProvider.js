@@ -4,7 +4,7 @@ export const AuthContext = createContext();
 
 function AuthProvider({ children }) {
 
-	const [auth, setAuth] = useState(localStorage.getItem("id"));
+	const [auth, setAuth] = useState(localStorage.getItem("email"));
 
 	const value = {auth, setAuth };
 

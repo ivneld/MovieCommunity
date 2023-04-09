@@ -19,4 +19,5 @@ export const MovieSpan = styled.span`
 `
 export const CategorySpan = styled.span`
   cursor: pointer;
+  color: #1264a3;
 `
