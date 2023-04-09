@@ -46,7 +46,7 @@ public class AuthService {
     }
 
     public boolean checkId(String email){
-        System.out.println("memberRepository.existsByEmail(email) = " + memberRepository.existsByEmail(email));
+        //System.out.println("memberRepository.existsByEmail(email) = " + memberRepository.existsByEmail(email));
         return memberRepository.existsByEmail(email);
     }
 
