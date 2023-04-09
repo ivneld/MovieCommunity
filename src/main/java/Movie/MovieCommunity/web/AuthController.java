@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,12 +31,13 @@ public class AuthController {
     }
     //@ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping("/checkIdDuplicate")
-    public ResponseEntity checkId(@RequestBody String email, HttpServletResponse response){
-        if( authService.checkId(email)){
-            return new ResponseEntity(HttpStatus.OK);
-        }
-        else{
+    public ResponseEntity checkId(@RequestBody Map<String,Object> requestMap){
+        System.out.println("email = " + requestMap.get("email").toString());
+        if( authService.checkId(requestMap.get("email").toString())){
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
+          }
+        else{
+            return new ResponseEntity(HttpStatus.OK);
         }
     }
 }
