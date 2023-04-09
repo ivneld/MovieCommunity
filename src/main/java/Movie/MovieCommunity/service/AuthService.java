@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+
 
     public MemberResponseDto signup(MemberRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
@@ -38,8 +40,13 @@ public class AuthService {
         System.out.println("authenticationToken = " + authenticationToken);
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         System.out.println("authentication = " + authentication);
+        Optional<Member> findMember = memberRepository.findByEmail(requestDto.getEmail());
 
-        return tokenProvider.generateTokenDto(authentication);
+        return tokenProvider.generateTokenDto(authentication, requestDto.getEmail(), findMember.get().getNickname());
+    }
+
+    public boolean checkId(String email){
+        return memberRepository.existsByEmail(email);
     }
 
 }

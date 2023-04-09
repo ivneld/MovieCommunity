@@ -13,4 +13,7 @@ public class TokenDto {
     private String grantType;
     private String accessToken;
     private Long tokenExpiresIn;
+
+    private String email;
+    private String nickname;
 }
