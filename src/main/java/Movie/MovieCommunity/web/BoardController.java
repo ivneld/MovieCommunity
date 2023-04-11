@@ -146,20 +146,20 @@ public class BoardController {
 
 
             int size = commentDtos.getSize();
-            System.out.println("size = " + size);
+//            System.out.println("size = " + size);
             for (CommentDto content : collect) {
-                System.out.println("content.getContent() = " + content.getContent());
+//                System.out.println("content.getContent() = " + content.getContent());
                 List<CommentDto> children = content.getChildren();
-                System.out.println("children = " + children);
+//                System.out.println("children = " + children);
                 for (CommentDto child : children) {
-                    System.out.println("child = " + child);
+//                    System.out.println("child = " + child);
                 }
             }
             //////////////////////////////
             PageImpl<CommentDto> commentDtoPage = new PageImpl<CommentDto>(collect, pageable, pageable.getPageSize());
 
             boardDetail.setComment(commentDtoPage);
-            System.out.println("boardDetail = " + boardDetail);
+//            System.out.println("boardDetail = " + boardDetail);
             return boardDetail;
 //            return "boardDetail";
 

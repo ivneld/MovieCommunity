@@ -1,13 +1,12 @@
 package Movie.MovieCommunity.dataCollection;
 
-//import Movie.MovieCommunity.JPADomain.*;
 import Movie.MovieCommunity.JPADomain.*;
 import Movie.MovieCommunity.JPADomain.dto.*;
 import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.domain.*;
 
-import Movie.MovieCommunity.web.repository.*;
+import Movie.MovieCommunity.web.form.CommentForm;
 import com.querydsl.core.Tuple;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +29,10 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class MovieDataService {
-    private final JdbcTemplateActorRepository jdbcTemplateActorRepository;
-    private final JdbcTemplateCompanyRepository jdbcTemplateCompanyRepository;
+
     private final GenreRepository genreRepository;
     private final ActorRepository actorRepository;
-    private final JdbcTemplateMovieWithActorRepository jdbcTemplateMovieWithActorRepository;
-    private final JdbcTemplateMovieWithCompanyRepository jdbcTemplateMovieWithCompanyRepository;
-    private final JdbcTemplateMovieWithGenreRepository jdbcTemplateMovieWithGenreRepository;
+
     private final MovieRepository movieRepository;
     private final CompanyRepository companyRepository;
     private final MovieWithGenreRepository movieWithGenreRepository;
@@ -45,7 +41,9 @@ public class MovieDataService {
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
     private final WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
 
-    private final JdbcTemplateWeeklyBoxOfficeRepository jdbcTemplateWeeklyBoxOfficeRepository;
+    private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
     @Autowired
     private final EntityManager em;
 
@@ -62,12 +60,16 @@ public class MovieDataService {
 
     private HashMap<String, EtcData> etcData = new HashMap<>();
 
+
     @PostConstruct
-    @Transactional
     public void Testing() throws Exception {
-/*        Movie movie = new Movie();
-        movieRepository.save(movie);*/
+
 //        movieDataCollection("2022");
+//        InitData();// movieDataCollection("2022") 실행 후 사용
+
+
+
+
 //        yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
@@ -81,6 +83,91 @@ public class MovieDataService {
 //        setMovieEtc();
     }
 
+    /**
+     *  movieDataCollection("2022") 실행 후 사용
+     */
+    @Transactional
+    public void InitData(){
+
+        Member member1 = new Member("email1@naver.com", "password", "nickname1", Authority.ROLE_USER);
+        Member member2 = new Member("email2@naver.com", "password", "nickname2", Authority.ROLE_USER);
+        Member member3 = new Member("email3@naver.com", "password", "nickname3", Authority.ROLE_USER);
+        Member member4 = new Member("email4@naver.com", "password", "nickname4", Authority.ROLE_USER);
+
+        Optional<JpaMovie> movie1 = movieRepository.findById(1l);
+        Optional<JpaMovie> movie2 = movieRepository.findById(2l);
+        Optional<JpaMovie> movie3 = movieRepository.findById(3l);
+        Optional<JpaMovie> movie4 = movieRepository.findById(4l);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+
+        for(int i = 0 ; i<20;i++){
+            Board board = null;
+            switch (i%4){
+                case 1:
+                    board = Board.builder()
+                            .title("title" + i)
+                            .content("content" + i)
+                            .movie(movie1.get())
+                            .member(member1)
+                            .build();
+                    break;
+                case 2:
+                    board = Board.builder()
+                            .title("title"+i)
+                            .content("content"+i)
+                            .movie(movie2.get())
+                            .member(member3)
+                            .build();
+                    break;
+                case 3:
+                    board = Board.builder()
+                            .title("title"+i)
+                            .content("content"+i)
+                            .movie(movie3.get())
+                            .member(member4)
+                            .build();
+                    break;
+                default:
+                    board = Board.builder()
+                            .title("title"+i)
+                            .content("content"+i)
+                            .movie(movie4.get())
+                            .member(member2)
+                            .build();
+                    break;
+            }
+            boardRepository.save(board);
+        }
+
+        for(int i = 0 ; i<20;i++) {
+            Optional<Board> board = boardRepository.findById(1l);
+            Comment comment = null;
+            CommentForm commentForm = null;
+            if (i<4){
+                commentForm = new CommentForm("comment"+i, member1, board.get(), null);
+
+            }else {
+                if (i%2==0) {
+                    Optional<Comment> parent = commentRepository.findById(1l);
+                    commentForm = new CommentForm("comment" + i, member2, board.get(), parent.get());
+                }else{
+                    Optional<Comment> parent = commentRepository.findById(2l);
+                    commentForm = new CommentForm("comment" + i, member2, board.get(), parent.get());
+                }
+            }
+            comment = new Comment(commentForm);
+            commentRepository.save(comment);
+
+
+        }
+
+
+
+    }
     /**
      *  movieDataCollection with movieDetailData
      */
