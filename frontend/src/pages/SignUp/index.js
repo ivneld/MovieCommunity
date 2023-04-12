@@ -1,8 +1,9 @@
 /* 회원가입 컴포넌트 */
 
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { Success, Error } from './styles';
 
 function SignUp() {
 
@@ -10,7 +11,10 @@ function SignUp() {
 	const [nickname, setNickname] = useState(""); //name
 	const [password, setPassword] = useState("");
 	const [checkpassword, setCheckpassword] = useState("");
+
 	const [email, setEmail] = useState("");
+	const [isDuplicate, setIsDuplicate] = useState(true);
+
 
 	const navigate = useNavigate();
 
@@ -32,18 +36,45 @@ function SignUp() {
 
 	const changeEmail = (event) => {
 		setEmail(event.target.value);
+		setIsDuplicate(true);
 	}
+
+	// /* 아이디 중복 체크 */
+	// const checkIdDuplicate = async () => {
+
+	// 	await axios.get("http://localhost:8080/auth/checkidduplicate", { params: { email: email } }) //user
+	// 		.then((resp) => {
+	// 			console.log("[SignUp.js] checkIdDuplicate() success :D");
+	// 			console.log(resp.data);
+
+	// 			if (resp.status == 200) {
+	// 				alert("사용 가능한 아이디입니다.");
+	// 			}
+				
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log("[SignUp.js] checkIdDuplicate() error :<");
+	// 			console.log(err);
+
+	// 			const resp = err.response;
+	// 			if (resp.status == 400) {
+	// 				alert(resp.data);
+	// 			}
+	// 		});
+	// }
 
 	/* 아이디 중복 체크 */
 	const checkIdDuplicate = async () => {
-
-		await axios.get("http://localhost:8080/auth/signup", { params: { email: email } }) //user
+        const req = {'email': email}
+        const config = {"Content-Type": 'application/json'};
+		await axios.post("http://localhost:8080/auth/checkIdDuplicate", req, config) //user
 			.then((resp) => {
 				console.log("[SignUp.js] checkIdDuplicate() success :D");
 				console.log(resp.data);
 
 				if (resp.status == 200) {
 					alert("사용 가능한 아이디입니다.");
+					setIsDuplicate(false);					
 				}
 				
 			})
@@ -53,14 +84,34 @@ function SignUp() {
 
 				const resp = err.response;
 				if (resp.status == 400) {
-					alert(resp.data);
+					alert("사용할 수 없는 아이디입니다.");
+					setIsDuplicate(true);
 				}
 			});
-
 	}
 
 	/* 회원가입 */
-	const signup = async () => {
+	const signup = async () => {		
+		if (!email){
+			alert("아이디를 입력해주세요")
+			return;
+		}
+		if (isDuplicate){
+			alert("아이디 중복 확인이 필요합니다");		
+			return;
+		}
+		else if (!nickname){
+			alert("이름을 입력해주세요");
+			return;
+		}
+		else if (!password || !checkpassword){
+			alert("비밀번호를 입력해주세요")
+			return;
+		}
+		else if (password && checkpassword && password !== checkpassword){
+			alert("비밀번호가 서로 일치하지 않습니다")
+			return;
+		}
 
 		const req = {
 			// id: id,
@@ -89,7 +140,7 @@ function SignUp() {
 				if (resp.status == 400) {
 					alert(resp.data);
 				}
-			});
+			});		
 	}
 
 
@@ -124,6 +175,12 @@ function SignUp() {
 						<td>
 							<input type="password" value={checkpassword} onChange={changeCheckpassword} size="50px" />
 						</td>
+						{password && checkpassword && password !== checkpassword &&
+						<Error>비밀번호가 일치하지 않습니다!</Error>
+						}
+						{password && checkpassword && password === checkpassword &&
+						<Success>비밀번호가 일치합니다!</Success>
+						}
 					</tr>
 
 					{/* <tr>

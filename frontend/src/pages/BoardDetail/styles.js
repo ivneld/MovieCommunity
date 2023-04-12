@@ -2,12 +2,13 @@ import styled from '@emotion/styled';
 
 export const Form = styled.form`
   margin: 0 auto;
-  width: 400px;
+  width: 330px;
   max-width: 400px;
 `;
 
 export const Label = styled.label`
   margin-bottom: 16px;
+  display: flex;
   & > span {
     display: block;
     text-align: left;
@@ -16,6 +17,9 @@ export const Label = styled.label`
     cursor: pointer;
     line-height: 1.46666667;
     font-weight: 700;
+  }
+  & > input {
+    margin-right: 10px;
   }
 `;
 
@@ -41,9 +45,13 @@ export const Input = styled.input`
   }
 `;
 
+export const InputWrapper = styled.div`
+  display: flex;
+`;
+
 export const Button = styled.button`
   margin-bottom: 12px;
-  width: 100%;
+  width: 33%;
   max-width: 100%;
   color: #fff;
   background-color: #4a154b;

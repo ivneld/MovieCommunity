@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 export const Body = styled.body`
-  background: skyblue;
+
   color: black;
   box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.1);
   text-align: center;
@@ -30,12 +30,13 @@ export const LinkContainer = styled.p`
 
 export const Form = styled.form`
   margin: 0 auto;
-  width: 400px;
+  width: 330px;
   max-width: 400px;
 `;
 
 export const Label = styled.label`
   margin-bottom: 16px;
+  display: flex;
   & > span {
     display: block;
     text-align: left;
@@ -44,6 +45,9 @@ export const Label = styled.label`
     cursor: pointer;
     line-height: 1.46666667;
     font-weight: 700;
+  }
+  & > input {
+    margin-right: 10px;
   }
 `;
 
@@ -71,7 +75,7 @@ export const Input = styled.input`
 
 export const Button = styled.button`
   margin-bottom: 12px;
-  width: 100%;
+  width: 33%;
   max-width: 100%;
   color: #fff;
   background-color: #4a154b;
@@ -95,4 +99,8 @@ export const Button = styled.button`
     --saf-0: rgba(var(--sk_highlight, 18, 100, 163), 1);
     box-shadow: 0 0 0 1px var(--saf-0), 0 0 0 5px rgba(29, 155, 209, 0.3);
   }
+`;
+
+export const LikeSpan = styled.span`
+  font-size: 13px;
 `;

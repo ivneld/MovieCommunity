@@ -9,7 +9,7 @@ export const CreateModal = styled.div`
   right: 0;
   z-index: 1022;
   & > div {
-    margin-top: 200px;
+    margin-top: 250px;
     display: inline-block;
     width: 440px;
     background: white;

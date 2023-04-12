@@ -2,16 +2,10 @@ import "./footer.css"
 
 function Footer() {
 	return (
-		<footer className="py-4 bg-dark text-light footer">
+		<footer className="py-3 bg-dark text-light footer">
           <div className="container text-center">
-            <ul className="nav justify-content-center mb-3">
-              <li className="nav-item">
-                <a className="nav-link text-light" href="/">Top</a>
-              </li>
-            </ul>
-
             <p>
-              <small>Copyright &copy;승준</small>
+              <small>Copyright &copy;영화 커뮤니티</small>
             </p>
           </div>
         </footer>

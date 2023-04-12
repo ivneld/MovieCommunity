@@ -19,5 +19,6 @@ export const MovieSpan = styled.span`
 `
 export const CategorySpan = styled.span`
   cursor: pointer;
+  font-weight: 700;
   color: #1264a3;
 `

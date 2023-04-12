@@ -39,7 +39,7 @@ function Nav() {
 						
 						{/* 마이페이지  */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/"><i className="fas"></i>마이페이지</Link>
+							<Link className="nav-link" to="/mypage"><i className="fas"></i>마이페이지</Link>
 						</li>
 					</ul>
 					<ul className="navbar-nav ml-auto">

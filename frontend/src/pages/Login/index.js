@@ -53,7 +53,8 @@ function Login() {
 			console.log("[Login.js] login() error :<");
 			console.log(err);
 
-			alert("⚠️ " + err.response.data);
+			// alert("⚠️ " + err.response.data);
+			alert("⚠️ 로그인 정보가 일치하지 않습니다");
 		});
 	}
 

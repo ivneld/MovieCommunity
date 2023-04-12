@@ -59,7 +59,7 @@ const Main = () => {
 
     
     if (!mainData){
-        return <div>데이터가 없습니다</div>
+        return <div>데이터가 없거나, 불러올 수 없습니다</div>
     }   
 
     return(

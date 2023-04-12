@@ -9,6 +9,7 @@ const Logout = loadable(() => import('../pages/Logout'));
 const SignUp = loadable(() => import('../pages/SignUp'));
 const BoardDetail = loadable(() => import('../pages/BoardDetail'));
 const PostingBoard = loadable(() => import('../pages/PostingBoard'));
+const MyPage = loadable(() => import('../pages/MyPage'));
 
 function Router({}) {
   return (
@@ -21,6 +22,7 @@ function Router({}) {
         <Route path="/auth/login" element={<Login />}></Route>
         <Route path="/auth/signup" element={<SignUp />}></Route>
         <Route path="/logout" element={<Logout />}></Route>
+        <Route path="/mypage" element={<MyPage />}></Route>
     </Routes>
   )
 }

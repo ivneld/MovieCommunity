@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import useSWR from 'swr';
 import fetcher from '../../utils/fetcher';
-import { Body, LinkContainer, Label, Form, Input, Button } from './styles';
+import { Body, LinkContainer, Label, Form, Input, Button, LikeSpan } from './styles';
 import useInput from '../../hooks/useInput';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -22,7 +22,7 @@ const Board = () => {
       );
 
     if (!boardData){
-        return <div>데이터가 없습니다</div>
+        return <div>데이터가 없거나, 불러올 수 없습니다</div>
     }
 
     return(
@@ -32,23 +32,21 @@ const Board = () => {
                 
                 <Form onSubmit={onSubmit}>
                     <Label>
-                    <div>
                         <Input type="text" placeholder='영화 제목 검색' value={title} onChange={onChangeTitle} />
-                    </div>
+                        <Button type="submit">검색</Button>
                     </Label>
-                    <Button type="submit">검색</Button>
                 </Form>
                 <hr/>
-
                 {boardData.content.map((data)=>{
                         return(
                             <LinkContainer>
-                                <Link to={`/boards/${data.id}/comment`} key={data.id} state={{detail : data}}>게시글 : {data.title}</Link>
+                                <Link to={`/boards/${data.id}/comment`} key={data.id} state={{detail : data}}>{data.title}</Link>
+                                <LikeSpan>&nbsp;추천 {data.like}</LikeSpan>
                             </LinkContainer>
                         )}
                     )
                 }
-                <hr/>
+                {/* <hr/>
                 <div>pageable 일단 생략&nbsp;&nbsp;&nbsp;
                     last:{boardData.last}&nbsp;&nbsp;&nbsp;
                     totalPages:{boardData.totalPages}&nbsp;&nbsp;&nbsp;
@@ -61,7 +59,7 @@ const Board = () => {
                     ))}&nbsp;&nbsp;&nbsp;
                     first:{boardData.first}&nbsp;&nbsp;&nbsp;
                     numberOfElements:{boardData.numberOfElements}&nbsp;&nbsp;&nbsp;
-                    empty:{boardData.empty}&nbsp;&nbsp;&nbsp;</div>
+                    empty:{boardData.empty}&nbsp;&nbsp;&nbsp;</div> */}
             </Body>
         </>
     )

@@ -24,7 +24,7 @@ export const Form = styled.form`
 
 export const Button = styled.button`
   margin-bottom: 12px;
-  width: 100%;
+  width: 40%;
   max-width: 100%;
   color: #fff;
   background-color: #4a154b;
