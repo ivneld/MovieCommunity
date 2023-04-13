@@ -75,7 +75,7 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
-//        setMovieEtc();        // 3
+        setTopMovieCnt();       //3
     }
 
     /**

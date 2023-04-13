@@ -46,6 +46,7 @@ import static Movie.MovieCommunity.web.SessionConst.*;
 @RequestMapping("/boards")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin
 public class BoardController {
     private final BoardRepository boardRepository;
     private final MovieRepository movieRepository;
