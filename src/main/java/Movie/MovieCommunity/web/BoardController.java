@@ -6,6 +6,7 @@ import Movie.MovieCommunity.JPADomain.JpaMovie;
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.BoardRepository;
 import Movie.MovieCommunity.JPARepository.CommentRepository;
+import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.JPARepository.dao.BoardDao;
 import Movie.MovieCommunity.JPARepository.searchCond.BoardSearchCond;
@@ -18,6 +19,8 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -44,6 +47,7 @@ public class BoardController {
     private final MovieRepository movieRepository;
     private final BoardService boardService;
     private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
     @ResponseBody
     @GetMapping
     @Transactional(readOnly = true)
@@ -90,16 +94,27 @@ public class BoardController {
 
     @Transactional
     @PostMapping("/create")
-    public String create(@ModelAttribute @Valid BoardForm boardForm,@RequestParam(name = "movieId") Long movieId, BindingResult bindingResult, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-        if (bindingResult.hasErrors()) {
-            return "boardCreate";
+    public ResponseEntity<ResponseBoardDto> create(@RequestBody RequestBoardDto requestBoardDto) {
+        BoardForm boardForm = new BoardForm();
+
+
+        Optional<JpaMovie> findMovie = movieRepository.findById(requestBoardDto.movieId);
+        if(findMovie.isPresent()){
+            boardForm.setMovie(findMovie.get());
+        }else{
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        JpaMovie jpaMovie = movieRepository.findById(movieId).get();
-        boardForm.setMovie(jpaMovie);
-        boardFormUpdate(boardForm, request);
+
+
+        //member ID 임의 설정
+        Member member = memberRepository.findById(1l).get();
+        boardForm.setMember(member);
+        boardForm.setTitle(requestBoardDto.getTitle());
+        boardForm.setContent(requestBoardDto.getContent());
+
+
         Board savedBoard = boardRepository.save(new Board(boardForm));
-        redirectAttributes.addAttribute("boardId", savedBoard.getId());
-        return "redirect:/boards/{boardId}";
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 
@@ -199,12 +214,9 @@ public class BoardController {
 
     private void boardFormUpdate(BoardForm boardForm, HttpServletRequest request) { // movie 와 member 데이터 세팅
         HttpSession session = request.getSession(false);
-//        JpaMovie movie = (JpaMovie) request.getAttribute("movie");
-//        System.out.println("movie = " + movie);
+
         Member member = (Member) session.getAttribute(LOGIN_MEMBER);
-//        System.out.println("member = " + member);
         boardForm.setMember(member);
-//        boardForm.setMovie(movie);
     }
 
 
@@ -218,5 +230,20 @@ public class BoardController {
             this.board = board;
             this.comment = comment;
         }
+    }
+
+    @Data
+    @NoArgsConstructor
+    static class RequestBoardDto{
+        private String title;
+        private String content;
+        private Long movieId;
+    }
+    @Data
+    @NoArgsConstructor
+    static class ResponseBoardDto{
+        private String title;
+        private String content;
+        private Long movieId;
     }
 }
