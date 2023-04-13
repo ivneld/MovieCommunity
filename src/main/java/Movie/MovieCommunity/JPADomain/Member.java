@@ -1,10 +1,12 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.web.form.AddMemberForm;
+import Movie.MovieCommunity.JPADomain.user.Provider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,21 @@ public class Member  extends BaseTimeEntity{
     @Column(name = "member_id")
     private Long id;
     private String username;
+    @Email
+//    @Column(nullable = false)
     private String email;
+
+//    @Column(nullable = false)
+    private Boolean emailVerified = false;
     private String nickname;
     private String password;
     private String name;
+    private String imageUrl;
     @Enumerated(EnumType.STRING)
     private Authority authority;
-    private String provider;
+//    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
     private String providerId;
 
 
@@ -45,25 +55,28 @@ public class Member  extends BaseTimeEntity{
 //    }
 
     @Builder
-    public Member(Long id, String email, String password, String nickname, Authority authority) {
-        this.id = id;
+    public Member(String name, String email, String password, Authority authority, Provider provider, String providerId, String imageUrl){
         this.email = email;
         this.password = password;
-        this.nickname = nickname;
+        this.name = name;
+        this.provider = provider;
         this.authority = authority;
     }
 
-    public Member(AddMemberForm memberForm) {
-        this.name = memberForm.getName();
-        this.email = memberForm.getEmail();
-        this.password = memberForm.getPassword();
-    }
 
     public Member(String email, String password, String nickname, Authority authority) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.authority = authority;
+    }
+
+    public void updateName(String name){
+        this.name = name;
+    }
+
+    public void updateImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
     }
 
 //    @Builder

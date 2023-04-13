@@ -89,10 +89,10 @@ public class MovieDataService {
     @Transactional
     public void InitData(){
 
-        Member member1 = new Member("email1@naver.com", "password", "nickname1", Authority.ROLE_USER);
-        Member member2 = new Member("email2@naver.com", "password", "nickname2", Authority.ROLE_USER);
-        Member member3 = new Member("email3@naver.com", "password", "nickname3", Authority.ROLE_USER);
-        Member member4 = new Member("email4@naver.com", "password", "nickname4", Authority.ROLE_USER);
+        Member member1 = new Member("email1@naver.com", "password", "nickname1", Authority.USER);
+        Member member2 = new Member("email2@naver.com", "password", "nickname2", Authority.USER);
+        Member member3 = new Member("email3@naver.com", "password", "nickname3", Authority.USER);
+        Member member4 = new Member("email4@naver.com", "password", "nickname4", Authority.USER);
 
         Optional<JpaMovie> movie1 = movieRepository.findById(1l);
         Optional<JpaMovie> movie2 = movieRepository.findById(2l);

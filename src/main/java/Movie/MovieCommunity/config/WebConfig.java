@@ -1,25 +1,24 @@
 package Movie.MovieCommunity.config;
 
-import Movie.MovieCommunity.web.interceptor.LoginCheckInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry.addInterceptor(new LoginCheckInterceptor())
-//                .order(1)
-//                .addPathPatterns("/**", "/boards/create", "/boards/**/update", "/comment/**")
-//                .excludePathPatterns("/", "/member/**", "/boards","/boards/*");
-//
-//    }
-    //    @Bean
-//    public AuditorAware<String> auditorProvider(HttpServletRequest request){
-//        HttpSession session = request.getSession(false);
-//        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-//        return () -> Optional.of(UUID.randomUUID().toString());
-////		return () -> Optional.of(member.getName());
-//    }
+    private final long MAX_AGE_SECS = 3600;
+
+    @Value("${app.cors.allowedOrigins}")
+    private String[] allowedOrigins;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(allowedOrigins)
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(MAX_AGE_SECS);
+    }
 }

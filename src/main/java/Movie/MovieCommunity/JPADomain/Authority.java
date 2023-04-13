@@ -1,5 +1,12 @@
 package Movie.MovieCommunity.JPADomain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum Authority {
-    ROLE_USER, ROLE_ADMIN
+    ADMIN("ROLE_ADMIN"),
+    USER("ROLE_USER");
+    private String value;
 }
