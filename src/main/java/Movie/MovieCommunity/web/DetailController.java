@@ -66,6 +66,7 @@ public class DetailController {
         JSONArray total = extracted(model, details, paramMap);
 
         return total;
+
     }
 
     private Map<String, String> paramMapSet(Map<String, String> paramMap, String movieCd ) {
