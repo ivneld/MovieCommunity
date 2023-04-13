@@ -64,7 +64,7 @@ public class MovieDataService {
     public void Testing() throws Exception {
 /*        Movie movie = new Movie();
         movieRepository.save(movie);*/
-//        movieDataCollection("2022");        // 1
+//        movieDataCollection("2023");        // 1
 //        yearWeeklyBoxOfficeData("20220101");          // 2
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);

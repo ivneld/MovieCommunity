@@ -175,7 +175,7 @@ public class RankingController {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
             while(iter.hasNext()) {
                 JSONObject boxOffice = (JSONObject) iter.next();
-                dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt((String) boxOffice.get("rank")), Integer.parseInt((String) boxOffice.get("rankInten")), boxOffice.get("openDt"), Long.parseLong((String) boxOffice.get("audiAcc"))));
+                dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt((String) boxOffice.get("rank")), Integer.parseInt((String) boxOffice.get("rankInten")), boxOffice.get("openDt"), Long.parseLong((String) boxOffice.get("audiAcc")), (String) boxOffice.get("movieCd")));
             }
         } catch (IOException e) {
             e.printStackTrace();

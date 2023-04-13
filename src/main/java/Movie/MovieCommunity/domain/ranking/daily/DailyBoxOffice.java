@@ -37,7 +37,7 @@ public class DailyBoxOffice {
 //    private String boxofficeType;
 //    private String showRange;
 //    private String yearWeekTime;
-    private String movieNm;	// 문자열	영화명(국문)을 출력합니다.
+    private String movieNm;    // 문자열	영화명(국문)을 출력합니다.
 //    @NumberFormat
 //    private Integer rnum;
     @NumberFormat
@@ -66,16 +66,19 @@ public class DailyBoxOffice {
 /*    scrnCnt	문자열	해당일자에 상영한 스크린수를 출력합니다.
     showCnt	문자열	해당일자에 상영된 횟수를 출력합니다.*/
 
+    private String movieCd;
+
     public DailyBoxOffice(){
 
     }
 
-    public DailyBoxOffice(String movieNm, int ranking, int rankInten, Object openDt, Long audiAcc ){
+    public DailyBoxOffice(String movieNm, int ranking, int rankInten, Object openDt, Long audiAcc, String movieCd ){
         this.movieNm=movieNm;
         this.ranking=ranking;
         this.rankInten=rankInten;
         this.openDt= openDt;
         this.audiAcc=audiAcc;
+        this.movieCd = movieCd;
     }
 
 
