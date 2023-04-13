@@ -15,7 +15,6 @@ public class Detail {
     private String actors;   // 배우
     private String audits;   // 심의정보
 
-
     public Detail(){
 
     }
