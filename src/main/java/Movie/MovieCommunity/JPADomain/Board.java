@@ -2,7 +2,6 @@ package Movie.MovieCommunity.JPADomain;
 
 import Movie.MovieCommunity.web.form.BoardForm;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,7 +39,7 @@ public class Board extends BaseTimeEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id")
     private JpaMovie movie;
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
 
     public Board updateBoard(String title, String content) {
@@ -55,11 +54,5 @@ public class Board extends BaseTimeEntity{
         this.member = boardForm.getMember();
         this.movie = boardForm.getMovie();
     }
-    @Builder
-    public Board(String title, String content, Member member, JpaMovie movie) {
-        this.title = title;
-        this.content = content;
-        this.member = member;
-        this.movie = movie;
-    }
+
 }
