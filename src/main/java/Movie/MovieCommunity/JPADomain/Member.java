@@ -59,6 +59,13 @@ public class Member  extends BaseTimeEntity{
         this.password = memberForm.getPassword();
     }
 
+    public Member(String email, String password, String nickname, Authority authority) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.authority = authority;
+    }
+
 //    @Builder
 //    public Member(Long id, String email, String password, String nickname) {
 //        this.id = id;

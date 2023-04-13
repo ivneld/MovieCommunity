@@ -93,6 +93,7 @@ public class BoardController {
     }
 
     @Transactional
+    @ResponseBody
     @PostMapping("/create")
     public ResponseEntity<ResponseBoardDto> create(@RequestBody RequestBoardDto requestBoardDto) {
         BoardForm boardForm = new BoardForm();
