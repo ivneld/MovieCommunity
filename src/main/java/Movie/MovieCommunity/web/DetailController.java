@@ -57,6 +57,7 @@ public class DetailController {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
 
+
         JSONArray array= new JSONArray();
         List<Detail> details= new ArrayList<>();
         Map<String, String> paramMap = new HashMap<String, String>();
@@ -121,7 +122,7 @@ public class DetailController {
 
             return result;
 
-    } catch (ProtocolException e) {
+        } catch (ProtocolException e) {
             throw new RuntimeException(e);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);

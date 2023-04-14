@@ -16,9 +16,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         if (session==null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null){
             String contextPath = request.getQueryString();
             if(contextPath == null) {
-                response.sendRedirect("/member/login?RedirectURL="+requestURI);
+//                response.sendRedirect("/member/login?RedirectURL="+requestURI);
             } else{
-                response.sendRedirect("/member/login?RedirectURL="+requestURI+"&"+contextPath);
+//                response.sendRedirect("/member/login?RedirectURL="+requestURI+"&"+contextPath);
             }
             return false;
         }
