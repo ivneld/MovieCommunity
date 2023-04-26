@@ -10,13 +10,26 @@ import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.JPARepository.dao.BoardDao;
 import Movie.MovieCommunity.JPARepository.searchCond.BoardSearchCond;
+import Movie.MovieCommunity.annotation.CurrentMember;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.BoardService;
+import Movie.MovieCommunity.web.apiDto.board.BoardAPIRequest;
+import Movie.MovieCommunity.web.apiDto.board.BoardDeleteAPIRequest;
+import Movie.MovieCommunity.web.apiDto.board.BoardDetailAPIRequest;
+import Movie.MovieCommunity.web.apiDto.board.BoardDetailAPIResponse;
 import Movie.MovieCommunity.web.dto.CommentDto;
 import Movie.MovieCommunity.web.form.BoardForm;
 import Movie.MovieCommunity.web.form.CommentForm;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
@@ -35,20 +48,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static Movie.MovieCommunity.web.SessionConst.*;
 
-@Controller
+@RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin
+@Tag(name="board", description = "게시판 API")
 public class BoardController {
     private final BoardRepository boardRepository;
     private final MovieRepository movieRepository;
     private final BoardService boardService;
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
-    @ResponseBody
+
+
     @GetMapping
     @Transactional(readOnly = true)
     public Page<BoardDao> boardList(BoardSearchCond boardSearchCond, Pageable pageable){
@@ -58,193 +72,51 @@ public class BoardController {
         return boardDaos;
     }
 
-    @Transactional(readOnly = true)
-    @GetMapping("/create")// 파라미터에 movie 를 확인하는 것이 아닌 movie 상세에서 movie data 를 넘겨 받을 수 있어야함..
-    public String createForm(@ModelAttribute BoardForm boardForm, @RequestParam(name = "movieId") Long movieId, HttpServletRequest request, Model model) {
 
-
-        log.info("movie ID = {}", movieId);
-        Optional<JpaMovie> findMovie = movieRepository.findById(movieId);
-
-        if (findMovie.isPresent()){
-            log.info("{}", findMovie);
-            request.setAttribute("movie", findMovie);
-        }else{
-            return "redirect:/boards";
-        }
-//        HttpSession session = request.getSession(false);
-//        if(session == null) {
-//            String requestURI = request.getRequestURI();
-//            log.info("{}",response);
-//            httpResponse.sendRedirect("/member/login?redirectURL="+requestURI);
-//           // redirectAttributes.addAttribute("path", requestURI);
-//            //return "redirect:/member/login";
-//        }
-//        Member member = (Member) session.getAttribute(LOGIN_MEMBER);
-//        if (member==null){
-//            log.info("BBBBBBBB");
-//
-//            String requestURI = request.getRequestURI();
-//            log.info("AAAAAAA");
-//            httpResponse.sendRedirect("/member/login?redirectURL="+requestURI);
-////            return "redirect:/member/login";
-//        }
-        return "boardCreate";
-    }
-
-    @Transactional
-    @ResponseBody
-    @PostMapping("/create")
-    public ResponseEntity<ResponseBoardDto> create(@RequestBody RequestBoardDto requestBoardDto) {
-        BoardForm boardForm = new BoardForm();
-
-
-        Optional<JpaMovie> findMovie = movieRepository.findById(requestBoardDto.movieId);
-        if(findMovie.isPresent()){
-            boardForm.setMovie(findMovie.get());
-        }else{
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
-        }
-
-
-        //member ID 임의 설정
-        Member member = memberRepository.findById(1l).get();
-        boardForm.setMember(member);
-        boardForm.setTitle(requestBoardDto.getTitle());
-        boardForm.setContent(requestBoardDto.getContent());
-
-
-        Board savedBoard = boardRepository.save(new Board(boardForm));
+    @Operation(method="post", summary = "게시판 생성")
+    @ApiResponses(value=
+        @ApiResponse(responseCode = "201", description = "게시판 생성 성공", content={@Content(mediaType = "application/json")})
+    )
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody BoardAPIRequest boardAPIRequest, @CurrentMember UserPrincipal userPrincipal) {
+        boardService.write(boardAPIRequest, userPrincipal);
         return new ResponseEntity(HttpStatus.OK);
     }
 
 
-
-    @ResponseBody
+    @Operation(method="get", summary = "게시판 상세 내용")
+    @ApiResponses(value=
+        @ApiResponse(responseCode = "200", description = "게시판 상세내용 출력 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = BoardDetailAPIResponse.class))})
+    )
     @GetMapping("/{boardId}")
-    public  BoardDetail boardDetail(@PathVariable Long boardId, Model model, @ModelAttribute CommentForm commentForm, HttpServletRequest request){
-        Board board = boardService.findOne(boardId);
-        BoardDetail boardDetail = new BoardDetail();
-       // log.info("1{}", boardDetail);
-        if (board != null){
-            model.addAttribute("board", board);
-            BoardDao boardDao = new BoardDao(board);
-
-            // comment/create 에서 확인 시 값이 없음, html form 에서 board를 추가적으로 설정해야 할 듯
-            // commentForm.setBoard(board);
-        //    log.info("2{}", boardDetail);
-
-            // 임시로 세션 활용
-            HttpSession session = request.getSession();
-            session.setAttribute(BOARD, board);
-            boardDetail.setBoard(boardDao);
-
-            //댓글 데이터 추가 필요
-
-
-            //댓글 데이터 추가 필요
-            PageRequest pageRequest = PageRequest.of(0,10);
-            Page<CommentDto> commentPage = commentRepository.findByBoardId(boardId, pageRequest);
-
-
-            boardDetail.setComment(commentPage);
+    public  ResponseEntity<?> boardDetail(@PathVariable Long boardId){
+        BoardDetailAPIResponse response = boardService.getDetail(boardId);
+        return ResponseEntity.ok(response);
+    }
 
 
 
-            Pageable pageable = PageRequest.of(0, 10, Sort.by("createdDt").ascending());
-            Page<Comment> commentDtos = commentRepository.findByBoardIdAndParentIdIsNull(1l, pageable);
-
-            List<Comment> contents = commentDtos.getContent();
-
-
-            List<CommentDto> collect = contents.stream().map(comment -> new CommentDto(comment)).
-                    collect(Collectors.toList());
-
-
-            int size = commentDtos.getSize();
-//            System.out.println("size = " + size);
-            for (CommentDto content : collect) {
-//                System.out.println("content.getContent() = " + content.getContent());
-                List<CommentDto> children = content.getChildren();
-//                System.out.println("children = " + children);
-                for (CommentDto child : children) {
-//                    System.out.println("child = " + child);
-                }
-            }
-            //////////////////////////////
-            PageImpl<CommentDto> commentDtoPage = new PageImpl<CommentDto>(collect, pageable, pageable.getPageSize());
-
-            boardDetail.setComment(commentDtoPage);
-//            System.out.println("boardDetail = " + boardDetail);
-            return boardDetail;
-//            return "boardDetail";
-
+    @Operation(method="post", summary = "게시판 상세 내용 수정")
+    @ApiResponses(value=
+    @ApiResponse(responseCode = "200", description = "게시판 상세내용 수정 성공", content={@Content(mediaType = "application/json")})
+    )
+    @PutMapping("/{boardId}")
+    public ResponseEntity<?> update(@Valid @RequestBody BoardDetailAPIRequest boardDetailAPIRequest, @CurrentMember UserPrincipal userPrincipal){
+        if(!boardService.update(boardDetailAPIRequest, userPrincipal)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-//        return "redirect:/boards";
-    //    log.info("4{}", boardDetail);
-        log.info("보드 id 못찾음1");
-        return null;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/{boardId}/update")
-    public String updateForm(@PathVariable Long boardId, HttpServletRequest request, Model model) {
-        HttpSession session = request.getSession(false);
-
-        Member member = (Member)session.getAttribute(LOGIN_MEMBER);
-        Board board = boardService.checkMyBoard(boardId, member.getId());
-        if ( board != null){ // 로그인한 멤버가 작성한 게시판인지 확인
-            BoardForm boardForm = new BoardForm(board);
-            model.addAttribute("boardForm", boardForm);
-            return "boardUpdate";
+    @Operation(method="delete", summary = "게시판 상세 내용 삭제")
+    @ApiResponses(value=
+    @ApiResponse(responseCode = "200", description = "게시판 상세내용 삭제 성공", content={@Content(mediaType = "application/json")})
+    )
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<?> delete(@Valid @RequestBody BoardDeleteAPIRequest boardDeleteAPIRequest, @CurrentMember UserPrincipal userPrincipal){
+        if(!boardService.delete(boardDeleteAPIRequest, userPrincipal)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return "redirect:/boards";
-    }
-
-
-    @PostMapping("/{boardId}/update")
-    public String update(@PathVariable Long boardId, @ModelAttribute @Valid BoardForm boardForm,  BindingResult bindingResult, RedirectAttributes redirectAttributes){
-        if (bindingResult.hasErrors()){
-            return "boardUpdate";
-        }
-        boardForm.setId(boardId);
-        boardService.updateBoard(boardForm);
-        redirectAttributes.addAttribute("boardId", boardId);
-        return "redirect:/boards/{boardId}";
-    }
-
-
-    private void boardFormUpdate(BoardForm boardForm, HttpServletRequest request) { // movie 와 member 데이터 세팅
-        HttpSession session = request.getSession(false);
-
-        Member member = (Member) session.getAttribute(LOGIN_MEMBER);
-        boardForm.setMember(member);
-    }
-
-
-    @Data
-    @NoArgsConstructor
-    static class BoardDetail{
-        private BoardDao board;
-        private Page<CommentDto> comment;
-
-        public BoardDetail(BoardDao board, Page<CommentDto> comment) {
-            this.board = board;
-            this.comment = comment;
-        }
-    }
-
-    @Data
-    @NoArgsConstructor
-    static class RequestBoardDto{
-        private String title;
-        private String content;
-        private Long movieId;
-    }
-    @Data
-    @NoArgsConstructor
-    static class ResponseBoardDto{
-        private String title;
-        private String content;
-        private Long movieId;
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

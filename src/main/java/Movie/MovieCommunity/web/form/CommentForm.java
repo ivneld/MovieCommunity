@@ -3,6 +3,7 @@ package Movie.MovieCommunity.web.form;
 import Movie.MovieCommunity.JPADomain.Board;
 import Movie.MovieCommunity.JPADomain.Comment;
 import Movie.MovieCommunity.JPADomain.Member;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,7 @@ public class CommentForm {
 
     private Board board;
     private Comment parent;
-
+    @Builder
     public CommentForm( String content, Member member, Board board, Comment parent) {
 
         this.content = content;

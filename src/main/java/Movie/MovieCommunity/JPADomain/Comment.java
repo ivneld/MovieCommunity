@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class Comment extends BaseTimeEntity{
     }
 
     public void updateContent(String content) {
+        this.setModifiedDt(LocalDateTime.now());
         this.content = content;
     }
 
