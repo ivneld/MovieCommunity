@@ -38,21 +38,14 @@ public class Member  extends BaseTimeEntity{
     private String providerId;
 
 
-    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Board> boards = new ArrayList<>();
-//    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Comment> comments = new ArrayList<>();
-//    @Builder
-//    public Member(String username, String name, String email, String password, String provider, String providerId) {
-//        this.username = username;
-//        this.name = name;
-//        this.email = email;
-//        this.password = password;
-//        this.provider = provider;
-//        this.providerId = providerId;
-//    }
+    @OneToMany(mappedBy = "member")
+    private List<LikeBoard> likeBoards = new ArrayList<>();
+    @OneToMany(mappedBy = "member")
+    private List<LikeMovie> likeMovies = new ArrayList<>();
 
     @Builder
     public Member(String name, String email, String password, Authority authority, Provider provider, String providerId, String imageUrl){
@@ -79,11 +72,9 @@ public class Member  extends BaseTimeEntity{
         this.imageUrl = imageUrl;
     }
 
-//    @Builder
-//    public Member(Long id, String email, String password, String nickname) {
-//        this.id = id;
-//        this.email = email;
-//        this.password = password;
-//        this.nickname = nickname;
+//    public void updateLikeBoard(LikeBoard likeBoard){
+//        this.likeBoards.add(likeBoard);
+//        likeBoard.
 //    }
+
 }

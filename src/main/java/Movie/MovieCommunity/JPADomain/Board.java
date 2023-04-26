@@ -42,6 +42,8 @@ public class Board extends BaseTimeEntity{
     private JpaMovie movie;
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeBoard> likeBoards = new ArrayList<>();
 
     public Board updateBoard(String title, String content) {
         this.title = title;

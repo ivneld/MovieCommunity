@@ -168,7 +168,8 @@ public class JpaMovie {
     private List<JpaMovieWithCompany> movieWithCompanies = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<JpaMovieWithGenre> movieWithGenres = new ArrayList<>();
-
+    @OneToMany(mappedBy = "movie")
+    private List<LikeMovie> likeMovies = new ArrayList<>();
     public void updateData(MovieDto movieDto) {
         this.nationNm = movieDto.getNationNm();
         this.directorNm = movieDto.getDirectorNm();

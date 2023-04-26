@@ -1,35 +1,24 @@
 package Movie.MovieCommunity.service;
 
-import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.Comment;
-import Movie.MovieCommunity.JPADomain.JpaMovie;
-import Movie.MovieCommunity.JPADomain.Member;
-import Movie.MovieCommunity.JPARepository.BoardRepository;
-import Movie.MovieCommunity.JPARepository.CommentRepository;
-import Movie.MovieCommunity.JPARepository.MemberRepository;
-import Movie.MovieCommunity.JPARepository.MovieRepository;
+import Movie.MovieCommunity.JPADomain.*;
+import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.JPARepository.dao.BoardDao;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
-import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
-import Movie.MovieCommunity.web.BoardController;
-import Movie.MovieCommunity.web.apiDto.board.BoardAPIRequest;
-import Movie.MovieCommunity.web.apiDto.board.BoardDeleteAPIRequest;
-import Movie.MovieCommunity.web.apiDto.board.BoardDetailAPIRequest;
-import Movie.MovieCommunity.web.apiDto.board.BoardDetailAPIResponse;
+import Movie.MovieCommunity.web.apiDto.board.*;
 import Movie.MovieCommunity.web.dto.CommentDto;
-import Movie.MovieCommunity.web.form.BoardForm;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,6 +27,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
     private final CommentRepository commentRepository;
+    private final LikeBoardRepository likeBoardRepository;
     public Board write(BoardAPIRequest boardAPIRequest, UserPrincipal userPrincipal){
         Optional<Member> findMember = memberRepository.findByEmail(userPrincipal.getEmail());
         DefaultAssert.isOptionalPresent(findMember);
@@ -117,6 +107,7 @@ public class BoardService {
         DefaultAssert.isOptionalPresent(findBoard);
 
         findBoard.get().updateBoard(boardDetailAPIRequest.getTitle(), boardDetailAPIRequest.getContent());
+        findBoard.get().setModifiedDt(LocalDateTime.now());
         return true;
     }
 
@@ -133,6 +124,31 @@ public class BoardService {
         DefaultAssert.isOptionalPresent(findBoard);
 
         boardRepository.delete(findBoard.get());
+        return true;
+    }
+
+    public boolean likeBoard(BoardLikeAPIRequest boardLikeAPIRequest, UserPrincipal userPrincipal) {
+        Optional<Member> findMember = memberRepository.findById(boardLikeAPIRequest.getMemberId());
+        DefaultAssert.isOptionalPresent(findMember);
+
+        Optional<Board> findBoard = boardRepository.findById(boardLikeAPIRequest.getBoardId());
+        DefaultAssert.isOptionalPresent(findBoard);
+
+        if(boardLikeAPIRequest.getMemberId() != userPrincipal.getId()){
+            log.error("사용자 정보가 일치하지 않습니다.");
+            return false;
+        }
+        if (likeBoardRepository.existByBoardIdAndMemberId(boardLikeAPIRequest.getBoardId(), boardLikeAPIRequest.getMemberId())){
+            log.error("이미 좋아요를 눌렀습니다.");
+            return false;
+        }
+
+
+        LikeBoard likeBoard = LikeBoard.builder()
+                .board(findBoard.get())
+                .member(findMember.get())
+                .build();
+        likeBoardRepository.save(likeBoard);
         return true;
     }
 }

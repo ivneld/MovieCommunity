@@ -13,10 +13,7 @@ import Movie.MovieCommunity.JPARepository.searchCond.BoardSearchCond;
 import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.BoardService;
-import Movie.MovieCommunity.web.apiDto.board.BoardAPIRequest;
-import Movie.MovieCommunity.web.apiDto.board.BoardDeleteAPIRequest;
-import Movie.MovieCommunity.web.apiDto.board.BoardDetailAPIRequest;
-import Movie.MovieCommunity.web.apiDto.board.BoardDetailAPIResponse;
+import Movie.MovieCommunity.web.apiDto.board.*;
 import Movie.MovieCommunity.web.dto.CommentDto;
 import Movie.MovieCommunity.web.form.BoardForm;
 import Movie.MovieCommunity.web.form.CommentForm;
@@ -115,6 +112,17 @@ public class BoardController {
     @DeleteMapping("/{boardId}")
     public ResponseEntity<?> delete(@Valid @RequestBody BoardDeleteAPIRequest boardDeleteAPIRequest, @CurrentMember UserPrincipal userPrincipal){
         if(!boardService.delete(boardDeleteAPIRequest, userPrincipal)){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @Operation(method="post", summary = "게시판 좋아요")
+    @ApiResponses(value=
+    @ApiResponse(responseCode = "200", description = "게시판 좋아요 성공", content={@Content(mediaType = "application/json")})
+    )
+    @PostMapping("/{boardId}/like")
+    public ResponseEntity<?> likeBoard(@Valid @RequestBody BoardLikeAPIRequest boardLikeAPIRequest, @CurrentMember UserPrincipal userPrincipal){
+        if(!boardService.likeBoard(boardLikeAPIRequest, userPrincipal)){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
