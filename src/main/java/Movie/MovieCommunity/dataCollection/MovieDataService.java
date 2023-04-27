@@ -278,10 +278,10 @@ public class MovieDataService {
     @Transactional(propagation = Propagation.REQUIRED)
     public void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
         MovieDto movieDto = threadMovie.get();
-        MovieWithCompany movieWithCompany = new MovieWithCompany();
+        JpaMovieWithCompany movieWithCompany = new JpaMovieWithCompany();
 
-        MovieWithGenre movieWithGenre = new MovieWithGenre();
-        MovieWithActor movieWithActor = new MovieWithActor();
+        JpaMovieWithGenre movieWithGenre = new JpaMovieWithGenre();
+        JpaMovieWithActor movieWithActor = new JpaMovieWithActor();
         JSONArray array = (JSONArray) havingJsonArray.get(arrayName);
         CompanyDto companyDto = null;
         JpaActor actor = null;

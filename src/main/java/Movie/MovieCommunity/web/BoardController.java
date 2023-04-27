@@ -116,15 +116,15 @@ public class BoardController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @Operation(method="post", summary = "게시판 좋아요")
-    @ApiResponses(value=
-    @ApiResponse(responseCode = "200", description = "게시판 좋아요 성공", content={@Content(mediaType = "application/json")})
-    )
-    @PostMapping("/{boardId}/like")
-    public ResponseEntity<?> likeBoard(@Valid @RequestBody BoardLikeAPIRequest boardLikeAPIRequest, @CurrentMember UserPrincipal userPrincipal){
-        if(!boardService.likeBoard(boardLikeAPIRequest, userPrincipal)){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @Operation(method="post", summary = "게시판 좋아요")
+//    @ApiResponses(value=
+//    @ApiResponse(responseCode = "200", description = "게시판 좋아요 성공", content={@Content(mediaType = "application/json")})
+//    )
+//    @PostMapping("/{boardId}/like")
+//    public ResponseEntity<?> likeBoard(@Valid @RequestBody BoardLikeAPIRequest boardLikeAPIRequest, @CurrentMember UserPrincipal userPrincipal){
+//        if(!boardService.likeBoard(boardLikeAPIRequest, userPrincipal)){
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 }

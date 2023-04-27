@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Table(name="moviewithgenre")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class JpaMovieWithGenre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

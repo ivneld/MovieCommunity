@@ -27,7 +27,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
     private final CommentRepository commentRepository;
-    private final LikeBoardRepository likeBoardRepository;
+//    private final LikeBoardRepository likeBoardRepository;
     public Board write(BoardAPIRequest boardAPIRequest, UserPrincipal userPrincipal){
         Optional<Member> findMember = memberRepository.findByEmail(userPrincipal.getEmail());
         DefaultAssert.isOptionalPresent(findMember);
@@ -127,28 +127,28 @@ public class BoardService {
         return true;
     }
 
-    public boolean likeBoard(BoardLikeAPIRequest boardLikeAPIRequest, UserPrincipal userPrincipal) {
-        Optional<Member> findMember = memberRepository.findById(boardLikeAPIRequest.getMemberId());
-        DefaultAssert.isOptionalPresent(findMember);
-
-        Optional<Board> findBoard = boardRepository.findById(boardLikeAPIRequest.getBoardId());
-        DefaultAssert.isOptionalPresent(findBoard);
-
-        if(boardLikeAPIRequest.getMemberId() != userPrincipal.getId()){
-            log.error("사용자 정보가 일치하지 않습니다.");
-            return false;
-        }
-        if (likeBoardRepository.existByBoardIdAndMemberId(boardLikeAPIRequest.getBoardId(), boardLikeAPIRequest.getMemberId())){
-            log.error("이미 좋아요를 눌렀습니다.");
-            return false;
-        }
-
-
-        LikeBoard likeBoard = LikeBoard.builder()
-                .board(findBoard.get())
-                .member(findMember.get())
-                .build();
-        likeBoardRepository.save(likeBoard);
-        return true;
-    }
+//    public boolean likeBoard(BoardLikeAPIRequest boardLikeAPIRequest, UserPrincipal userPrincipal) {
+//        Optional<Member> findMember = memberRepository.findById(boardLikeAPIRequest.getMemberId());
+//        DefaultAssert.isOptionalPresent(findMember);
+//
+//        Optional<Board> findBoard = boardRepository.findById(boardLikeAPIRequest.getBoardId());
+//        DefaultAssert.isOptionalPresent(findBoard);
+//
+//        if(boardLikeAPIRequest.getMemberId() != userPrincipal.getId()){
+//            log.error("사용자 정보가 일치하지 않습니다.");
+//            return false;
+//        }
+//        if (likeBoardRepository.existByBoardIdAndMemberId(boardLikeAPIRequest.getBoardId(), boardLikeAPIRequest.getMemberId())){
+//            log.error("이미 좋아요를 눌렀습니다.");
+//            return false;
+//        }
+//
+//
+//        LikeBoard likeBoard = LikeBoard.builder()
+//                .board(findBoard.get())
+//                .member(findMember.get())
+//                .build();
+//        likeBoardRepository.save(likeBoard);
+//        return true;
+//    }
 }
