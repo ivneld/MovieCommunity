@@ -13,9 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 @SpringBootTest
 class BoardRepositoryTest {
@@ -61,5 +59,13 @@ class BoardRepositoryTest {
         }
 
     }
+
+//    @Test
+//    public void findQueryList(){
+//        List<Board> boardList = boardRepository.findBoardList();
+//        for (Board board : boardList) {
+//            System.out.println("board = " + board);
+//        }
+//    }
 
 }

@@ -1,7 +1,5 @@
 package Movie.MovieCommunity.web;
 
-
-
 import Movie.MovieCommunity.domain.ranking.Detail;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -67,7 +65,6 @@ public class DetailController {
         JSONArray total = extracted(model, details, paramMap);
 
         return total;
-
     }
 
     private Map<String, String> paramMapSet(Map<String, String> paramMap, String movieCd ) {

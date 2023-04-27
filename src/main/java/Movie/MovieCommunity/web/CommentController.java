@@ -1,27 +1,25 @@
 package Movie.MovieCommunity.web;
 
-import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.Comment;
-import Movie.MovieCommunity.JPADomain.Member;
-import Movie.MovieCommunity.JPARepository.BoardRepository;
-import Movie.MovieCommunity.JPARepository.dao.BoardDao;
+import Movie.MovieCommunity.annotation.CurrentMember;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.CommentService;
-import Movie.MovieCommunity.web.form.BoardForm;
+import Movie.MovieCommunity.web.apiDto.comment.CommentAPIRequest;
+import Movie.MovieCommunity.web.apiDto.comment.CommentDeleteAPIRequest;
+import Movie.MovieCommunity.web.apiDto.comment.CommentUpdateAPIRequest;
 import Movie.MovieCommunity.web.form.CommentForm;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Optional;
 
 
 /**
@@ -29,42 +27,51 @@ import java.util.Optional;
  * movie : movie_id ,movie_nm, open_dt
  * genre : genre_id, genre_nm
  */
-@Controller
+@RestController
 @RequestMapping("/comment")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("http://localhost:3000")
+@Tag(name="comment", description = "댓글 API")
 public class CommentController {
     private final CommentService commentService;
-    private final BoardRepository boardRepository;
 
-    @PostMapping("/create")
-    public String create(@ModelAttribute @Valid CommentForm commentForm, BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes){
-
-
-        HttpSession session = request.getSession(false);
-        Board board = (Board) session.getAttribute(SessionConst.BOARD);
-        commentForm.setBoard(board);
-
-        if (session == null){// 댓글 작성 시 로그인 확인
-            bindingResult.reject("loginRequired","로그인이 필요합니다.");
-            return "redirect:/member/login";
-        }
-        redirectAttributes.addAttribute("boardId", commentForm.getBoard().getId());
-
-
-        if (bindingResult.hasErrors()){
-//            model.addAttribute("board", board);
-            redirectAttributes.addAttribute("comment", false);
-            return "redirect:/boards/{boardId}";
-//            return "boardDetail";
-        }
-        Member member = (Member) session.getAttribute(SessionConst.LOGIN_MEMBER);
-
-        commentForm.setMember(member);
-        commentService.write(commentForm);
-        session.removeAttribute(SessionConst.BOARD);
-        return "redirect:/boards/{boardId}";
+    @Operation(method = "post", summary = "댓글 생성")
+    @ApiResponses(value=
+        @ApiResponse(responseCode = "201", description = "댓글 생성 성공", content={@Content(mediaType = "application/json")})
+    )
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> create(@Valid @RequestBody CommentAPIRequest commentRequest, @CurrentMember UserPrincipal userPrincipal){
+        String email = userPrincipal.getEmail();
+        CommentForm response = commentService.write(commentRequest, email);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @Operation(method="put", summary = "댓글 수정")
+    @ApiResponses(value=
+        @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content={@Content(mediaType = "application/json")})
+    )
+    @PutMapping
+    public ResponseEntity<?> update(@Valid @RequestBody CommentUpdateAPIRequest commentUpdateAPIRequest, @CurrentMember UserPrincipal userPrincipal){
+        Boolean checkUpdate = commentService.update(commentUpdateAPIRequest, userPrincipal);
+        if (!checkUpdate){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(method="delete", summary = "댓글 삭제")
+    @ApiResponses(value=
+        @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = {@Content(mediaType = "application/json")})
+    )
+    @DeleteMapping
+    public ResponseEntity<?> delete(@Valid @RequestBody CommentDeleteAPIRequest commentDeleteAPIRequest, @CurrentMember UserPrincipal userPrincipal){
+        commentService.delete(commentDeleteAPIRequest, userPrincipal);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 
 }
 

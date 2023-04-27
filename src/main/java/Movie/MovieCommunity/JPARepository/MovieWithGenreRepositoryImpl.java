@@ -1,9 +1,5 @@
 package Movie.MovieCommunity.JPARepository;
 
-import Movie.MovieCommunity.JPADomain.JpaGenre;
-import Movie.MovieCommunity.JPADomain.QJpaGenre;
-import Movie.MovieCommunity.JPADomain.QJpaMovie;
-import Movie.MovieCommunity.JPADomain.QJpaMovieWithGenre;
 import Movie.MovieCommunity.JPADomain.dto.MovieGenreDto;
 import Movie.MovieCommunity.JPADomain.dto.QMovieGenreDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;

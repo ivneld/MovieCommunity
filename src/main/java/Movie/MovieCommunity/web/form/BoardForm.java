@@ -1,15 +1,11 @@
 package Movie.MovieCommunity.web.form;
 
 import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.Comment;
 import Movie.MovieCommunity.JPADomain.JpaMovie;
 import Movie.MovieCommunity.JPADomain.Member;
 import lombok.Data;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 public class BoardForm {
