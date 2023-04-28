@@ -4,17 +4,28 @@ import Movie.MovieCommunity.JPADomain.*;
 import Movie.MovieCommunity.JPADomain.dto.*;
 import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
+import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.domain.*;
 
 import Movie.MovieCommunity.web.form.CommentForm;
 import com.querydsl.core.Tuple;
+import info.movito.themoviedbapi.TmdbApi;
+import info.movito.themoviedbapi.TmdbMovies;
+import info.movito.themoviedbapi.TmdbSearch;
+import info.movito.themoviedbapi.model.Collection;
+import info.movito.themoviedbapi.model.MovieDb;
+import info.movito.themoviedbapi.model.Video;
+import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
+import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,13 +33,17 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class MovieDataService {
+
 
     private final GenreRepository genreRepository;
     private final ActorRepository actorRepository;
@@ -42,18 +57,23 @@ public class MovieDataService {
     private final WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
 
     private final MemberRepository memberRepository;
-    private final BoardRepository boardRepository;
+//    private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     @Autowired
     private final EntityManager em;
 
-//    @Value("${movie-api-key}")
-    private String key = "633a3302093ec75c112d1afac4eb1ba5";
+    private String imageBaseUrl = "https://image.tmdb.org/t/p/w500/";
+    private String youtubeBaseUrl = "https://www.youtube.com/watch?v=";
+    private String vimeoBaseUrl = "https://vimeo.com/";
+    @Value("${movie.secret}")
+    private String[] key;//= "633a3302093ec75c112d1afac4eb1ba5";
+    @Value("${tmdb.secret}")
+    private String tmdbKey;
     private String response;
 //    private Company company = new Company();
 //    private Genre genre = new Genre();
 //    private Actor actor = new Actor();
-    private KobisOpenAPIRestService service = new KobisOpenAPIRestService(key);
+    //private KobisOpenAPIRestService service = new KobisOpenAPIRestService(key[0]);
     private ThreadLocal<MovieDto> threadMovie = new ThreadLocal<>();
     private ThreadLocal<Long> threadTotCnt = new ThreadLocal<>();
     private ThreadLocal<LocalDate> threadStartDay = new ThreadLocal<>();
@@ -63,8 +83,10 @@ public class MovieDataService {
 
     @PostConstruct
     public void Testing() throws Exception {
-
-//        movieDataCollection("2022");
+        System.out.println("key = " + key[0]);
+//        String searchTitle = "토르: 러브 앤 썬더";
+//        tmdbSearch(searchTitle);
+        movieDataCollection("2022");
 //        InitData();// movieDataCollection("2022") 실행 후 사용
 
 
@@ -103,76 +125,77 @@ public class MovieDataService {
         memberRepository.save(member2);
         memberRepository.save(member3);
         memberRepository.save(member4);
-
-        for(int i = 0 ; i<20;i++){
-            Board board = null;
-            switch (i%4){
-                case 1:
-                    board = Board.builder()
-                            .title("title" + i)
-                            .content("content" + i)
-                            .movie(movie1.get())
-                            .member(member1)
-                            .build();
-                    break;
-                case 2:
-                    board = Board.builder()
-                            .title("title"+i)
-                            .content("content"+i)
-                            .movie(movie2.get())
-                            .member(member3)
-                            .build();
-                    break;
-                case 3:
-                    board = Board.builder()
-                            .title("title"+i)
-                            .content("content"+i)
-                            .movie(movie3.get())
-                            .member(member4)
-                            .build();
-                    break;
-                default:
-                    board = Board.builder()
-                            .title("title"+i)
-                            .content("content"+i)
-                            .movie(movie4.get())
-                            .member(member2)
-                            .build();
-                    break;
-            }
-            boardRepository.save(board);
+//
+//        for(int i = 0 ; i<20;i++){
+//            Board board = null;
+//            switch (i%4){
+//                case 1:
+//                    board = Board.builder()
+//                            .title("title" + i)
+//                            .content("content" + i)
+//                            .movie(movie1.get())
+//                            .member(member1)
+//                            .build();
+//                    break;
+//                case 2:
+//                    board = Board.builder()
+//                            .title("title"+i)
+//                            .content("content"+i)
+//                            .movie(movie2.get())
+//                            .member(member3)
+//                            .build();
+//                    break;
+//                case 3:
+//                    board = Board.builder()
+//                            .title("title"+i)
+//                            .content("content"+i)
+//                            .movie(movie3.get())
+//                            .member(member4)
+//                            .build();
+//                    break;
+//                default:
+//                    board = Board.builder()
+//                            .title("title"+i)
+//                            .content("content"+i)
+//                            .movie(movie4.get())
+//                            .member(member2)
+//                            .build();
+//                    break;
+//            }
+//            boardRepository.save(board);
         }
 
-        for(int i = 0 ; i<20;i++) {
-            Optional<Board> board = boardRepository.findById(1l);
-            Comment comment = null;
-            CommentForm commentForm = null;
-            if (i<4){
-                commentForm = new CommentForm("comment"+i, member1, board.get(), null);
-
-            }else {
-                if (i%2==0) {
-                    Optional<Comment> parent = commentRepository.findById(1l);
-                    commentForm = new CommentForm("comment" + i, member2, board.get(), parent.get());
-                }else{
-                    Optional<Comment> parent = commentRepository.findById(2l);
-                    commentForm = new CommentForm("comment" + i, member2, board.get(), parent.get());
-                }
-            }
-            comment = new Comment(commentForm);
-            commentRepository.save(comment);
-
-
-        }
+//        for(int i = 0 ; i<20;i++) {
+//            Optional<Board> board = boardRepository.findById(1l);
+//            Comment comment = null;
+//            CommentForm commentForm = null;
+//            if (i<4){
+//                commentForm = new CommentForm("comment"+i, member1, board.get(), null);
+//
+//            }else {
+//                if (i%2==0) {
+//                    Optional<Comment> parent = commentRepository.findById(1l);
+//                    commentForm = new CommentForm("comment" + i, member2, board.get(), parent.get());
+//                }else{
+//                    Optional<Comment> parent = commentRepository.findById(2l);
+//                    commentForm = new CommentForm("comment" + i, member2, board.get(), parent.get());
+//                }
+//            }
+//            comment = new Comment(commentForm);
+//            commentRepository.save(comment);
 
 
+//        }
 
-    }
+
+
+//    }
     /**
      *  movieDataCollection with movieDetailData
      */
     @Transactional(propagation = Propagation.REQUIRED)
     public void movieDataCollection(String openStartDt) throws Exception {
+        KobisOpenAPIRestService service = new KobisOpenAPIRestService(key[0]);
         Map<String, String> param = new HashMap<>();
         //param.put("curPage", "1");
         //param.put("itemPerPage","0");
@@ -182,6 +205,7 @@ public class MovieDataService {
             String curPage = String.valueOf(i+1);
             log.info("curPage = {}", curPage);
             param.put("curPage", curPage);
+
             response = service.getMovieList(true, param);
             JSONParser jsonParser = new JSONParser();
             Object parse = jsonParser.parse(response);
@@ -201,7 +225,7 @@ public class MovieDataService {
                 JSONObject movieData = (JSONObject)movieList.get(j);
                 String movieCd = (String)movieData.get("movieCd");
                 //String movieNm = (String)movieData.get("movieNm");
-                movieDetailData(movieCd);
+                movieDetailData(movieCd, service);
                 //log.info("movieList = {}", movieList);
             }
 
@@ -210,7 +234,7 @@ public class MovieDataService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void movieDetailData(String movieCd) throws Exception {
+    public void movieDetailData(String movieCd, KobisOpenAPIRestService service) throws Exception {
 
         List<String> keyNames = new ArrayList<>();
 
@@ -244,12 +268,8 @@ public class MovieDataService {
         JpaMovie savedMovie = movieRepository.save(movie);
         keyNames.add("nationNm");
         JSONArrayExtracted(movieInfo,"nations", keyNames, null, savedMovie);
-        //Company company = new Company();
 
-        // 임의로 ID 생성
-/*        genre.setId(1L);
-        actor.setId(1L);
-        company.setId(1L);*/
+
 
         keyNames.add("genreNm");
         JSONArrayExtracted(movieInfo,"genres", keyNames, new GenreDto(), savedMovie);
@@ -382,6 +402,7 @@ public class MovieDataService {
 
     @Transactional
     public void yearWeeklyBoxOfficeData(String targetDt) {
+        KobisOpenAPIRestService service = new KobisOpenAPIRestService(key[0]);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate startDate = LocalDate.parse("20220101", formatter);
 /*        LocalDate nextDate = startDate.plusDays(7);
@@ -520,5 +541,99 @@ public class MovieDataService {
             }
         });
 
+    }
+//https://image.tmdb.org/t/p/w500/eg4vGqZo1BpjY3ZoCUAGk09Pq7T.jpg
+    /*
+
+    YouTube: https://www.youtube.com/watch?v=
+Vimeo: https://vimeo.com/
+     */
+    @Data
+    static class MovieVideo{
+        private String name;
+        private String site;
+        private String key;
+        private String type;
+        @Builder
+    public MovieVideo(String name, String site, String key, String type) {
+        this.name = name;
+        this.site = site;
+        this.key = key;
+        this.type = type;
+    }
+}
+    public void tmdbSearch(String searchTitle){
+
+        TmdbApi tmdbApi = new TmdbApi(tmdbKey);
+
+        Optional<Integer> optionalMovie = searchMovie(tmdbApi, searchTitle);
+        if (optionalMovie.isPresent()){ // 영화 데이터가 있을 경우
+            Integer movieId = optionalMovie.get();
+            TmdbMovies movies = tmdbApi.getMovies();
+            MovieDb movie = movies.getMovie(movieId, "ko-kr", TmdbMovies.MovieMethod.videos);// 영화 상세 데이터 비디오 url 포함
+            Collection movieCollection = movie.getBelongsToCollection();
+            int collectionId = movieCollection.getId();
+            String seriesName = movieCollection.getName();
+            String collectionBackdropPath = imageBaseUrl+movieCollection.getBackdropPath();
+            String collectionPosterPath = imageBaseUrl+movieCollection.getPosterPath();
+            System.out.println("collectionId = " + collectionId); //시리즈 별 영화 데이터 추가하려면 collectionTable 을 새로 만들고 다대일 movie <-> collectionTable 관계를 가지도록 고려
+            System.out.println("seriesName = " + seriesName);
+            System.out.println("collectionBackdropPath = " + collectionBackdropPath);
+            System.out.println("collectionPosterPath = " + collectionPosterPath);
+
+
+            Stream<MovieVideo> movieVideoStream = movie.getVideos().stream().map(video -> MovieVideo.builder()
+                    .name(video.getName())
+                    .site(video.getSite())
+                    .key(video.getSite().equals("YouTube") ? youtubeBaseUrl+video.getKey() : vimeoBaseUrl+video.getKey())// 유튜브면 baseurl을 유트브 아니면 vimeo 로 설정
+                    .type(video.getType())
+                    .build()
+            );
+            movieVideoStream.forEach(movieVideo -> System.out.println("movieVideo = " + movieVideo));
+
+
+        }
+
+    }
+
+    private Optional<Integer> searchMovie(TmdbApi tmdbApi, String searchTitle) {
+
+        Optional<Integer> id = Optional.empty();
+        TmdbSearch search = tmdbApi.getSearch();
+        MovieResultsPage value = search.searchMovie(searchTitle, null, "ko-kr", true, 1);
+        if (value.getTotalResults()== 0){
+            System.out.println("영화 데이터 없습니다.");
+            return id;
+        }else {
+            Optional<MovieDb> optionalMovie = value.getResults().stream().filter(movieDb -> movieDb.getTitle().equals(searchTitle)).findFirst();
+            if (optionalMovie.isEmpty()){
+                System.out.println("일치하는 영화가 없습니다.");
+                return id;
+            }
+            DefaultAssert.isOptionalPresent(optionalMovie);
+            MovieDb movieDb = optionalMovie.get();
+            id = Optional.of(movieDb.getId());// 실제 ID
+            System.out.println("id = " + id);
+            String title = movieDb.getTitle();
+            System.out.println("title = " + title);
+            String overview = movieDb.getOverview();
+            System.out.println("overview = " + overview);
+
+            String releaseDate = movieDb.getReleaseDate();
+            System.out.println("releaseDate = " + releaseDate);
+
+            String backdropPath = imageBaseUrl+movieDb.getBackdropPath();
+            System.out.println("backdropPath = " + backdropPath);
+            String posterPath = imageBaseUrl+movieDb.getPosterPath();
+            System.out.println("posterPath = " + posterPath);
+
+            float popularity = movieDb.getPopularity();
+            System.out.println("popularity = " + popularity);
+            float voteAverage = movieDb.getVoteAverage();
+            System.out.println("voteAverage = " + voteAverage);
+            int voteCount = movieDb.getVoteCount();
+            System.out.println("voteCount = " + voteCount);
+        }
+        return id;
     }
 }

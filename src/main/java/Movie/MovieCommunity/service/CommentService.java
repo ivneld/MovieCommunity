@@ -2,10 +2,12 @@ package Movie.MovieCommunity.service;
 
 import Movie.MovieCommunity.JPADomain.Board;
 import Movie.MovieCommunity.JPADomain.Comment;
+import Movie.MovieCommunity.JPADomain.JpaMovie;
 import Movie.MovieCommunity.JPADomain.Member;
-import Movie.MovieCommunity.JPARepository.BoardRepository;
+//import Movie.MovieCommunity.JPARepository.BoardRepository;
 import Movie.MovieCommunity.JPARepository.CommentRepository;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.web.apiDto.comment.CommentAPI;
@@ -25,13 +27,14 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
-    private final BoardRepository boardRepository;
+//    private final BoardRepository boardRepository;
+    private final MovieRepository movieRepository;
     public CommentForm write(CommentAPIRequest commentAPIRequest, String email){
         Optional<Member> findMember = memberRepository.findByEmail(email);
         DefaultAssert.isOptionalPresent(findMember);
 
-        Optional<Board> findBoard = boardRepository.findById(commentAPIRequest.getBoardId());
-        DefaultAssert.isOptionalPresent(findBoard);
+        Optional<JpaMovie> findMovie = movieRepository.findById(commentAPIRequest.getBoardId());
+        DefaultAssert.isOptionalPresent(findMovie);
 
         Comment parent = null;
         if (commentAPIRequest.getParentId() != null){
@@ -41,7 +44,7 @@ public class CommentService {
         }
         CommentForm commentForm = CommentForm.builder()
                 .content(commentAPIRequest.getContent())
-                .board(findBoard.get())
+                .movie(findMovie.get())
                 .member(findMember.get())
                 .parent(parent)
                 .build();

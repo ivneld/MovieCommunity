@@ -53,7 +53,7 @@ class CommentRepositoryTest {
         Optional<Comment> findComment = commentRepository.findById(12l);
         Comment parent = findComment.get();
 
-        for (int i=0;i<10;i++){
+/*        for (int i=0;i<10;i++){
             if(i%2==0){
                 CommentForm commentForm = new CommentForm("content"+i,member1, board, parent);
                 Comment comment = new Comment(commentForm);
@@ -66,7 +66,7 @@ class CommentRepositoryTest {
                 commentRepository.save(comment);
                 em.flush();
             }
-        }
+        }*/
     }
 
     @Test

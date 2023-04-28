@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+//@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseTimeEntity{

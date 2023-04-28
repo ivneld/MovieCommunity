@@ -21,7 +21,7 @@ public class Member  extends BaseTimeEntity{
     private Long id;
     private String username;
     @Email
-//    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
 //    @Column(nullable = false)
@@ -38,13 +38,13 @@ public class Member  extends BaseTimeEntity{
     private String providerId;
 
 
-    @OneToMany(mappedBy = "member")
-    private List<Board> boards = new ArrayList<>();
-    @OneToMany(mappedBy = "member")
+//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+//    private List<Board> boards = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
-//    @OneToMany(mappedBy = "member")
-//    private List<LikeBoard> likeBoards = new ArrayList<>();
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeComment> likeComments = new ArrayList<>();
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LikeMovie> likeMovies = new ArrayList<>();
 
     @Builder
