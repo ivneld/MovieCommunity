@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class JpaActor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "actor_id")
     private Long id;
+
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String actorNm;
 
     @Override

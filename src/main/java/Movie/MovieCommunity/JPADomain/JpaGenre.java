@@ -19,5 +19,6 @@ public class JpaGenre {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "genre_id")
     private Long id;
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String genreNm;
 }
