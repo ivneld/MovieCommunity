@@ -2,6 +2,7 @@ package Movie.MovieCommunity.web.form;
 
 import Movie.MovieCommunity.JPADomain.Board;
 import Movie.MovieCommunity.JPADomain.Comment;
+import Movie.MovieCommunity.JPADomain.JpaMovie;
 import Movie.MovieCommunity.JPADomain.Member;
 import lombok.Builder;
 import lombok.Data;
@@ -18,14 +19,14 @@ public class CommentForm {
 
     private Member member;
 
-    private Board board;
+    private JpaMovie movie;
     private Comment parent;
     @Builder
-    public CommentForm( String content, Member member, Board board, Comment parent) {
+    public CommentForm( String content, Member member, JpaMovie movie, Comment parent) {
 
         this.content = content;
         this.member = member;
-        this.board = board;
+        this.movie = movie;
         this.parent = parent;
     }
 }

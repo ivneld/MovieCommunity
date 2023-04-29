@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name="comment")
+@Table(name="comment")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseTimeEntity{
@@ -19,20 +20,20 @@ public class Comment extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
+    @Column(nullable = false)
     private String content;
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="member_id")
+    @JoinColumn(name ="member_id", nullable = false)
     private Member member;
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name ="board_id")
-    private Board board;
+    @JoinColumn(name ="movie_id", nullable = false)
+    private JpaMovie movie;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
-
-    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LikeComment> likeComments = new ArrayList<>();;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();;
 
     @Override
@@ -51,7 +52,7 @@ public class Comment extends BaseTimeEntity{
     public Comment(CommentForm commentForm) {
         this.content = commentForm.getContent();
         this.member = commentForm.getMember();
-        this.board = commentForm.getBoard();
+        this.movie = commentForm.getMovie();
         this.parent = commentForm.getParent();
     }
 }
