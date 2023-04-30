@@ -84,11 +84,11 @@ public class MovieDataService {
     @PostConstruct
     public void Testing() throws Exception {
         System.out.println("key = " + key[0]);
-//        String searchTitle = "토르: 러브 앤 썬더";
-//        tmdbSearch(searchTitle);
-        movieDataCollection("2022");
-//        InitData();// movieDataCollection("2022") 실행 후 사용
-
+        String searchTitle = "슈퍼 마리오 브라더스";
+        tmdbSearch(searchTitle);
+//        movieDataCollection("2023");
+//        InitData();
+//        movieDataCollection("2022");// 실행 후 사용
 
 
 
@@ -210,15 +210,16 @@ public class MovieDataService {
             JSONParser jsonParser = new JSONParser();
             Object parse = jsonParser.parse(response);
             JSONObject ps = (JSONObject) parse;
+            log.info("ps={}",ps);
             JSONObject movieListResult = (JSONObject)ps.get("movieListResult");
             //Long totCnt = (Long)movieListResult.get("totCnt");
             if (i==0)
                 threadTotCnt.set((Long)movieListResult.get("totCnt"));
             JSONArray movieList = (JSONArray)movieListResult.get("movieList");
 
-/*        log.info("list = {}",totCnt);
-        log.info("list = {}",movieListResult);*/
-
+/*        log.info("list = {}",totCnt);*/
+            log.info("list = {}",movieList);
+            log.info("listSize = {}",movieList.size());
 
 
             for(int j=0;j< movieList.size();j++){
@@ -241,12 +242,12 @@ public class MovieDataService {
         // 임의로 ID 생성
         //movie.setId(1L);
         response = service.getMovieInfo(true, movieCd);
-
+        log.info("response={}",response);
         JSONParser jsonParser = new JSONParser();
         Object parse = jsonParser.parse(response);
         JSONObject ps = (JSONObject) parse;
         JSONObject movieInfoResult = (JSONObject)ps.get("movieInfoResult");
-        //log.info("{}",movieInfoResult);
+        log.info("{}",movieInfoResult);
         JSONObject movieInfo = (JSONObject)movieInfoResult.get("movieInfo");
         //String movieCd = (String) movieInfo.get("movieCd");
         String movieNm = (String) movieInfo.get("movieNm");
@@ -517,11 +518,11 @@ public class MovieDataService {
 //    }
 
     // update
-    public void setMovieEtcV2() {
-        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
-        Tuple tuple1 = tuples.get(0);
-        tuple1.get(QJpaMovie.jpaMovie.movieCd);
-    }
+//    public void setMovieEtcV2() {
+//        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
+//        Tuple tuple1 = tuples.get(0);
+//        tuple1.get(QJpaMovie.jpaMovie.movieCd);
+//    }
     public void setTopMovieCnt() {
         List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByRankingLessThan(11);
 
@@ -571,15 +572,19 @@ Vimeo: https://vimeo.com/
             Integer movieId = optionalMovie.get();
             TmdbMovies movies = tmdbApi.getMovies();
             MovieDb movie = movies.getMovie(movieId, "ko-kr", TmdbMovies.MovieMethod.videos);// 영화 상세 데이터 비디오 url 포함
-            Collection movieCollection = movie.getBelongsToCollection();
-            int collectionId = movieCollection.getId();
-            String seriesName = movieCollection.getName();
-            String collectionBackdropPath = imageBaseUrl+movieCollection.getBackdropPath();
-            String collectionPosterPath = imageBaseUrl+movieCollection.getPosterPath();
-            System.out.println("collectionId = " + collectionId); //시리즈 별 영화 데이터 추가하려면 collectionTable 을 새로 만들고 다대일 movie <-> collectionTable 관계를 가지도록 고려
-            System.out.println("seriesName = " + seriesName);
-            System.out.println("collectionBackdropPath = " + collectionBackdropPath);
-            System.out.println("collectionPosterPath = " + collectionPosterPath);
+
+            /*고친 부분*/
+            if (movie.getBelongsToCollection()!=null){
+                Collection movieCollection = movie.getBelongsToCollection();
+                int collectionId = movieCollection.getId();
+                String seriesName = movieCollection.getName();
+                String collectionBackdropPath = imageBaseUrl+movieCollection.getBackdropPath();
+                String collectionPosterPath = imageBaseUrl+movieCollection.getPosterPath();
+                System.out.println("collectionId = " + collectionId); //시리즈 별 영화 데이터 추가하려면 collectionTable 을 새로 만들고 다대일 movie <-> collectionTable 관계를 가지도록 고려
+                System.out.println("seriesName = " + seriesName);
+                System.out.println("collectionBackdropPath = " + collectionBackdropPath);
+                System.out.println("collectionPosterPath = " + collectionPosterPath);
+            }
 
 
             Stream<MovieVideo> movieVideoStream = movie.getVideos().stream().map(video -> MovieVideo.builder()
@@ -600,7 +605,7 @@ Vimeo: https://vimeo.com/
 
         Optional<Integer> id = Optional.empty();
         TmdbSearch search = tmdbApi.getSearch();
-        MovieResultsPage value = search.searchMovie(searchTitle, null, "ko-kr", true, 1);
+        MovieResultsPage value = search.searchMovie(searchTitle, 0, "ko-kr", true, 1);
         if (value.getTotalResults()== 0){
             System.out.println("영화 데이터 없습니다.");
             return id;
