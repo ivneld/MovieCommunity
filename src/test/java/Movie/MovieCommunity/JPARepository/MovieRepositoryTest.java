@@ -9,6 +9,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @SpringBootTest
 @Transactional
@@ -58,5 +59,11 @@ em.clear();
 
     }
 
+    @Test
+    public void deleteTest(){
+        Optional<JpaMovie> findMovie = movieRepository.findById(8l);
+        JpaMovie jpaMovie = findMovie.get();
+        movieRepository.delete(jpaMovie);
+    }
 
 }

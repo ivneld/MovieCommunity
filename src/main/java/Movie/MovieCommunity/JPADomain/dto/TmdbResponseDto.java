@@ -18,6 +18,11 @@ public class TmdbResponseDto {
     private float popularity;
     private float voteAverage;
     private int voteCount;
+
+    private int collectionId;
+    private String seriesName;
+    private String collectionBackdropPath;
+    private String collectionPosterPath;
     private List<Video> videos = new ArrayList<>();
     @Builder
     public TmdbResponseDto(int id, String title, String overview, String releaseDate, String backdropPath, String posterPath, float popularity, float voteAverage, int voteCount) {
@@ -33,9 +38,7 @@ public class TmdbResponseDto {
     }
 
     public void addVideos(List<Video> tmdbTests) {
-//                        System.out.println("넘어온 videos = " + videos);
         this.videos.addAll(tmdbTests);
-//            System.out.println("추가된 videos = " + this.videos);
     }
 
 }

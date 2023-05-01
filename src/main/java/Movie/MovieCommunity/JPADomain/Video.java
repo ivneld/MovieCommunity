@@ -15,18 +15,18 @@ public class Video {
     @Column(name="video_id")
     private Long id;
     private String name;
-    private String site;
-    private String key;
-    private String type;
+    private String siteName;
+    private String url;
+    private String videoType;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id", nullable = false)
+    @JoinColumn(name = "movie_id")
     private JpaMovie movie;
     @Builder
-    public Video(String name, String site, String key, String type, JpaMovie movie) {
+    public Video(String name, String siteName, String url, String videoType, JpaMovie movie) {
         this.name = name;
-        this.site = site;
-        this.key = key;
-        this.type = type;
+        this.siteName = siteName;
+        this.url = url;
+        this.videoType = videoType;
         this.movie = movie;
     }
 

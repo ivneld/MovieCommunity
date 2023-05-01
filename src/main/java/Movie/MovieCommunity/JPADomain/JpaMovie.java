@@ -172,16 +172,16 @@ public class JpaMovie {
     @NumberFormat(pattern = "###,###")
     private Long audiAcc;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<JpaMovieWithActor> movieWithActors = new ArrayList<>();
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<JpaMovieWithCompany> movieWithCompanies = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<JpaMovieWithGenre> movieWithGenres = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<LikeMovie> likeMovies = new ArrayList<>();
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
     public void updateData(MovieDto movieDto) {
         this.nationNm = movieDto.getNationNm();
@@ -216,7 +216,7 @@ public class JpaMovie {
     private String posterPath;
     private float popularity;
     private float voteAverage;
-    private Integer voteCount;
+    private int voteCount;
     private Integer collectionId;
     private String seriesName;
 
@@ -225,8 +225,8 @@ public class JpaMovie {
     private String collectionBackdropPath;
     private String collectionPosterPath;
 
-//    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-//    private List<Video> videos = new ArrayList<>();
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Video> videos = new ArrayList<>();
     public void addTmdbData(TmdbResponseDto tmdbResponseDto) {
         this.tmId = tmdbResponseDto.getId();
         this.overview = tmdbResponseDto.getOverview();
@@ -235,11 +235,11 @@ public class JpaMovie {
         this.popularity = tmdbResponseDto.getPopularity();
         this.voteAverage = tmdbResponseDto.getVoteAverage();
         this.voteCount = tmdbResponseDto.getVoteCount();
-//        this.videos = tmdbResponseDto.getVideos();
-//        this.collectionId = tmdbResponseDto.getCollectionId();
-//        this.seriesName = tmdbResponseDto.getSeriesName();
-//        this.collectionBackdropPath = tmdbResponseDto.getCollectionBackdropPath();
-//        this.collectionPosterPath = tmdbResponseDto.getCollectionPosterPath();
+        this.videos = tmdbResponseDto.getVideos();
+        this.collectionId = tmdbResponseDto.getCollectionId();
+        this.seriesName = tmdbResponseDto.getSeriesName();
+        this.collectionBackdropPath = tmdbResponseDto.getCollectionBackdropPath();
+        this.collectionPosterPath = tmdbResponseDto.getCollectionPosterPath();
     }
 
 }
