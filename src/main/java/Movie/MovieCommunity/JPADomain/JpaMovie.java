@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,9 @@ public class JpaMovie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
     private Long id;
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String movieCd;
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String movieNm;
 
     public JpaMovie(Long id, String movieCd, String movieNm, Integer showTm, Integer openDt, String prdtStatNm, String typeNm, String nationNm, String directorNm, String auditNo, String watchGradeNm, int topScore, Long salesAcc, Long audiAcc, List<JpaMovieWithActor> movieWithActors, List<JpaMovieWithCompany> movieWithCompanies, List<JpaMovieWithGenre> movieWithGenres) {
@@ -102,15 +105,20 @@ public class JpaMovie {
     //    movieNmEn	문자열	영화명(영문)을 출력합니다.
 //    movieNmOg	문자열	영화명(원문)을 출력합니다.
 //    prdtYear	문자열	제작연도를 출력합니다.
+
     private Integer showTm;
     private Integer openDt;
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String prdtStatNm;
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String typeNm;
 //     nations	문자열	제작국가를 나타냅니다.
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String nationNm;
    // private Long genreId;
 //    private String directors;
-    private String directorNm;
+   @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+   private String directorNm;
 //    peopleNmEn	문자열	감독명(영문)을 출력합니다.
 //    actors	문자열	배우를 나타냅니다.
     //private String actorNm;
@@ -121,7 +129,9 @@ public class JpaMovie {
 //    showTypeGroupNm	문자열	상영형태 구분을 출력합니다.
 //    showTypeNm	문자열	상영형태명을 출력합니다.
 //    private String audits;// 	문자열	심의정보를 나타냅니다.
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String auditNo;//	문자열	심의번호를 출력합니다.
+    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
     private String watchGradeNm;//	문자열	관람등급 명칭을 출력합니다.
 
     public JpaMovie(MovieDto movieDto) {
@@ -183,6 +193,18 @@ public class JpaMovie {
 
     }
 
+    private Long tmId;
+    @Size(max = 500)
+    private String overview;
+    private String backdropPath;
+    private String posterPath;
+    private Double popularity;
+    private Double voteAverage;
+    private Integer voteCount;
+    private Integer collectionId;
+    private String seriesName;
+    private String collectionBackdropPath;
+    private String collectionPosterPath;
 
     public void setTopScore(int topScore) {
         this.topScore = topScore;
