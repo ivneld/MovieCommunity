@@ -110,7 +110,6 @@ public class AuthService {
                 .provider(Provider.local)
                 .authority(Authority.ADMIN)
                 .build();
-
         memberRepository.save(member);
 
         URI location = ServletUriComponentsBuilder

@@ -1,6 +1,8 @@
 package Movie.MovieCommunity.JPADomain;
 
 import Movie.MovieCommunity.JPADomain.dto.MovieDto;
+import Movie.MovieCommunity.JPADomain.dto.TmdbResponseDto;
+import Movie.MovieCommunity.dataCollection.MovieDataService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,9 +58,9 @@ public class JpaMovie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
     private Long id;
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column(nullable = false)
     private String movieCd;
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column(nullable = false)
     private String movieNm;
 
     public JpaMovie(Long id, String movieCd, String movieNm, Integer showTm, Integer openDt, String prdtStatNm, String typeNm, String nationNm, String directorNm, String auditNo, String watchGradeNm, int topScore, Long salesAcc, Long audiAcc, List<JpaMovieWithActor> movieWithActors, List<JpaMovieWithCompany> movieWithCompanies, List<JpaMovieWithGenre> movieWithGenres) {
@@ -107,16 +109,16 @@ public class JpaMovie {
 
     private Integer showTm;
     private Integer openDt;
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column(nullable = false)
     private String prdtStatNm;
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column(nullable = false)
     private String typeNm;
 //     nations	문자열	제작국가를 나타냅니다.
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column()
     private String nationNm;
    // private Long genreId;
 //    private String directors;
-   @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+   @Column()
    private String directorNm;
 //    peopleNmEn	문자열	감독명(영문)을 출력합니다.
 //    actors	문자열	배우를 나타냅니다.
@@ -128,9 +130,9 @@ public class JpaMovie {
 //    showTypeGroupNm	문자열	상영형태 구분을 출력합니다.
 //    showTypeNm	문자열	상영형태명을 출력합니다.
 //    private String audits;// 	문자열	심의정보를 나타냅니다.
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column()
     private String auditNo;//	문자열	심의번호를 출력합니다.
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column()
     private String watchGradeNm;//	문자열	관람등급 명칭을 출력합니다.
 
     public JpaMovie(MovieDto movieDto) {
@@ -207,16 +209,37 @@ public class JpaMovie {
     /**
      * tmdb entity
      */
-    private Long tmId;
-    @Size(max = 500)
+    private int tmId;
+    @Lob
     private String overview;
     private String backdropPath;
     private String posterPath;
-    private Double popularity;
-    private Double voteAverage;
+    private float popularity;
+    private float voteAverage;
     private Integer voteCount;
     private Integer collectionId;
     private String seriesName;
+
+
+
     private String collectionBackdropPath;
     private String collectionPosterPath;
+
+//    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<Video> videos = new ArrayList<>();
+    public void addTmdbData(TmdbResponseDto tmdbResponseDto) {
+        this.tmId = tmdbResponseDto.getId();
+        this.overview = tmdbResponseDto.getOverview();
+        this.backdropPath = tmdbResponseDto.getBackdropPath();
+        this.posterPath = tmdbResponseDto.getPosterPath();
+        this.popularity = tmdbResponseDto.getPopularity();
+        this.voteAverage = tmdbResponseDto.getVoteAverage();
+        this.voteCount = tmdbResponseDto.getVoteCount();
+//        this.videos = tmdbResponseDto.getVideos();
+//        this.collectionId = tmdbResponseDto.getCollectionId();
+//        this.seriesName = tmdbResponseDto.getSeriesName();
+//        this.collectionBackdropPath = tmdbResponseDto.getCollectionBackdropPath();
+//        this.collectionPosterPath = tmdbResponseDto.getCollectionPosterPath();
+    }
+
 }

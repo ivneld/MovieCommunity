@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name="like_movie")@Table(name = "like_movie")
 @Getter
 @NoArgsConstructor
 public class LikeMovie {

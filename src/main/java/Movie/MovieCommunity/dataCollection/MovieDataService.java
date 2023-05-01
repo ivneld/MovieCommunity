@@ -7,18 +7,14 @@ import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.domain.*;
 
-import Movie.MovieCommunity.web.form.CommentForm;
 import com.querydsl.core.Tuple;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.TmdbSearch;
 import info.movito.themoviedbapi.model.Collection;
 import info.movito.themoviedbapi.model.MovieDb;
-import info.movito.themoviedbapi.model.Video;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
-import lombok.Builder;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -33,11 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -77,7 +71,7 @@ public class MovieDataService {
     private ThreadLocal<MovieDto> threadMovie = new ThreadLocal<>();
     private ThreadLocal<Long> threadTotCnt = new ThreadLocal<>();
     private ThreadLocal<LocalDate> threadStartDay = new ThreadLocal<>();
-
+    private ThreadLocal<TmdbResponseDto> tmdbResponseDtoThreadLocal = new ThreadLocal<>();
     private HashMap<String, EtcData> etcData = new HashMap<>();
 
 
@@ -86,7 +80,7 @@ public class MovieDataService {
         System.out.println("key = " + key[0]);
 //        String searchTitle = "토르: 러브 앤 썬더";
 //        tmdbSearch(searchTitle);
-        movieDataCollection("2022");
+//        movieDataCollection("2022");
 //        InitData();// movieDataCollection("2022") 실행 후 사용
 
 
@@ -201,15 +195,28 @@ public class MovieDataService {
         //param.put("itemPerPage","0");
         param.put("openStartDt", openStartDt);
         threadTotCnt.set(10L);
+
+        int failCnt = 0;
         for(int i=0; i< threadTotCnt.get()/10 + 1; i++){
             String curPage = String.valueOf(i+1);
             log.info("curPage = {}", curPage);
             param.put("curPage", curPage);
 
             response = service.getMovieList(true, param);
+
+
             JSONParser jsonParser = new JSONParser();
             Object parse = jsonParser.parse(response);
             JSONObject ps = (JSONObject) parse;
+            JSONObject faultInfo = (JSONObject)ps.get("faultInfo");
+            if (faultInfo != null && failCnt != 10){
+                i--;
+                failCnt++;
+                log.error("영화 리스트가 없습니다.", failCnt);
+                continue;
+            }else if(failCnt > 0){
+                failCnt = 0;
+            }
             JSONObject movieListResult = (JSONObject)ps.get("movieListResult");
             //Long totCnt = (Long)movieListResult.get("totCnt");
             if (i==0)
@@ -247,6 +254,10 @@ public class MovieDataService {
         JSONObject ps = (JSONObject) parse;
         JSONObject movieInfoResult = (JSONObject)ps.get("movieInfoResult");
         //log.info("{}",movieInfoResult);
+        if (movieInfoResult == null){
+            log.error("영화 상세 데이터가 없습니다.");
+            return;
+        }
         JSONObject movieInfo = (JSONObject)movieInfoResult.get("movieInfo");
         //String movieCd = (String) movieInfo.get("movieCd");
         String movieNm = (String) movieInfo.get("movieNm");
@@ -293,6 +304,17 @@ public class MovieDataService {
 
 
         log.info("movie = {}",movie);
+
+        tmdbSearch(savedMovie.getMovieNm(), movie);
+        TmdbResponseDto tmdbResponseDto = tmdbResponseDtoThreadLocal.get();
+        if(tmdbResponseDto != null){
+            movie.addTmdbData(tmdbResponseDto);
+            System.out.println("tmdbResponseDto = " + tmdbResponseDto);
+            tmdbResponseDtoThreadLocal.remove();
+            movieRepository.save(movie);
+        }
+
+
         threadMovie.remove();
     }
     @Transactional(propagation = Propagation.REQUIRED)
@@ -548,49 +570,52 @@ public class MovieDataService {
     YouTube: https://www.youtube.com/watch?v=
 Vimeo: https://vimeo.com/
      */
-    @Data
-    static class MovieVideo{
-        private String name;
-        private String site;
-        private String key;
-        private String type;
-        @Builder
-    public MovieVideo(String name, String site, String key, String type) {
-        this.name = name;
-        this.site = site;
-        this.key = key;
-        this.type = type;
-    }
-}
-    public void tmdbSearch(String searchTitle){
+
+
+    public void tmdbSearch(String searchTitle, JpaMovie jpaMovie){
+
 
         TmdbApi tmdbApi = new TmdbApi(tmdbKey);
 
         Optional<Integer> optionalMovie = searchMovie(tmdbApi, searchTitle);
         if (optionalMovie.isPresent()){ // 영화 데이터가 있을 경우
+
             Integer movieId = optionalMovie.get();
             TmdbMovies movies = tmdbApi.getMovies();
             MovieDb movie = movies.getMovie(movieId, "ko-kr", TmdbMovies.MovieMethod.videos);// 영화 상세 데이터 비디오 url 포함
+
             Collection movieCollection = movie.getBelongsToCollection();
-            int collectionId = movieCollection.getId();
-            String seriesName = movieCollection.getName();
-            String collectionBackdropPath = imageBaseUrl+movieCollection.getBackdropPath();
-            String collectionPosterPath = imageBaseUrl+movieCollection.getPosterPath();
-            System.out.println("collectionId = " + collectionId); //시리즈 별 영화 데이터 추가하려면 collectionTable 을 새로 만들고 다대일 movie <-> collectionTable 관계를 가지도록 고려
-            System.out.println("seriesName = " + seriesName);
-            System.out.println("collectionBackdropPath = " + collectionBackdropPath);
-            System.out.println("collectionPosterPath = " + collectionPosterPath);
+            if (movieCollection != null) {
+                int collectionId = movieCollection.getId();
+                String seriesName = movieCollection.getName();
+                String collectionBackdropPath = imageBaseUrl + movieCollection.getBackdropPath();
+                String collectionPosterPath = imageBaseUrl + movieCollection.getPosterPath();
+                System.out.println("collectionId = " + collectionId); //시리즈 별 영화 데이터 추가하려면 collectionTable 을 새로 만들고 다대일 movie <-> collectionTable 관계를 가지도록 고려
+                System.out.println("seriesName = " + seriesName);
+                System.out.println("collectionBackdropPath = " + collectionBackdropPath);
+                System.out.println("collectionPosterPath = " + collectionPosterPath);
+            }
+            System.out.println("movie.getVideos() = " + movie.getVideos());
+            if (movie.getVideos().size() != 0){
+                List<Video> tmdbTests = movie.getVideos().stream().map(video -> Video.builder()
+                        .name(video.getName())
+                        .site(video.getSite())
+                        .key(video.getSite().equals("YouTube") ? youtubeBaseUrl + video.getKey() : vimeoBaseUrl + video.getKey())// 유튜브면 baseurl을 유트브 아니면 vimeo 로 설정
+                        .type(video.getType())
+                        .movie(jpaMovie)
+                        .build()
+                ).collect(Collectors.toList());
 
-
-            Stream<MovieVideo> movieVideoStream = movie.getVideos().stream().map(video -> MovieVideo.builder()
-                    .name(video.getName())
-                    .site(video.getSite())
-                    .key(video.getSite().equals("YouTube") ? youtubeBaseUrl+video.getKey() : vimeoBaseUrl+video.getKey())// 유튜브면 baseurl을 유트브 아니면 vimeo 로 설정
-                    .type(video.getType())
-                    .build()
-            );
-            movieVideoStream.forEach(movieVideo -> System.out.println("movieVideo = " + movieVideo));
-
+//                Stream<MovieVideo> movieVideoStream = (Stream<MovieVideo>) tmdbVideos;
+                //movieVideoStream.forEach(movieVideo -> System.out.println("movieVideo = " + movieVideo));
+                TmdbResponseDto tmdbResponseDto = tmdbResponseDtoThreadLocal.get();
+//                List<MovieVideo> videos = movieVideoStream.collect(Collectors.toList());
+//                System.out.println("videos = " +  tmdbVideos);
+//                System.out.println("tmdbResponseDto = " + tmdbResponseDto);
+                tmdbResponseDto.addVideos(tmdbTests);
+            }else{
+                log.error("TMDB 영화 비디오가 없습니다.");
+            }
 
         }
 
@@ -602,7 +627,7 @@ Vimeo: https://vimeo.com/
         TmdbSearch search = tmdbApi.getSearch();
         MovieResultsPage value = search.searchMovie(searchTitle, null, "ko-kr", true, 1);
         if (value.getTotalResults()== 0){
-            System.out.println("영화 데이터 없습니다.");
+            log.error("TMDB 영화 데이터 없습니다.");
             return id;
         }else {
             Optional<MovieDb> optionalMovie = value.getResults().stream().filter(movieDb -> movieDb.getTitle().equals(searchTitle)).findFirst();
@@ -633,7 +658,21 @@ Vimeo: https://vimeo.com/
             System.out.println("voteAverage = " + voteAverage);
             int voteCount = movieDb.getVoteCount();
             System.out.println("voteCount = " + voteCount);
+
+            TmdbResponseDto tmdbResponseDto = TmdbResponseDto.builder()
+                    .id(id.get().intValue())
+                    .title(title)
+                    .overview(overview)
+                    .releaseDate(releaseDate)
+                    .backdropPath(backdropPath)
+                    .posterPath(posterPath)
+                    .popularity(popularity)
+                    .voteAverage(voteAverage)
+                    .voteCount(voteCount).build();
+            tmdbResponseDtoThreadLocal.set(tmdbResponseDto);
         }
         return id;
     }
+
+
 }
