@@ -52,7 +52,6 @@ staffRoleNm	문자열	스텝역할명을 출력합니다.
 @Table(name="movie")
 @Entity(name = "movie")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class JpaMovie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
@@ -193,6 +192,21 @@ public class JpaMovie {
 
     }
 
+    public void setTopScore(int topScore) {
+        this.topScore = topScore;
+    }
+
+    public void setSalesAcc(Long salesAcc) {
+        this.salesAcc = salesAcc;
+    }
+
+    public void setAudiAcc(Long audiAcc) {
+        this.audiAcc = audiAcc;
+    }
+
+    /**
+     * tmdb entity
+     */
     private Long tmId;
     @Size(max = 500)
     private String overview;
@@ -205,16 +219,4 @@ public class JpaMovie {
     private String seriesName;
     private String collectionBackdropPath;
     private String collectionPosterPath;
-
-    public void setTopScore(int topScore) {
-        this.topScore = topScore;
-    }
-
-    public void setSalesAcc(Long salesAcc) {
-        this.salesAcc = salesAcc;
-    }
-
-    public void setAudiAcc(Long audiAcc) {
-        this.audiAcc = audiAcc;
-    }
 }
