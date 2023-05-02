@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-@Entity
+@Entity(name = "like_comment")
+@Table(name="like_comment")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class LikeComment {

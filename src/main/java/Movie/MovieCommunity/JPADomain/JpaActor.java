@@ -37,7 +37,7 @@ public class JpaActor {
     @Column(name = "actor_id")
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR(45) DEFAULT 'default_value'")
+    @Column(nullable = false)
     private String actorNm;
 
     @Override

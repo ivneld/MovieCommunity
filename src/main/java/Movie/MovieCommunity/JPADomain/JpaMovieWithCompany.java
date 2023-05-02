@@ -24,7 +24,7 @@ public class JpaMovieWithCompany {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id")
     private JpaMovie movie;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name="company_id")
     private JpaCompany company;
 }
