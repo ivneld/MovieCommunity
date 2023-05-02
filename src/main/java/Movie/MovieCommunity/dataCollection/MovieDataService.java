@@ -54,7 +54,6 @@ public class MovieDataService {
     private final MovieWithActorRepository movieWithActorRepository;
     private final MovieWithCompanyRepository movieWithCompanyRepository;
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
-    private final WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
 
     private final MemberRepository memberRepository;
 //    private final BoardRepository boardRepository;
@@ -86,7 +85,7 @@ public class MovieDataService {
         System.out.println("key = " + key[0]);
 //        String searchTitle = "토르: 러브 앤 썬더";
 //        tmdbSearch(searchTitle);
-        movieDataCollection("2022");
+//        movieDataCollection("2022");
 //        InitData();// movieDataCollection("2022") 실행 후 사용
 
 
@@ -102,7 +101,8 @@ public class MovieDataService {
 //        setMovieCd("2022");
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
-//        setMovieEtc();
+
+//        countEtc();         // 실행 전 메서드 주석 참고!
     }
 
     /**
@@ -488,60 +488,45 @@ public class MovieDataService {
         threadStartDay.remove();
     }
 
+    /**
+     * count : movie.sales_acc, movie.audi_acc, movie.top_movie_cnt, actor.top_movie_cnt
+     * yearWeeklyBoxOfficeData 실행 후 사용
+     */
+    public void countEtc() {
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
 
-//    public void setMovieEtc() {
-//        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findAll();
-//
-//        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
-//
-//            if(movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
-//                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
-//
-//                if (movie.getSalesAcc() == null || movie.getSalesAcc() < weeklyBoxOffice.getSalesAcc()) {
-//                    movie.setSalesAcc(weeklyBoxOffice.getSalesAcc());
-//                }
-//                if (movie.getAudiAcc() == null || movie.getAudiAcc() < weeklyBoxOffice.getAudiAcc()) {
-//                    movie.setAudiAcc(weeklyBoxOffice.getAudiAcc());
-//                }
-//                if (weeklyBoxOffice.getRanking() <= 10) {
-//                    movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
-//
-//                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
-//                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
-//                }
-//
-//                movieRepository.save(movie);
-//                log.info("movie={}", movie);
-//            }
-//        }
-//    }
+        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
 
-    // update
-    public void setMovieEtcV2() {
-        List<Tuple> tuples = weeklyBoxOfficeRepositoryCustom.movieWithWeekly();
-        Tuple tuple1 = tuples.get(0);
-        tuple1.get(QJpaMovie.jpaMovie.movieCd);
-    }
-    public void setTopMovieCnt() {
-        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByRankingLessThan(11);
-
-        weeklyBoxOffices.stream().forEach(weeklyBoxOffice -> {
-            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+            if(movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
                 JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
 
-                List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findAllActor(movie.getId());
-                movieWithActors.stream().forEach(movieWithActor -> {
-                    JpaActor actor = movieWithActor.getActor();
-                    actor.plusTopMovieCnt();
+                if (movie.getSalesAcc() == null || movie.getSalesAcc() < weeklyBoxOffice.getSalesAcc()) {
+                    movie.setSalesAcc(weeklyBoxOffice.getSalesAcc());
+                    log.info("update salesAcc={}",movie.getId());
+                }
+                if (movie.getAudiAcc() == null || movie.getAudiAcc() < weeklyBoxOffice.getAudiAcc()) {
+                    movie.setAudiAcc(weeklyBoxOffice.getAudiAcc());
+                    log.info("update audiAcc={}",movie.getId());
+                }
+                if (weeklyBoxOffice.getRanking() <= 10) {
+                    movie.setTopScore(movie.getTopScore() + (11 - weeklyBoxOffice.getRanking()));
 
+//                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
+//                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
+                    List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findByMovieId(movie.getId());
+                    for (JpaMovieWithActor movieWithActor : movieWithActors) {
+                        JpaActor actor = actorRepository.findById(movieWithActor.getActor().getId()).get();
+                        actor.countTopMovieCnt();
+                        actorRepository.save(actor);
+                    }
+                }
 
-                    log.info("actor id={}", actor.getId());
-                    log.info("-> cnt={}", actor.getTopMovieCnt());
-                });
+                movieRepository.save(movie);
+                log.info("movie={}", movie);
             }
-        });
-
+        }
     }
+
 //https://image.tmdb.org/t/p/w500/eg4vGqZo1BpjY3ZoCUAGk09Pq7T.jpg
     /*
 
