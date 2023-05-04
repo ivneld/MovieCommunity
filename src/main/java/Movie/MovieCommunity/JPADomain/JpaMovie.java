@@ -113,14 +113,14 @@ public class JpaMovie {
     private String prdtStatNm;
     @Column(nullable = false)
     private String typeNm;
-//     nations	문자열	제작국가를 나타냅니다.
+    //     nations	문자열	제작국가를 나타냅니다.
     @Column()
     private String nationNm;
-   // private Long genreId;
+    // private Long genreId;
 //    private String directors;
-   @Column()
-   private String directorNm;
-//    peopleNmEn	문자열	감독명(영문)을 출력합니다.
+    @Column()
+    private String directorNm;
+    //    peopleNmEn	문자열	감독명(영문)을 출력합니다.
 //    actors	문자열	배우를 나타냅니다.
     //private String actorNm;
 //    peopleNmEn	문자열	배우명(영문)을 출력합니다.
@@ -155,7 +155,7 @@ public class JpaMovie {
 //    private String companyNmEn;//	문자열	참여 영화사명(영문)을 출력합니다.
 //    private String companyPartNm;//	문자열	참여 영화사 분야명을 출력합니다.
     private int topScore;
-//    staffs	문자열	스텝을 나타냅니다.
+    //    staffs	문자열	스텝을 나타냅니다.
 //    peopleNm	문자열	스텝명을 출력합니다.
 //    peopleNmEn	문자열	스텝명(영문)을 출력합니다.
 //    staffRoleNm	문자열	스텝역할명을 출력합니다.
