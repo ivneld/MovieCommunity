@@ -77,7 +77,7 @@ public class MovieDataService {
         System.out.println("key = " + key[0]);
 
         // 2018로 넘겨줄시 2018~2023 현재까지 조회(조회 순서는 최신 순)
-        movieDataCollection("2018");
+//        movieDataCollection("2018");
 
 
 

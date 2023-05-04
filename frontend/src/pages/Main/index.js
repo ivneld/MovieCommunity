@@ -34,6 +34,10 @@ const Main = () => {
         dedupingInterval: 100000,
     });
 
+    // const { data : detailMainData } = useSWR(`http://localhost:8080/detail${}`, fetcher, {
+    //     dedupingInterval: 100000,
+    // });
+
     if (movienm){ // 게시판에서 영화 제목 검색 O 경우
         const result = mainData.filter(data => data.movieNm === `${movienm}`) // 검색한 영화 제목 filter해서 해당 영화 정보만 불러오기
         return (

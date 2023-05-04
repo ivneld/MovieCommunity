@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { Link } from "react-router-dom";
 
-function Nav() {
+function Nav(props) {
 
 	const { auth, setAuth } = useContext(AuthContext);
 
@@ -45,7 +45,7 @@ function Nav() {
 					<ul className="navbar-nav ml-auto">
 
 						{							
-							(auth) ?
+							(auth || props.authenticated) ?
 								<>
 									{/* 회원 정보 */}
 									<li className="nav-item">
