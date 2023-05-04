@@ -8,7 +8,9 @@ import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /*
 movieCd	문자열	영화코드를 출력합니다.
@@ -172,6 +174,22 @@ public class JpaMovie {
     private List<LikeMovie> likeMovies = new ArrayList<>();
     @OneToMany(mappedBy = "movie")
     private List<Comment> comments = new ArrayList<>();
+
+    private String overview;
+
+    private String releaseDate;
+    private String backdropPath;
+    private String posterPath;
+    private Long popularity;
+    private Long voteAverage;
+    private Integer voteCount;
+    private Integer collectionId;
+    private String seriesName;
+    private String collectionBackdropPath;
+    private String collectionPosterPath;
+    @OneToMany(mappedBy = "movie")
+
+
     public void updateData(MovieDto movieDto) {
         this.nationNm = movieDto.getNationNm();
         this.directorNm = movieDto.getDirectorNm();

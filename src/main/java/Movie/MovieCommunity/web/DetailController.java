@@ -35,7 +35,7 @@ public class DetailController {
 
     // Map -> QueryString
     public String makeQueryString(Map<String, String> paramMap) {
-        final StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
         paramMap.entrySet().forEach(( entry )->{
             if( sb.length() > 0 ) {

@@ -16,10 +16,10 @@ public class JpaMovieWithGenre {
     @Column(name = "movie_with_genre_id")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="movie_id")
+    @JoinColumn(name="movie_id",nullable = false)
     private JpaMovie movie;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="genre_id")
+    @JoinColumn(name="genre_id",nullable = false)
     private JpaGenre genre;
     public JpaMovieWithGenre(JpaMovie movie, JpaGenre genre) {
         this.movie = movie;

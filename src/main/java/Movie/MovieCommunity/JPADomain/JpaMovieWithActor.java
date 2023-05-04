@@ -25,11 +25,11 @@ public class JpaMovieWithActor {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "movie_id")
+    @JoinColumn(name = "movie_id",nullable = false)
     private JpaMovie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "actor_id")
+    @JoinColumn(name = "actor_id",nullable = false)
     private JpaActor actor;
     private String cast;
 

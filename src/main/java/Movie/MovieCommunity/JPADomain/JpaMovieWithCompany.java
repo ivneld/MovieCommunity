@@ -22,9 +22,9 @@ public class JpaMovieWithCompany {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="movie_id")
+    @JoinColumn(name="movie_id",nullable = false)
     private JpaMovie movie;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="company_id")
+    @JoinColumn(name="company_id",nullable = false)
     private JpaCompany company;
 }
