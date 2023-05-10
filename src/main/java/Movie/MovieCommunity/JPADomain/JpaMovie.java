@@ -212,6 +212,7 @@ public class JpaMovie {
     private int tmId;
     @Lob
     private String overview;
+    @Column()
     private String backdropPath;
     private String posterPath;
     private float popularity;
@@ -219,9 +220,6 @@ public class JpaMovie {
     private int voteCount;
     private Integer collectionId;
     private String seriesName;
-
-
-
     private String collectionBackdropPath;
     private String collectionPosterPath;
 

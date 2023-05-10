@@ -51,7 +51,7 @@ public class JpaActor {
 
     //    peopleNmEn	문자열	배우명(영문)을 출력합니다.
     //private String cast;//	문자열	배역명을 출력합니다.
-    private Integer topMovieCnt;
+    private Integer topMovieCnt = 0;
 
     @OneToMany(mappedBy = "actor")
     private List<JpaMovieWithActor> movieWithActors = new ArrayList<>();
