@@ -20,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        System.out.println("email = " + email);
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() ->
@@ -31,8 +32,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Transactional
     public UserDetails loadUserById(Long id) {
+        System.out.println("회원가입인가요?");
         Optional<Member> member = memberRepository.findById(id);
-
         DefaultAssert.isOptionalPresent(member);
 
         return UserPrincipal.create(member.get());

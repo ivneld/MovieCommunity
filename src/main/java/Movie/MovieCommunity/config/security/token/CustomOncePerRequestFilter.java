@@ -23,24 +23,36 @@ public class CustomOncePerRequestFilter extends OncePerRequestFilter{
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = getJwtFromRequest(request);
+        String[] tokens = getJwtFromRequest(request);
 
-        if (StringUtils.hasText(jwt) && customTokenProviderService.validateToken(jwt)) {
-            UsernamePasswordAuthenticationToken authentication = customTokenProviderService.getAuthenticationById(jwt);
+        if (StringUtils.hasText(tokens[0]) && customTokenProviderService.validateToken(tokens[0])) { // 어세스 토큰이 있고 토큰이 유효한 경우 (만료된 토큰의 예외를 잡아서 추가 처리)
+            UsernamePasswordAuthenticationToken authentication = customTokenProviderService.getAuthenticationById(tokens[0]);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-
+//        else if (StringUtils.hasText(tokens[1]) && customTokenProviderService.validateToken(tokens[1])) { // 리프레쉬 토큰이 있고 토큰이 유효한 경우
+//            System.out.println("리프레쉬 토큰");
+//            UsernamePasswordAuthenticationToken authentication = customTokenProviderService.getAuthenticationById(tokens[0]);
+//            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//        }
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
+    private String[] getJwtFromRequest(HttpServletRequest request) {
+        String[] tokens = new String[2];
+
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-            log.info("bearerToken = {}", bearerToken.substring(7, bearerToken.length()));
-            return bearerToken.substring(7, bearerToken.length());
+            log.info("accessToken = {}", bearerToken.substring(7, bearerToken.length()));
+            tokens[0] = bearerToken.substring(7, bearerToken.length());
         }
-        return null;
+        String refreshToken = request.getHeader("Authorization_refresh");
+        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith("Bearer")) {
+            log.info("refreshToken = {}", refreshToken.substring(7, refreshToken.length()));
+            tokens[1] = refreshToken.substring(7, refreshToken.length());
+        }
+        return tokens;
     }
 
 }

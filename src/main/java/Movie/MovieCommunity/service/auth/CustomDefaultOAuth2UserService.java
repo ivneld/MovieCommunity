@@ -51,6 +51,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        System.out.println(" 로그인 로직 "  );
         Member member = Member.builder()
                 .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
                 .providerId(oAuth2UserInfo.getId())
