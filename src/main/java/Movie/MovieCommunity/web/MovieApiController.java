@@ -1,5 +1,7 @@
 package Movie.MovieCommunity.web;
 
+import Movie.MovieCommunity.annotation.CurrentMember;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +34,9 @@ public class MovieApiController {
             @ApiResponse(responseCode = "200",description = "연간 랭킹 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
     })
     @GetMapping("movie/year")
-    public ResponseEntity<?> yearRanking(@Valid @RequestParam int openDt){
+    public ResponseEntity<?> yearRanking(@Valid @RequestParam int openDt, @CurrentMember Long id){
+        //Long id = userPrincipal.getId();
+        System.out.println("id = " + id);
         List<YearRankingResponse> yearRankingResponses = movieService.yearRanking(openDt);
         return new ResponseEntity(yearRankingResponses, HttpStatus.OK);
     }

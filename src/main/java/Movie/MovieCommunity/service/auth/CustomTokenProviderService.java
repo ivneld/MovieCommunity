@@ -62,13 +62,19 @@ public class CustomTokenProviderService {
         Date refreshTokenExpiresIn = new Date(now.getTime() + oAuth2Config.getAuth().getRefreshTokenExpirationMsec());
 
         String secretKey = oAuth2Config.getAuth().getTokenSecret();
-        System.out.println("secretKey = " + secretKey);
+        log.info("secretKey = " + secretKey);
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        System.out.println("keyBytes = " + keyBytes);
+        log.info("keyBytes = " + keyBytes);
         Key key = Keys.hmacShaKeyFor(keyBytes);
-        System.out.println("key = " + key);
+        log.info("userPrincipal = " + userPrincipal);
+        log.info("userPrincipal.getId() = " + userPrincipal.getId());
+        log.info("userPrincipal.getEmail() = " + userPrincipal.getEmail());
+        log.info("userPrincipal.getName() = " + userPrincipal.getName());
+        log.info("userPrincipal.getUsername() = " + userPrincipal.getUsername());
+//        userPrincipal.get
         String accessToken = Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getId()))
+                .setAudience(userPrincipal.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -92,11 +98,13 @@ public class CustomTokenProviderService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
+        log.info("토큰 subject = {}", claims.getAudience());
+        log.info("토큰 subject = {}", claims.getSubject());
         return Long.parseLong(claims.getSubject());
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationById(String token){
+        log.info("ID로 인증 찾기");
         Long userId = getUserIdFromToken(token);
         UserDetails userDetails = customUserDetailsService.loadUserById(userId);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

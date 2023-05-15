@@ -91,7 +91,7 @@ public class MovieDataService {
 
 
 
-        yearWeeklyBoxOfficeData("20220101");
+        //yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -102,7 +102,7 @@ public class MovieDataService {
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
 
-        countEtc();         // 실행 전 메서드 주석 참고!
+        //countEtc();         // 실행 전 메서드 주석 참고!
     }
 
     /**

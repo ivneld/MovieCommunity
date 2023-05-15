@@ -30,6 +30,24 @@ public class Member  extends BaseTimeEntity{
     private String password;
     private String name;
     private String imageUrl;
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", emailVerified=" + emailVerified +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", authority=" + authority +
+                ", provider=" + provider +
+                ", providerId='" + providerId + '\'' +
+                '}';
+    }
+
     @Enumerated(EnumType.STRING)
     private Authority authority;
 //    @NotNull
