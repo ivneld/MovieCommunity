@@ -170,7 +170,7 @@ public class AuthService {
     private boolean valid(String refreshToken){
 
         //1. 토큰 형식 물리적 검증
-        boolean validateCheck = customTokenProviderService.validateToken(refreshToken);
+        boolean validateCheck = customTokenProviderService.validateRefreshToken(refreshToken);
         DefaultAssert.isTrue(validateCheck, "Token 검증에 실패하였습니다.");
 
         //2. refresh token 값을 불러온다.

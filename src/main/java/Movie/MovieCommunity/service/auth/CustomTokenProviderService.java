@@ -5,7 +5,9 @@ import java.util.Date;
 
 
 import Movie.MovieCommunity.JPADomain.mapping.TokenMapping;
+import Movie.MovieCommunity.advice.payload.ErrorCode;
 import Movie.MovieCommunity.config.OAuth2Config;
+import Movie.MovieCommunity.advice.error.ExpiredTokenException;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -137,6 +139,27 @@ public class CustomTokenProviderService {
             log.error("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException ex) {
             log.error("만료된 JWT 토큰입니다.");
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+        } catch (UnsupportedJwtException ex) {
+            log.error("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException ex) {
+            log.error("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            //log.info("bearerToken = {} \n oAuth2Config.getAuth()={}", token, oAuth2Config.getAuth().getTokenSecret());
+            Jwts.parserBuilder().setSigningKey(oAuth2Config.getAuth().getTokenSecret()).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException ex) {
+            log.error("잘못된 JWT 서명입니다.");
+        } catch (MalformedJwtException ex) {
+            log.error("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException ex) {
+            log.error("만료된 JWT 토큰입니다.");
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (UnsupportedJwtException ex) {
             log.error("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException ex) {
