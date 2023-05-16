@@ -84,14 +84,14 @@ public class MovieDataService {
 //        String searchTitle = "토르: 러브 앤 썬더";
 //        tmdbSearch(searchTitle);
 
-//        movieDataCollection("2022");
+
 
 //        InitData();// movieDataCollection("2022") 실행 후 사용
 
 
 
 
-//        yearWeeklyBoxOfficeData("20220101");
+        //yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -102,7 +102,7 @@ public class MovieDataService {
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
 
-//        countEtc();         // 실행 전 메서드 주석 참고!
+        //countEtc();         // 실행 전 메서드 주석 참고!
     }
 
     /**
@@ -198,7 +198,7 @@ public class MovieDataService {
         KobisOpenAPIRestService service = new KobisOpenAPIRestService(key[0]);
         Map<String, String> param = new HashMap<>();
         param.put("openStartDt", openStartDt);
-        threadTotCnt.set(10L);
+        threadTotCnt.set(100000L);
 
         int failCnt = 0;
         for(int i=0; i< threadTotCnt.get()/10 + 1; i++){
@@ -266,6 +266,7 @@ public class MovieDataService {
             String errorCode = (String) faultInfo.get("errorCode");
             if (errorCode.equals("320011")){
                 keyOrder++;
+                log.info("키 교환을 했습니다.");
                 service = new KobisOpenAPIRestService(key[keyOrder]);
             }
             return false;
@@ -464,6 +465,7 @@ public class MovieDataService {
 //            WeeklyBoxOffice weeklyBoxOffice = new WeeklyBoxOffice();
 
             try {
+
                 response = service.getWeeklyBoxOffice(true, param);
                 JSONParser jsonParser = new JSONParser();
                 Object parse = jsonParser.parse(response);

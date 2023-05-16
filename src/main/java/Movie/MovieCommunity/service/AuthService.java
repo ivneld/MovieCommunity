@@ -95,7 +95,10 @@ public class AuthService {
                 .userEmail(tokenMapping.getUserEmail())
                 .build();
         tokenRepository.save(token);
-        AuthResponse authResponse = AuthResponse.builder().accessToken(tokenMapping.getAccessToken()).refreshToken(token.getRefreshToken()).build();
+        AuthResponse authResponse = AuthResponse.builder().
+                accessToken(tokenMapping.getAccessToken()).
+                refreshToken(token.getRefreshToken())
+                .build();
         System.out.println("authResponse = " + authResponse);
         return ResponseEntity.ok(authResponse);
     }
@@ -108,7 +111,7 @@ public class AuthService {
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .provider(Provider.local)
-                .authority(Authority.ADMIN)
+                .authority(Authority.USER)
                 .build();
         memberRepository.save(member);
 
@@ -121,8 +124,11 @@ public class AuthService {
     }
 
     public ResponseEntity<?> refresh(RefreshTokenRequest tokenRefreshRequest){
+        System.out.println("검증 전");
         //1차 검증
         boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
+        System.out.println("검증 후");
+
         DefaultAssert.isAuthentication(checkValid);
 
         Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
@@ -133,9 +139,11 @@ public class AuthService {
         TokenMapping tokenMapping;
 
         Long expirationTime = customTokenProviderService.getExpiration(tokenRefreshRequest.getRefreshToken());
+        System.out.println("expirationTime = " + expirationTime);
         if(expirationTime > 0){
-            tokenMapping = customTokenProviderService.refreshToken(authentication, token.get().getRefreshToken());
-        }else{
+            tokenMapping = customTokenProviderService.createToken(authentication);
+            //tokenMapping = customTokenProviderService.refreshToken(authentication, token.get().getRefreshToken());
+        }else{ // 만료되면 위 검증에서 예외 처리 되므로 오지도 않음
             tokenMapping = customTokenProviderService.createToken(authentication);
         }
 
@@ -162,7 +170,7 @@ public class AuthService {
     private boolean valid(String refreshToken){
 
         //1. 토큰 형식 물리적 검증
-        boolean validateCheck = customTokenProviderService.validateToken(refreshToken);
+        boolean validateCheck = customTokenProviderService.validateRefreshToken(refreshToken);
         DefaultAssert.isTrue(validateCheck, "Token 검증에 실패하였습니다.");
 
         //2. refresh token 값을 불러온다.
