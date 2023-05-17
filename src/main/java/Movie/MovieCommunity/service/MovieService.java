@@ -20,11 +20,13 @@ public class MovieService {
         int endDt = (openDt+1)*10000;
         List<JpaMovie> yearRankingByOpenDt = movieRepository.findYearRankingByOpenDt(startDt, endDt);
         List<YearRankingResponse> response = new ArrayList<>();
+        String url = null;
         int i = 1;
         for (JpaMovie m : yearRankingByOpenDt) {
+
             int topCnt = 0;
             YearRankingResponse yearRankingResponse = YearRankingResponse.builder()
-                    .rank(i++)
+                    .rank(i)
                     .id(m.getId())
                     .movieNm(m.getMovieNm())
                     .showTm(m.getShowTm())
@@ -36,12 +38,17 @@ public class MovieService {
                     .posterPath(m.getPosterPath())
                     .interest(m.getLikeMovies().size())
                     .build();
+            if (i==1 && m.getVideos() != null) {
+                url = m.getVideos().get(0).getUrl();
+                yearRankingResponse.setUrl(url);
+            }
             for (Comment comment : m.getComments()) {
                 if(topCnt < comment.getLikeComments().size()){
                     topCnt = comment.getLikeComments().size();
                     yearRankingResponse.setTopComment(comment.getContent());
                 }
             }
+            i++;
             response.add(yearRankingResponse);
         }
 //        List<YearRankingResponse> response = yearRankingByOpenDt.stream().map(m -> YearRankingResponse.builder()
