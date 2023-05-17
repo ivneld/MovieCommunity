@@ -18,8 +18,9 @@ public class YearRankingResponse {
         private float voteAverage;
         private int interest;
         private String topComment;
+        private String url;
     @Builder
-    public YearRankingResponse(int rank, Long id, String movieNm, Integer showTm, Integer openDt,String prdtStatNm, String watchGradeNm, String overview, String posterPath, float voteAverage, int interest) {
+    public YearRankingResponse(int rank, Long id, String movieNm, Integer showTm, Integer openDt,String prdtStatNm, String watchGradeNm, String overview, String posterPath, float voteAverage, int interest, String url) {
         this.rank = rank;
         this.id = id;
         this.movieNm = movieNm;
@@ -31,5 +32,6 @@ public class YearRankingResponse {
         this.posterPath = posterPath;
         this.voteAverage = voteAverage;
         this.interest = interest;
+        this.url = url;
     }
 }
