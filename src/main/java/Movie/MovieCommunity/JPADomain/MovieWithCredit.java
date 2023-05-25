@@ -1,36 +1,31 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.JPADomain.JpaActor;
-import Movie.MovieCommunity.JPADomain.JpaMovie;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity(name="moviewithactor")
+@Entity
 @Getter
 @Setter
-@Table(name="moviewithactor")
-public class JpaMovieWithActor {
+@Table
+@NoArgsConstructor
+public class MovieWithCredit {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "movie_with_actor_id")
+    @Column(name = "movie_with_credit_id")
     private Long id;
 
-    public void updateData(JpaMovie movie, String cast) {
+    public void updateData(Movie movie, String cast) {
         this.movie = movie;
         this.cast = cast;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
-    private JpaMovie movie;
+    private Movie movie;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "actor_id")
-    private JpaActor actor;
+    @JoinColumn(name = "credit_id")
+    private Credit credit;
     private String cast;
 
     @Override
@@ -38,12 +33,17 @@ public class JpaMovieWithActor {
         return "JpaMovieWithActor{" +
                 "id=" + id +
                 ", movie=" + movie +
-                ", actor=" + actor +
+                ", actor=" + credit +
                 ", cast='" + cast + '\'' +
                 '}';
     }
 //    public void setMovieId(Long movieId){
 //        this.movieId = movieId;
 //    }
-
+    @Builder
+    public MovieWithCredit(Movie movie, Credit credit, String cast) {
+        this.movie = movie;
+        this.credit = credit;
+        this.cast = cast;
+    }
 }

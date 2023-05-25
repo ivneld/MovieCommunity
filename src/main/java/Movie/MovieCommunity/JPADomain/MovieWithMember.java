@@ -1,5 +1,7 @@
 package Movie.MovieCommunity.JPADomain;
 
+import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPADomain.Movie;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,7 +18,7 @@ public class MovieWithMember {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id",nullable = false)
-    private JpaMovie movie;
+    private Movie movie;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id",nullable = false)
     private Member member;

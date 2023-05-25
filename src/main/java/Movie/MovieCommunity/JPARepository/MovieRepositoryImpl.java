@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
-import static Movie.MovieCommunity.JPADomain.QJpaMovie.jpaMovie;
+import static Movie.MovieCommunity.JPADomain.QMovie.movie;
 import static org.thymeleaf.util.StringUtils.isEmpty;
 
 @Repository
@@ -29,8 +29,8 @@ public class MovieRepositoryImpl implements QuerydslMovieRepository{
 //String movieCd, String movieNm, Integer showTm, Integer openDt, String prdtStatNm, String typeNm, String nationNm, String directorNm, String watchGradeNm
     @Override
     public Page<MovieDao> findByMovieCond(MovieSearchCond movieSearchCond, Pageable pageable) {
-        List<MovieDao> content = jpaQueryFactory.select(new QMovieDao(jpaMovie.movieCd, jpaMovie.movieNm, jpaMovie.showTm, jpaMovie.openDt, jpaMovie.prdtStatNm, jpaMovie.typeNm, jpaMovie.nationNm, jpaMovie.directorNm, jpaMovie.watchGradeNm, jpaMovie.topScore))
-                .from(jpaMovie)
+        List<MovieDao> content = jpaQueryFactory.select(new QMovieDao(movie.movieCd, movie.movieNm, movie.showTm, movie.openDt, movie.prdtStatNm, movie.typeNm, movie.nationNm, movie.directorNm, movie.watchGradeNm, movie.topScore))
+                .from(movie)
                 .where(movieCdEq(movieSearchCond.getMovieNm()),
                         movieNmContain(movieSearchCond.getMovieNm()),
                         movieShowTmGoe(movieSearchCond.getShowTm()),
@@ -44,8 +44,8 @@ public class MovieRepositoryImpl implements QuerydslMovieRepository{
                         )
                 .fetch();
 
-        Long count = jpaQueryFactory.select(jpaMovie.count())
-                .from(jpaMovie)
+        Long count = jpaQueryFactory.select(movie.count())
+                .from(movie)
                 .where(movieCdEq(movieSearchCond.getMovieNm()),
                         movieNmContain(movieSearchCond.getMovieNm()),
                         movieShowTmGoe(movieSearchCond.getShowTm()),
@@ -63,45 +63,45 @@ public class MovieRepositoryImpl implements QuerydslMovieRepository{
 
 
     private BooleanExpression movieCdEq(String movieCd) {
-        return isEmpty(movieCd) ? null : jpaMovie.movieCd.eq(movieCd);
+        return isEmpty(movieCd) ? null : movie.movieCd.eq(movieCd);
     }
     private BooleanExpression movieNmContain(String movieNm) {
-        return isEmpty(movieNm) ? null : jpaMovie.movieNm.contains(movieNm);
+        return isEmpty(movieNm) ? null : movie.movieNm.contains(movieNm);
     }
     private BooleanExpression movieShowTmGoe(Integer showTm) {
         if(showTm == null)
             return null;
         else {
-            return jpaMovie.showTm.goe(showTm);
+            return movie.showTm.goe(showTm);
         }
     }
     private BooleanExpression movieOpenDtGoe(Integer openDt) {
         if(openDt == null)
             return null;
         else {
-            return jpaMovie.openDt.goe(openDt);
+            return movie.openDt.goe(openDt);
         }
     }
     private BooleanExpression moviePrdtStatNmEq(String prdtStatNm) {
-        return isEmpty(prdtStatNm) ? null : jpaMovie.prdtStatNm.eq(prdtStatNm);
+        return isEmpty(prdtStatNm) ? null : movie.prdtStatNm.eq(prdtStatNm);
     }
     private BooleanExpression movieTypeNmEq(String typeNm) {
-        return isEmpty(typeNm) ? null : jpaMovie.typeNm.eq(typeNm);
+        return isEmpty(typeNm) ? null : movie.typeNm.eq(typeNm);
     }
     private BooleanExpression movieNationNmEq(String nationNm) {
-        return isEmpty(nationNm) ? null : jpaMovie.nationNm.eq(nationNm);
+        return isEmpty(nationNm) ? null : movie.nationNm.eq(nationNm);
     }
     private BooleanExpression movieDirectorNmContain(String directorNm) {
-        return isEmpty(directorNm) ? null : jpaMovie.directorNm.contains(directorNm);
+        return isEmpty(directorNm) ? null : movie.directorNm.contains(directorNm);
     }
     private BooleanExpression movieWatchGradeNmEq(String watchGradeNm) {
-        return isEmpty(watchGradeNm) ? null : jpaMovie.watchGradeNm.eq(watchGradeNm);
+        return isEmpty(watchGradeNm) ? null : movie.watchGradeNm.eq(watchGradeNm);
     }
     private BooleanExpression movieTopScoreGoe(Integer topScore) {
         if(topScore == null)
             return null;
         else {
-            return jpaMovie.openDt.goe(topScore);
+            return movie.openDt.goe(topScore);
         }
     }
 }

@@ -7,9 +7,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static Movie.MovieCommunity.JPADomain.QJpaGenre.*;
-import static Movie.MovieCommunity.JPADomain.QJpaMovie.jpaMovie;
-import static Movie.MovieCommunity.JPADomain.QJpaMovieWithGenre.*;
+import static Movie.MovieCommunity.JPADomain.QGenre.genre;
+import static Movie.MovieCommunity.JPADomain.QJpaMovieWithGenre.jpaMovieWithGenre;
+import static Movie.MovieCommunity.JPADomain.QMovie.movie;
 
 public class MovieWithGenreRepositoryImpl implements MovieWithGenreRepositoryCustom{
 
@@ -24,11 +24,11 @@ public class MovieWithGenreRepositoryImpl implements MovieWithGenreRepositoryCus
 
     @Override
     public List<MovieGenreDto> findAllMovieAndGenre() {
-        return queryFactory.select(new QMovieGenreDto(jpaMovie.id, jpaMovie.movieNm, jpaMovie.openDt,
-                        jpaMovie.audiAcc, jpaGenre.id, jpaGenre.genreNm))
+        return queryFactory.select(new QMovieGenreDto(movie.id, movie.movieNm, movie.openDt,
+                        movie.audiAcc, genre.id, genre.genreNm))
                 .from(jpaMovieWithGenre)
-                .leftJoin(jpaMovie).on(jpaMovie.id.eq(jpaMovieWithGenre.movie.id))
-                .leftJoin(jpaGenre).on(jpaGenre.id.eq(jpaMovieWithGenre.genre.id))
+                .leftJoin(movie).on(movie.id.eq(jpaMovieWithGenre.movie.id))
+                .leftJoin(genre).on(genre.id.eq(jpaMovieWithGenre.genre.id))
                 .fetch();
 
     }

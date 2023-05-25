@@ -1,7 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
 import Movie.MovieCommunity.web.form.CommentForm;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,14 +26,15 @@ public class Comment extends BaseTimeEntity{
     private Member member;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="movie_id", nullable = false)
-    private JpaMovie movie;
+    private Movie movie;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LikeComment> likeComments = new ArrayList<>();;
+    private List<LikeComment> likeComments = new ArrayList<>();
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> children = new ArrayList<>();;
+    private List<Comment> children = new ArrayList<>();
+
 
     @Override
     public String toString() {

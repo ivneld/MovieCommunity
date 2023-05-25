@@ -42,9 +42,9 @@ public class CommentController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@Valid @RequestBody CommentAPIRequest commentRequest, @CurrentMember UserPrincipal userPrincipal){
-        String email = userPrincipal.getEmail();
-        CommentForm response = commentService.write(commentRequest, email);
+    public ResponseEntity<?> create(@Valid @RequestBody CommentAPIRequest commentRequest, @CurrentMember Long memberId){
+//        String email = userPrincipal.getEmail();
+        CommentForm response = commentService.write(commentRequest, memberId);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -53,8 +53,8 @@ public class CommentController {
         @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content={@Content(mediaType = "application/json")})
     )
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody CommentUpdateAPIRequest commentUpdateAPIRequest, @CurrentMember UserPrincipal userPrincipal){
-        Boolean checkUpdate = commentService.update(commentUpdateAPIRequest, userPrincipal);
+    public ResponseEntity<?> update(@Valid @RequestBody CommentUpdateAPIRequest commentUpdateAPIRequest, @CurrentMember Long memberId){
+        Boolean checkUpdate = commentService.update(commentUpdateAPIRequest, memberId);
         if (!checkUpdate){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -66,8 +66,8 @@ public class CommentController {
         @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = {@Content(mediaType = "application/json")})
     )
     @DeleteMapping
-    public ResponseEntity<?> delete(@Valid @RequestBody CommentDeleteAPIRequest commentDeleteAPIRequest, @CurrentMember UserPrincipal userPrincipal){
-        commentService.delete(commentDeleteAPIRequest, userPrincipal);
+    public ResponseEntity<?> delete(@Valid @RequestBody CommentDeleteAPIRequest commentDeleteAPIRequest, @CurrentMember Long memberId){
+        commentService.delete(commentDeleteAPIRequest, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

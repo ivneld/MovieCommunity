@@ -1,8 +1,7 @@
 package Movie.MovieCommunity.service;
 
-import Movie.MovieCommunity.JPADomain.Board;
 import Movie.MovieCommunity.JPADomain.Comment;
-import Movie.MovieCommunity.JPADomain.JpaMovie;
+import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.JPADomain.Member;
 //import Movie.MovieCommunity.JPARepository.BoardRepository;
 import Movie.MovieCommunity.JPARepository.CommentRepository;
@@ -29,33 +28,33 @@ public class CommentService {
     private final MemberRepository memberRepository;
 //    private final BoardRepository boardRepository;
     private final MovieRepository movieRepository;
-    public CommentForm write(CommentAPIRequest commentAPIRequest, String email){
-        Optional<Member> findMember = memberRepository.findByEmail(email);
+    public CommentForm write(CommentAPIRequest commentAPIRequest, Long memberId){
+        Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
-        Optional<JpaMovie> findMovie = movieRepository.findById(commentAPIRequest.getBoardId());
+        Optional<Movie> findMovie = movieRepository.findById(commentAPIRequest.getMovieId());
         DefaultAssert.isOptionalPresent(findMovie);
 
-        Comment parent = null;
-        if (commentAPIRequest.getParentId() != null){
-            Optional<Comment> findParent = commentRepository.findById(commentAPIRequest.getParentId());
-            DefaultAssert.isOptionalPresent(findParent);
-            parent = findParent.get();
-        }
+//        Comment parent = null;
+//        if (commentAPIRequest.getParentId() != null){
+//            Optional<Comment> findParent = commentRepository.findById(commentAPIRequest.getParentId());
+//            DefaultAssert.isOptionalPresent(findParent);
+//            parent = findParent.get();
+//        }
         CommentForm commentForm = CommentForm.builder()
                 .content(commentAPIRequest.getContent())
                 .movie(findMovie.get())
                 .member(findMember.get())
-                .parent(parent)
+//                .parent(parent)
                 .build();
         commentRepository.save(new Comment(commentForm));
         return commentForm;
     }
-    public Boolean update(CommentUpdateAPIRequest commentUpdateAPIRequest, UserPrincipal userPrincipal){
+    public Boolean update(CommentUpdateAPIRequest commentUpdateAPIRequest, Long memberId){
         Optional<Comment> findComment = commentRepository.findById(commentUpdateAPIRequest.getCommentId());
         DefaultAssert.isOptionalPresent(findComment);
 
-        Optional<Member> findMember = memberRepository.findByEmail(userPrincipal.getEmail());
+        Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
         if (!checkMine(commentUpdateAPIRequest, findMember)){
@@ -68,11 +67,11 @@ public class CommentService {
 
         return true;
     }
-    public boolean delete(CommentDeleteAPIRequest commentDeleteAPIRequest, UserPrincipal userPrincipal) {
+    public boolean delete(CommentDeleteAPIRequest commentDeleteAPIRequest, Long memberId) {
         Optional<Comment> findComment = commentRepository.findById(commentDeleteAPIRequest.getCommentId());
         DefaultAssert.isOptionalPresent(findComment);
 
-        Optional<Member> findMember = memberRepository.findByEmail(userPrincipal.getEmail());
+        Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
         if (!checkMine(commentDeleteAPIRequest, findMember)){

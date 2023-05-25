@@ -18,5 +18,5 @@ public class LikeMovie {
     private Member member;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id", nullable = false)
-    private JpaMovie movie;
+    private Movie movie;
 }

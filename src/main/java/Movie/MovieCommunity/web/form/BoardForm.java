@@ -1,7 +1,7 @@
 package Movie.MovieCommunity.web.form;
 
 import Movie.MovieCommunity.JPADomain.Board;
-import Movie.MovieCommunity.JPADomain.JpaMovie;
+import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.JPADomain.Member;
 import lombok.Data;
 
@@ -15,7 +15,7 @@ public class BoardForm {
     @NotEmpty(message = "필수 값 입니다.")
     private String content;
     private Member member;
-    private JpaMovie movie;
+    private Movie movie;
 
     public BoardForm() {
     }
