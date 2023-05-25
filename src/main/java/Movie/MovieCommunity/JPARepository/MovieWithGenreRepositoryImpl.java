@@ -1,7 +1,5 @@
 package Movie.MovieCommunity.JPARepository;
 
-import Movie.MovieCommunity.JPADomain.JpaMovie;
-import Movie.MovieCommunity.JPADomain.QJpaMovie;
 import Movie.MovieCommunity.JPADomain.dto.MovieGenreDto;
 import Movie.MovieCommunity.JPARepository.dao.MovieWithGenreCountDao;
 import Movie.MovieCommunity.JPADomain.dto.QMovieGenreDto;
@@ -41,24 +39,24 @@ public class MovieWithGenreRepositoryImpl implements MovieWithGenreRepositoryCus
 
     @Override
     public List<MovieWithGenreCountDao> findTop100MovieWithGenre() {
-        return queryFactory.select(new QMovieWithGenreCountDao(jpaGenre.id, jpaGenre.genreNm, jpaMovie.id, jpaMovie.popularity))
+        return queryFactory.select(new QMovieWithGenreCountDao(genre.id, genre.genreNm, movie.id, movie.popularity))
                 .from(jpaMovieWithGenre)
-                .join(jpaGenre).on(jpaGenre.id.eq(jpaMovieWithGenre.genre.id))
-                .join(jpaMovie).on(jpaMovie.id.eq(jpaMovieWithGenre.movie.id))
-                .orderBy(jpaMovie.popularity.desc()).limit(100)
+                .join(genre).on(genre.id.eq(jpaMovieWithGenre.genre.id))
+                .join(movie).on(movie.id.eq(jpaMovieWithGenre.movie.id))
+                .orderBy(movie.popularity.desc()).limit(100)
                 .fetch();
     }
 
     @Override
     public List<MovieWithGenreDao> findMovieByGenre(Long genreId) {
-        return queryFactory.select(new QMovieWithGenreDao(jpaMovie.movieCd, jpaMovie.movieNm, jpaMovie.showTm, jpaMovie.openDt, jpaMovie.prdtStatNm, jpaMovie.typeNm,
-                        jpaMovie.nationNm, jpaMovie.directorNm, jpaMovie.auditNo, jpaMovie.watchGradeNm, jpaMovie.topScore, jpaMovie.salesAcc,
-                        jpaMovie.audiAcc, jpaMovie.tmId, jpaMovie.overview, jpaMovie.backdropPath, jpaMovie.posterPath, jpaMovie.popularity,
-                        jpaMovie.voteAverage, jpaMovie.voteCount, jpaMovie.collectionId, jpaMovie.seriesName, jpaMovie.collectionBackdropPath, jpaMovie.collectionPosterPath))
+        return queryFactory.select(new QMovieWithGenreDao(movie.movieCd, movie.movieNm, movie.showTm, movie.openDt, movie.prdtStatNm, movie.typeNm,
+                        movie.nationNm, movie.directorNm, movie.auditNo, movie.watchGradeNm, movie.topScore, movie.salesAcc,
+                        movie.audiAcc, movie.tmId, movie.overview, movie.backdropPath, movie.posterPath, movie.popularity,
+                        movie.voteAverage, movie.voteCount, movie.collectionId, movie.seriesName, movie.collectionBackdropPath, movie.collectionPosterPath))
                 .from(jpaMovieWithGenre)
-                .join(jpaGenre).on(jpaGenre.id.eq(jpaMovieWithGenre.genre.id))
-                .join(jpaMovie).on(jpaMovie.id.eq(jpaMovieWithGenre.movie.id))
-                .where(jpaGenre.id.eq(genreId))
+                .join(genre).on(genre.id.eq(jpaMovieWithGenre.genre.id))
+                .join(movie).on(movie.id.eq(jpaMovieWithGenre.movie.id))
+                .where(genre.id.eq(genreId))
                 .fetch();
     }
 

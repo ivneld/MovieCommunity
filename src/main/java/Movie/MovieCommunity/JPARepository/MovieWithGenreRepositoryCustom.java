@@ -1,6 +1,5 @@
 package Movie.MovieCommunity.JPARepository;
 
-import Movie.MovieCommunity.JPADomain.JpaMovie;
 import Movie.MovieCommunity.JPADomain.dto.MovieGenreDto;
 import Movie.MovieCommunity.JPARepository.dao.MovieWithGenreCountDao;
 import Movie.MovieCommunity.JPARepository.dao.MovieWithGenreDao;

@@ -136,53 +136,53 @@ public class MovieService {
      * @return -> YearRankingResponse List
      * (weeklyBoxOffice, movie 에서 존재하는 영화는 다를 수 있다.)
      */
-    public List<YearRankingResponse> weeklyRanking(int year, int week) {
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
-
-        int startWeek = startDate.get(weekOfYear);
-        int targetWeek = startWeek + week - 1;
-
-        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek);
-        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
-
-        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByOpenDtBetween(firstDayOfWeek, lastDayOfWeek);
-
-        List<YearRankingResponse> result = new ArrayList<>();
-
-        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
-            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
-                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
-
-                result.add(YearRankingResponse.builder()
-                        .id(movie.getId())
-                        .movieCd(movie.getMovieCd())
-                        .movieNm(movie.getMovieNm())
-                        .showTm(movie.getShowTm())
-                        .openDt(movie.getOpenDt())
-                        .prdtStatNm(movie.getPrdtStatNm())
-                        .typeNm(movie.getTypeNm())
-                        .nationNm(movie.getNationNm())
-                        .directorNm(movie.getDirectorNm())
-                        .auditNo(movie.getAuditNo())
-                        .watchGradeNm(movie.getWatchGradeNm())
-                        .topScore(movie.getTopScore())
-                        .salesAcc(movie.getSalesAcc())
-                        .audiAcc(movie.getAudiAcc())
-                        .tmId(movie.getTmId())
-                        .overview(movie.getOverview())
-                        .backdropPath(movie.getBackdropPath())
-                        .posterPath(movie.getPosterPath())
-                        .popularity(movie.getPopularity())
-                        .voteAverage(movie.getVoteAverage())
-                        .voteCount(movie.getVoteCount())
-                        .collectionId(movie.getCollectionId())
-                        .seriesName(movie.getSeriesName())
-                        .collectionBackdropPath(movie.getCollectionBackdropPath())
-                        .collectionPosterPath(movie.getCollectionPosterPath())
-                        .build());
-            }
-        }
-        return result;
-    }
+//    public List<YearRankingResponse> weeklyRanking(int year, int week) {
+//        LocalDate startDate = LocalDate.of(year, 1, 1);
+//        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
+//
+//        int startWeek = startDate.get(weekOfYear);
+//        int targetWeek = startWeek + week - 1;
+//
+//        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek);
+//        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
+//
+//        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByOpenDtBetween(firstDayOfWeek, lastDayOfWeek);
+//
+//        List<YearRankingResponse> result = new ArrayList<>();
+//
+//        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
+//            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+//                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+//
+//                result.add(YearRankingResponse.builder()
+//                        .id(movie.getId())
+//                        .movieCd(movie.getMovieCd())
+//                        .movieNm(movie.getMovieNm())
+//                        .showTm(movie.getShowTm())
+//                        .openDt(movie.getOpenDt())
+//                        .prdtStatNm(movie.getPrdtStatNm())
+//                        .typeNm(movie.getTypeNm())
+//                        .nationNm(movie.getNationNm())
+//                        .directorNm(movie.getDirectorNm())
+//                        .auditNo(movie.getAuditNo())
+//                        .watchGradeNm(movie.getWatchGradeNm())
+//                        .topScore(movie.getTopScore())
+//                        .salesAcc(movie.getSalesAcc())
+//                        .audiAcc(movie.getAudiAcc())
+//                        .tmId(movie.getTmId())
+//                        .overview(movie.getOverview())
+//                        .backdropPath(movie.getBackdropPath())
+//                        .posterPath(movie.getPosterPath())
+//                        .popularity(movie.getPopularity())
+//                        .voteAverage(movie.getVoteAverage())
+//                        .voteCount(movie.getVoteCount())
+//                        .collectionId(movie.getCollectionId())
+//                        .seriesName(movie.getSeriesName())
+//                        .collectionBackdropPath(movie.getCollectionBackdropPath())
+//                        .collectionPosterPath(movie.getCollectionPosterPath())
+//                        .build());
+//            }
+//        }
+//        return result;
+//    }
 }
