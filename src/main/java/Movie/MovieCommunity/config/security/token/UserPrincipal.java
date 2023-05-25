@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.config.security.token;
 
 import Movie.MovieCommunity.JPADomain.Member;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,18 +11,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+@Slf4j
 public class UserPrincipal implements OAuth2User, UserDetails {
 
     private Long id;
     private String email;
+    private String name;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String email, String name, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
+        this.name = name;
         this.password = password;
         this.authorities = authorities;
     }
@@ -31,14 +34,29 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return new UserPrincipal(
                 member.getId(),
                 member.getEmail(),
+                member.getName(),
                 member.getPassword(),
                 authorities
         );
     }
 
+    @Override
+    public String toString() {
+        return "UserPrincipal{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", attributes=" + attributes +
+                '}';
+    }
+
     public static UserPrincipal create(Member member, Map<String, Object> attributes) {
+        log.info("사용자 정보 세팅");
+        log.info("member = {}" , member);
         UserPrincipal userPrincipal = UserPrincipal.create(member);
         userPrincipal.setAttributes(attributes);
+        log.info("userPrincipal = " + userPrincipal);
         return userPrincipal;
     }
 
@@ -66,7 +84,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     @Override
     public String getName() {
-        return String.valueOf(id);
+        return name;
     }
 
     @Override
