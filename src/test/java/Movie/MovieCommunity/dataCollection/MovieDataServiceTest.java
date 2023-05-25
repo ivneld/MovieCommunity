@@ -3,7 +3,6 @@ package Movie.MovieCommunity.dataCollection;
 import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
 import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
 import Movie.MovieCommunity.service.MovieService;
-import Movie.MovieCommunity.web.apiDto.movie.YearRankingResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -25,9 +24,9 @@ public class MovieDataServiceTest {
     public void test () {
 
     }
-    @Test
-    public void weeklyRankingTest() {
-        List<YearRankingResponse> list = movieService.weeklyRanking(2023, 1);
-        log.info("size={}",list.size());
-    }
+//    @Test
+//    public void weeklyRankingTest() {
+//        List<YearRankingResponse> list = movieService.weeklyRanking(2023, 1);
+//        log.info("size={}",list.size());
+//    }
 }

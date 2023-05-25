@@ -6,7 +6,6 @@ import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
-import Movie.MovieCommunity.web.apiDto.movie.YearRankingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -120,30 +119,14 @@ public class MovieService {
 
                 result.add(YearRankingResponse.builder()
                         .id(movie.getId())
-                        .movieCd(movie.getMovieCd())
                         .movieNm(movie.getMovieNm())
                         .showTm(movie.getShowTm())
                         .openDt(movie.getOpenDt())
                         .prdtStatNm(movie.getPrdtStatNm())
-                        .typeNm(movie.getTypeNm())
-                        .nationNm(movie.getNationNm())
-                        .directorNm(movie.getDirectorNm())
-                        .auditNo(movie.getAuditNo())
                         .watchGradeNm(movie.getWatchGradeNm())
-                        .topScore(movie.getTopScore())
-                        .salesAcc(movie.getSalesAcc())
-                        .audiAcc(movie.getAudiAcc())
-                        .tmId(movie.getTmId())
                         .overview(movie.getOverview())
-                        .backdropPath(movie.getBackdropPath())
                         .posterPath(movie.getPosterPath())
-                        .popularity(movie.getPopularity())
                         .voteAverage(movie.getVoteAverage())
-                        .voteCount(movie.getVoteCount())
-                        .collectionId(movie.getCollectionId())
-                        .seriesName(movie.getSeriesName())
-                        .collectionBackdropPath(movie.getCollectionBackdropPath())
-                        .collectionPosterPath(movie.getCollectionPosterPath())
                         .build());
             }
         }

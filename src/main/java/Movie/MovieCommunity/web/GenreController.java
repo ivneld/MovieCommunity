@@ -4,7 +4,6 @@ import Movie.MovieCommunity.JPADomain.dto.MovieWithGenreCountDto;
 import Movie.MovieCommunity.JPARepository.MovieWithGenreRepositoryCustom;
 import Movie.MovieCommunity.JPARepository.dao.MovieWithGenreDao;
 import Movie.MovieCommunity.service.MovieWithGenreService;
-import Movie.MovieCommunity.web.apiDto.movie.YearRankingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
