@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Table(name="video")
 @NoArgsConstructor
 public class Video {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="video_id")
@@ -21,6 +22,7 @@ public class Video {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
     private JpaMovie movie;
+
     @Builder
     public Video(String name, String siteName, String url, String videoType, JpaMovie movie) {
         this.name = name;

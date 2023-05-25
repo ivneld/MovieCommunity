@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -51,7 +53,8 @@ public class JpaActor {
 
     //    peopleNmEn	문자열	배우명(영문)을 출력합니다.
     //private String cast;//	문자열	배역명을 출력합니다.
-    private Integer topMovieCnt = 0;
+    @ColumnDefault("0")
+    private Integer topMovieCnt;
 
     @OneToMany(mappedBy = "actor")
     private List<JpaMovieWithActor> movieWithActors = new ArrayList<>();

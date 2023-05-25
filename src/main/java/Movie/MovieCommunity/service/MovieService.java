@@ -1,18 +1,27 @@
 package Movie.MovieCommunity.service;
 
 import Movie.MovieCommunity.JPADomain.JpaMovie;
+import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
+import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
 import Movie.MovieCommunity.web.apiDto.movie.YearRankingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.temporal.TemporalField;
+import java.time.temporal.WeekFields;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MovieService {
     private final MovieRepository movieRepository;
+    private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
 
     public List<YearRankingResponse> yearRanking(int openDt){
         int startDt = openDt*10000;
@@ -49,4 +58,59 @@ public class MovieService {
         return response;
     }
 
+    /**
+     * @param year -> 주간별로 분할할 년도
+     * @param week -> 원하는 주차
+     * @return -> YearRankingResponse List
+     * (weeklyBoxOffice, movie 에서 존재하는 영화는 다를 수 있다.)
+     */
+    public List<YearRankingResponse> weeklyRanking(int year, int week) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
+
+        int startWeek = startDate.get(weekOfYear);
+        int targetWeek = startWeek + week - 1;
+
+        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek);
+        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
+
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByOpenDtBetween(firstDayOfWeek, lastDayOfWeek);
+
+        List<YearRankingResponse> result = new ArrayList<>();
+
+        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
+            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
+                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+
+                result.add(YearRankingResponse.builder()
+                        .id(movie.getId())
+                        .movieCd(movie.getMovieCd())
+                        .movieNm(movie.getMovieNm())
+                        .showTm(movie.getShowTm())
+                        .openDt(movie.getOpenDt())
+                        .prdtStatNm(movie.getPrdtStatNm())
+                        .typeNm(movie.getTypeNm())
+                        .nationNm(movie.getNationNm())
+                        .directorNm(movie.getDirectorNm())
+                        .auditNo(movie.getAuditNo())
+                        .watchGradeNm(movie.getWatchGradeNm())
+                        .topScore(movie.getTopScore())
+                        .salesAcc(movie.getSalesAcc())
+                        .audiAcc(movie.getAudiAcc())
+                        .tmId(movie.getTmId())
+                        .overview(movie.getOverview())
+                        .backdropPath(movie.getBackdropPath())
+                        .posterPath(movie.getPosterPath())
+                        .popularity(movie.getPopularity())
+                        .voteAverage(movie.getVoteAverage())
+                        .voteCount(movie.getVoteCount())
+                        .collectionId(movie.getCollectionId())
+                        .seriesName(movie.getSeriesName())
+                        .collectionBackdropPath(movie.getCollectionBackdropPath())
+                        .collectionPosterPath(movie.getCollectionPosterPath())
+                        .build());
+            }
+        }
+        return result;
+    }
 }

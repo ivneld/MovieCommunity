@@ -72,7 +72,7 @@ public class MovieDataService {
     private HashMap<String, EtcData> etcData = new HashMap<>();
 
 
-    @PostConstruct
+//    @PostConstruct
     public void Testing() throws Exception {
         System.out.println("key = " + key[0]);
 
@@ -91,7 +91,7 @@ public class MovieDataService {
 
 
 
-        yearWeeklyBoxOfficeData("20220101");
+//        yearWeeklyBoxOfficeData("20220101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -555,9 +555,13 @@ public class MovieDataService {
 //                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
                     List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findByMovieId(movie.getId());
                     for (JpaMovieWithActor movieWithActor : movieWithActors) {
-                        JpaActor actor = actorRepository.findById(movieWithActor.getActor().getId()).get();
-                        actor.countTopMovieCnt();
-                        actorRepository.save(actor);
+                        if (actorRepository.findById(movieWithActor.getActor().getId()).isPresent()) {
+                            JpaActor actor = actorRepository.findById(movieWithActor.getActor().getId()).get();
+
+                            actor.countTopMovieCnt();
+                            actorRepository.save(actor);
+                        }
+
                     }
                 }
 
