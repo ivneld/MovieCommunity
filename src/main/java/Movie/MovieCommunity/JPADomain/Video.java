@@ -1,6 +1,5 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.JPADomain.Movie;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

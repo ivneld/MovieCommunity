@@ -22,8 +22,8 @@ class MovieDataServiceTest {
 
     @Autowired WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
 
-    @Autowired
-    WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
+//    @Autowired
+//    WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
 
     @Test
     public void test() {
