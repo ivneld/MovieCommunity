@@ -1,7 +1,9 @@
 package Movie.MovieCommunity.dataCollection;
 
-import Movie.MovieCommunity.JPADomain.MovieWithCredit;
-import Movie.MovieCommunity.JPARepository.*;
+import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
+import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
+import Movie.MovieCommunity.service.MovieService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,25 +15,18 @@ import java.util.List;
 @SpringBootTest
 @Transactional
 @Slf4j
-class MovieDataServiceTest {
+public class MovieDataServiceTest {
 
-    @Autowired MovieRepository movieRepository;
-
-    @Autowired ActorRepository actorRepository;
-    @Autowired MovieWithActorRepository movieWithActorRepository;
-
-    @Autowired WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
-
-//    @Autowired
-//    WeeklyBoxOfficeRepositoryCustom weeklyBoxOfficeRepositoryCustom;
+    @Autowired
+    MovieService movieService;
 
     @Test
-    public void test() {
-        List<MovieWithCredit> movieWithActors = movieWithActorRepository.findByMovieId(1L);
-
-        for (MovieWithCredit movieWithActor : movieWithActors) {
-            log.info("movieWithActor={}", movieWithActor);
-        }
+    public void test () {
 
     }
+//    @Test
+//    public void weeklyRankingTest() {
+//        List<YearRankingResponse> list = movieService.weeklyRanking(2023, 1);
+//        log.info("size={}",list.size());
+//    }
 }

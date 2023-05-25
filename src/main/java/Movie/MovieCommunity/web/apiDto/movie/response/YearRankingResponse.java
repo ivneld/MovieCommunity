@@ -10,7 +10,7 @@ public class YearRankingResponse {
         private String movieNm;
         private Integer showTm;
         private Integer openDt;
-    private String prdtStatNm;
+        private String prdtStatNm;
 
         private String watchGradeNm;
         private String overview;
