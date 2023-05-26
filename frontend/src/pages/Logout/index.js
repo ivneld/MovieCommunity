@@ -13,7 +13,7 @@ function Logout() {
 		localStorage.removeItem("bbs_access_token");
 		localStorage.removeItem("email");
 
-		alert(auth + "님, 성공적으로 로그아웃 되었습니다 🔒");
+		console.log(auth + "님, 성공적으로 로그아웃 되었습니다 🔒");
 		setAuth(null);
 		
 		navigate("/");

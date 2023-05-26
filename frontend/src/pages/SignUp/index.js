@@ -47,14 +47,14 @@ function Signup(props) {
     return (
       <div className="signup-container">
         <div className="signup-content">
-          <h1 className="signup-title">Sign Up</h1>
+          <h1 className="signup-title">회원가입</h1>
           <SocialSignup />
           <div className="or-separator">
             <span className="or-text">OR</span>
           </div>
           <SignupForm/>
           <span className="login-link">
-            Already have an account? <Link to="/auth/login">Login!</Link>
+            이미 계정이 있다면? <Link to="/auth/login">로그인!</Link>
           </span>
         </div>
       </div>
@@ -65,19 +65,19 @@ function Signup(props) {
     return (
       <div className="social-signup">
         <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
-          <img src={googleLogo} alt="Google" /> Sign up with Google
+          <img src={googleLogo} alt="Google" />Google 회원가입
         </a>
         <a className="btn btn-block social-btn facebook" href={FACEBOOK_AUTH_URL}>
-            <img src={fbLogo} alt="Facebook" /> Sign up with Facebook
+            <img src={fbLogo} alt="Facebook" />Facebook 회원가입
         </a>
         <a className="btn btn-block social-btn github" href={GITHUB_AUTH_URL}>
-            <img src={githubLogo} alt="Github" /> Sign up with Github
+            <img src={githubLogo} alt="Github" />Github 회원가입
         </a>
         <a className="btn btn-block social-btn kakao" href={KAKAO_AUTH_URL}>
-            <img src={kakaoLogo} alt="Kakao" /> Sign up with Kakao
+            <img src={kakaoLogo} alt="Kakao" />Kakao 회원가입
         </a>
         <a className="btn btn-block social-btn kakao" href={NAVER_AUTH_URL}>
-            <img src={naverLogo} alt="Naver" /> Sign up with Naver
+            <img src={naverLogo} alt="Naver" />Naver 회원가입
         </a>
       </div>
     );
@@ -196,7 +196,7 @@ function Signup(props) {
         </div>
         <div className="form-item">
           <input type="email" name="email" value={email} onChange={changeEmail} className="form-control" placeholder="이메일" required/>
-          <button className="btn btn-outline-danger" onClick={checkIdDuplicate}><i className="fas fa-check"></i> 아이디 중복 확인</button>
+          <button id="duplicate" className="btn btn-outline-danger" onClick={checkIdDuplicate}><i className="fas fa-check"></i> 중복 확인</button>
         </div>
         <div className="form-item">
           <input type="password" name="password" value={password} onChange={changePassword} className="form-control" placeholder="비밀번호" required/>

@@ -21,8 +21,4 @@ public interface MovieRepository extends JpaRepository<JpaMovie, Long> {
     List<JpaMovie> findList();
 
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 15f32da6fcd367f7f46b0d29184062b3c1bdd004

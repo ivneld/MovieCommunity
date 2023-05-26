@@ -1,27 +1,30 @@
 import styled from '@emotion/styled';
 
 export const Label = styled.label`
+  display: flex;
   margin-bottom: 16px;
-  & > span {
-    display: block;
-    text-align: left;
-    padding-bottom: 8px;
-    font-size: 15px;
-    cursor: pointer;
-    line-height: 1.46666667;
-    font-weight: 700;
-  }
+
   & > div {
-    padding-bottom: 30px;
+    padding-bottom: 10px;
+  }
+  & > div > div{
+    text-align: justify;
+  }
+  & > img {
+    margin-right : 30px;
   }
 `;
 
 export const Form = styled.form`
   margin: 0 auto;
-  width: 400px;
-  max-width: 400px;
+  width: 625px;
+  max-width: 625px;
 `;
-
+export const MovieDiv = styled.div`
+  font-size: 17.5px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+`;
 export const Button = styled.button`
   margin-bottom: 12px;
   width: 40%;

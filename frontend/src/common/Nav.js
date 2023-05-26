@@ -1,11 +1,12 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthProvider";
 import { Link } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 function Nav(props) {
 
 	const { auth, setAuth } = useContext(AuthContext);
-
+	
 	return (
 		<nav className="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
 			<div className="container">
@@ -16,6 +17,16 @@ function Nav(props) {
 						{/* 메인 화면 */}
 						<li className="nav-item">
 							<Link className="nav-link" to="/"><i className="fas fa-home"></i> Home</Link>
+						</li>
+
+						{/* 랭킹  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/ranking"><i className="fas"></i>랭킹</Link>
+						</li>
+						
+						{/* 상영예정작  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/upcomingmovies"><i className="fas"></i>상영예정작</Link>
 						</li>
 
 						{/* 장르별 */}

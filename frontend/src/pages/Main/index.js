@@ -1,42 +1,25 @@
 import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LinkContainer, MovieSpan, CategorySpan } from './styles';
+import { LinkContainer, MovieSpan, CategorySpan, PosterContainer1, PosterContainer2, OpendtApiContainer, TimeStamp } from './styles';
 import useSWR from 'swr';
 import fetcher from '../../utils/fetcher';
 import MovieDetailModal from '../../components/MovieDetailModal';
 import { useSearchParams } from 'react-router-dom';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import './index.css';
 
 const Main = () => {
-    const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
-    const [content, setContent] = useState('');
-
     const [postingBoardMovieId, setPostingBoardMovieId] = useState('');
-
-    const [isEvery, setIsEvery] = useState(true);
-    const [isForeign, setIsForeign] = useState(false);
-    const [isKorea, setIsKorea] = useState(false);
 
 	const [searchParams, setSearchParams] = useSearchParams(); // 쿼리 스트링을 searchParams 형태로 가져오고
 	const movienm = searchParams.get('movienm'); // movienm 값 변수에 저장
-
     const [posts, setPosts] = useState([]);
-
-    const onCloseModal = useCallback(() => {
-        setShowMovieDetailModal(false);
-    }, []);
-
-    const onClickModal = useCallback((e) => {
-        setShowMovieDetailModal(true);
-        setContent('아직 상세데이터 못 받음');
-    }, []);
 
     const { data : mainData } = useSWR('http://localhost:8080', fetcher, {
         dedupingInterval: 100000,
     });
-
-    // const { data : detailMainData } = useSWR(`http://localhost:8080/detail${}`, fetcher, {
-    //     dedupingInterval: 100000,
-    // });
 
     if (movienm){ // 게시판에서 영화 제목 검색 O 경우
         const result = mainData.filter(data => data.movieNm === `${movienm}`) // 검색한 영화 제목 filter해서 해당 영화 정보만 불러오기
@@ -60,76 +43,111 @@ const Main = () => {
             </div>
         )
     }
-
-    
     if (!mainData){
         return <div>데이터가 없거나, 불러올 수 없습니다</div>
     }   
-
     return(
         <>
             {!movienm && // 메인페이지 (게시판에서 영화 제목 검색 X 경우)
             <>
-
-                    Top 10&nbsp;&nbsp;&nbsp;
-                    <CategorySpan onClick={() => (setIsEvery(true), setIsForeign(false), setIsKorea(false))}>전체영화&nbsp;&nbsp;&nbsp;</CategorySpan>
-                    <CategorySpan onClick={() => (setIsEvery(false), setIsForeign(false), setIsKorea(true))}>국내영화&nbsp;&nbsp;&nbsp;</CategorySpan>
-                    <CategorySpan onClick={() => (setIsEvery(false), setIsForeign(true), setIsKorea(false))}>해외영화</CategorySpan>
+                <OpendtApi/>
                 <hr/>
-         
-                {isEvery &&
-                    <div>
-                        {mainData[0].map((data)=>{
-                                return(
-                                    <div>
-                                        <MovieSpan onClick={() => (onClickModal(), setPostingBoardMovieId(data.movieNm))}>{data.movieNm}</MovieSpan>
-                                    </div>
-                                )}
-                            )
-                        }
-                    </div>                     
-                }
-                {isForeign &&
-                    <div>
-                        {mainData[1].map((data)=>{
-                                return(
-                                    <div>
-                                        <MovieSpan onClick={() => (onClickModal(), setPostingBoardMovieId(data.movieNm))}>{data.movieNm}</MovieSpan>
-                                    </div>
-                                )}
-                            )
-                        }
-                    </div>                     
-                }
-                {isKorea &&
-                    <div>
-                        {mainData[2].map((data)=>{
-                                return(
-                                    <div>
-                                        <MovieSpan onClick={() => (onClickModal(), setPostingBoardMovieId(data.movieNm))}>{data.movieNm}</MovieSpan>
-                                    </div>
-                                )}
-                            )
-                        }
-                    </div>                     
-                }
-                <hr/>
-                <h3>
-                    {posts.map((post, index) => (
-                    <div key={index}>{post.content}</div>
-                    ))}
-                </h3>
-                <MovieDetailModal
-                    show={showMovieDetailModal}
-                    onCloseModal={onCloseModal}
-                    setShowMovieDetailModal={setShowMovieDetailModal}
-                    content={content}
-                    postingBoardMovieId={postingBoardMovieId}
-                />
             </>
             }
         </>
     )
 };
+
+function OpendtApi() {
+    const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
+    const [modalData, setModalData] = useState(null);
+
+    const prevArrow = (
+        <button className="slick-prev" aria-label="Previous" type="button"/>
+      );
+    
+      const nextArrow = (
+        <button className="slick-next" aria-label="Next" type="button"/>
+      );
+      const sliderSettings = {
+        slidesToShow: 7,
+        slidesToScroll: 1,
+        infinite: true,
+        dots: true,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 2,
+            },
+          },
+          {
+            breakpoint: 480,
+            settings: {
+              slidesToShow: 1,
+            },
+          },
+        ],
+        prevArrow: prevArrow,
+        nextArrow: nextArrow,
+      };
+
+    const onCloseModal = useCallback(() => {
+        setShowMovieDetailModal(false);
+    }, []);
+    const onClickModal = useCallback((e) => {
+        setShowMovieDetailModal(true);
+        setModalData(e);
+    }, []);
+    const { data : opendtData, error } = useSWR(`http://localhost:8080/movie/year?openDt=${2023}`, fetcher, {
+        dedupingInterval: 100000,
+    });
+    
+    if (error) console.log('데이터를 불러오는 중에 오류가 발생했습니다.')
+    if (!opendtData) console.log('데이터를 불러오는 중입니다...')
+    const url = opendtData?.[0]?.url; // ex) https://www.youtube.com/watch?v=6KCJ7T9yrBc
+    if (url === undefined) return <div>url이 undefined임</div>
+    const criteriaIndex = url.indexOf('=') + 1;
+    const extractedText = url.substring(criteriaIndex); // 6KCJ7T9yrBc
+    const targetUrl = `https://www.youtube.com/embed/${extractedText}?autoplay=1&controls=0&loop=1&playlist=${extractedText}&mute=1`;
+    return (
+        <OpendtApiContainer>
+            <div>
+                이번주 인기영화 확인해보세요
+            </div>
+            <PosterContainer1 style={{backgroundColor:'black', position:'relative'}} zIndex="2" onClick={() => (onClickModal(opendtData[0]))}>
+                <iframe zIndex="1" width="800" height="450" src={targetUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, color: 'white', textShadow:"4px 2px 4px black",fontWeight: 'bold', fontSize: '100px', padding: '0 20px' }}>1</span>
+            </PosterContainer1>
+            
+            <Slider {...sliderSettings}>
+                    {opendtData.map((obj, index) => {
+                        if(index >= 1){
+                        return (
+                            <div key={index} style={{ marginRight:"20px" }}>
+                                <MovieSpan onClick={() => (onClickModal(opendtData[index]))}>
+                                    <div style={{ position: 'relative' }}>
+                                        <img src={obj.posterPath} height="400px" alt='포스터주소' />
+                                        <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, color: 'white', textShadow:"4px 2px 4px black",fontWeight: 'bold', fontSize: '100px', padding: '0 20px' }}>{obj.rank}</span>
+                                    </div>
+                                </MovieSpan>
+                            </div>
+                        )
+                    }
+                    return null;
+                    })}
+            </Slider>
+            <MovieDetailModal
+                    show={showMovieDetailModal}
+                    onCloseModal={onCloseModal}
+                    setShowMovieDetailModal={setShowMovieDetailModal}
+                    modalData={modalData}
+                    // postingBoardMovieId={postingBoardMovieId}
+            />
+        </OpendtApiContainer>
+    )
+}
 
 export default Main;

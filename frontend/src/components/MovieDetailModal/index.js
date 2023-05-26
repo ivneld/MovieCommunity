@@ -1,9 +1,10 @@
 import Modal from "../Modal";
 import React, { useCallback } from "react";
-import { Label, Button, Form } from "./styles";
+import { Label, Button, Form, MovieDiv } from "./styles";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-const MovieDetailModal = ({show, onCloseModal, content, postingBoardMovieId}) => {
+const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) => {
     const navigate = useNavigate();
 
     const onSubmit = useCallback(
@@ -14,19 +15,44 @@ const MovieDetailModal = ({show, onCloseModal, content, postingBoardMovieId}) =>
         },
         [postingBoardMovieId],
       );
-
     return(
-        <Modal show={show} onCloseModal={onCloseModal}>
-            <Form onSubmit={onSubmit}>
-                <Label>
-                <span>모달</span>
-                <div>상세정보 : {content}</div>
+        <>
+        {modalData &&
+            <Modal show={show} onCloseModal={onCloseModal}>
+                <Form onSubmit={onSubmit}>
+                    <Label>
+                        <img src={modalData.posterPath} height="300px" alt='포스터주소' />
+                        <div>
+                            <div style={{marginBottom:"20px"}}>
+                                <span style={{fontSize:"27.5px", fontWeight:"bold"}}>{modalData.movieNm}</span>
+                            </div>
+                            <div style={{display:"flex"}}>
+                                <div>
+                                    <MovieDiv>개봉일 : {modalData.openDt}</MovieDiv>
+                                    <MovieDiv>등급 : {modalData.watchGradeNm}</MovieDiv>
+                                </div>
+                                <div>
+                                    <MovieDiv>평점 : {modalData.voteAverage}</MovieDiv>
+                                    <MovieDiv>러닝타임 : {modalData.showTm}분</MovieDiv>
+                                </div>
+                            </div>
+                            <div>
+                                <MovieDiv>줄거리 : {modalData.overview}</MovieDiv>
+                            </div>
+                            {/* <div>
+                                <MovieDiv>{modalData.prdtStatNm}</MovieDiv>
+                            </div> */}
+                            <div style={{display:"flex"}}>
+                                <MovieDiv style={{marginRight:"175px"}}>⭐ {modalData.interest}</MovieDiv>
+                                <MovieDiv><Link to="/detail">+ 더보기</Link></MovieDiv>
+                            </div>
+                        </div>
                 </Label>
-                <Button type="submit">게시글 작성</Button>
-            </Form>
-        </Modal>
-
-        
+                    <Button type="submit">게시글 작성</Button>
+                </Form>
+            </Modal>
+        }
+        </>
     )
 }
 

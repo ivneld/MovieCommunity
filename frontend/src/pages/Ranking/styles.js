@@ -23,16 +23,17 @@ export const CategorySpan = styled.span`
 `
 
 export const OpendtApiContainer = styled.div`
-  margin-bottom: 100px;
+  
 `
 export const PosterContainer1 = styled.div`
-  cursor: pointer;
   display: flex;
   justify-content: center;
 `
 export const PosterContainer2 = styled.div`
   display: flex;
+  
   margin-top: 10px;
+
 `
 export const MovieImg = styled.img`
   height: 400;

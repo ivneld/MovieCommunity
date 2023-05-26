@@ -60,3 +60,13 @@
     margin-bottom: 30px;
     color: azure;
 }
+
+.form-item {
+    display: flex;
+    margin: 5px 0;
+}
+
+#duplicate{
+    margin-left: 5px;
+    width: 153px;
+}
