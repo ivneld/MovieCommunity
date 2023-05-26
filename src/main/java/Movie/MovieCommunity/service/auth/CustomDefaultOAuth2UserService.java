@@ -2,7 +2,7 @@ package Movie.MovieCommunity.service.auth;
 
 import Movie.MovieCommunity.JPADomain.Authority;
 import Movie.MovieCommunity.JPADomain.Member;
-import Movie.MovieCommunity.JPADomain.user.Provider;
+import Movie.MovieCommunity.JPADomain.Provider;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.config.security.auth.OAuth2UserInfoFactory;

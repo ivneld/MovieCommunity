@@ -1,4 +1,4 @@
-package Movie.MovieCommunity.JPADomain.user;
+package Movie.MovieCommunity.JPADomain;
 
 public enum Provider {
     local,

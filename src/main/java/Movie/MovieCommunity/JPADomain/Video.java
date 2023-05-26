@@ -20,9 +20,9 @@ public class Video {
     private String videoType;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
-    private JpaMovie movie;
+    private Movie movie;
     @Builder
-    public Video(String name, String siteName, String url, String videoType, JpaMovie movie) {
+    public Video(String name, String siteName, String url, String videoType, Movie movie) {
         this.name = name;
         this.siteName = siteName;
         this.url = url;
