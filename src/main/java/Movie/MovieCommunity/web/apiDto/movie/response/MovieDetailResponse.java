@@ -28,11 +28,11 @@ public class MovieDetailResponse {
     private List<String> ott = new ArrayList<>();
 
     private List<CreditDto> credits = new ArrayList<>();
-    private List<MonthWeekDto> monthWeeks = new ArrayList<>();
+    private List<WeeklyRankingResponse> weeklyRanks = new ArrayList<>();
 
-    private List<ShortCommentDto> shortComments = new ArrayList<>();
+//    private List<ShortCommentDto> shortComments = new ArrayList<>();
 //    private String directorNm;
-    private List<BoardDto> boards = new ArrayList<>();
+//    private List<BoardDto> boards = new ArrayList<>();
 
     private List<SeriesDto> series = new ArrayList<>();
     private String videoUrl;

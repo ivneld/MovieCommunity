@@ -7,9 +7,11 @@ import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
 import Movie.MovieCommunity.dataCollection.MovieDataService;
+import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -120,11 +122,14 @@ public class MovieService {
                 Credit credit = mc.getCredit();
                 movieDetailResponse.addCredit(new CreditDto(credit.getId(), credit.getActorNm(), credit.getProfile_path(), credit.getCreditCategory()));
             }
-            List<SeriesDto> seriesDtos = movieDataService.selectSeries(movie.getCollectionId());
-            for (SeriesDto seriesDto : seriesDtos) {
-                movieDataService.collectByTmId(seriesDto.getId());
+            movieDetailResponse.setWeeklyRanks(getWeeklyRankingResponses(movie));
+            if(movie.getCollectionId()!=null && movie.getCollectionId() != 0) {
+                List<SeriesDto> seriesDtos = movieDataService.selectSeries(movie.getCollectionId());
+                for (SeriesDto seriesDto : seriesDtos) {
+                    movieDataService.collectByTmId(seriesDto.getId());
+                }
+                movieDetailResponse.setSeries(seriesDtos);
             }
-            movieDetailResponse.setSeries(seriesDtos);
             return movieDetailResponse;
         }catch(EntityNotFoundException e){
 
@@ -171,5 +176,35 @@ public class MovieService {
             }
         }
         return result;
+    }
+
+    public List<WeeklyRankingResponse> findWeeklyRank(Long movieId) {
+        Movie movie = movieRepository.findById(movieId).orElseThrow();
+        return getWeeklyRankingResponses(movie);
+    }
+
+    private List<WeeklyRankingResponse> getWeeklyRankingResponses(Movie movie) {
+        List<JpaWeeklyBoxOffice> weeklyList = weeklyBoxOfficeRepository.findByMovieCdOrderByYearWeekTime(movie.getMovieCd());
+        List<WeeklyRankingResponse> weeklyRankingResponses = new ArrayList<>();
+        for (JpaWeeklyBoxOffice w : weeklyList) {
+            System.out.println("w = " + w);
+            WeeklyRankingResponse response = WeeklyRankingResponse.builder()
+                    .rank(w.getRanking())
+                    .rankInten(w.getRankInten())
+                    .rankOldAndNew(w.getRankOldAndNew())
+                    .build();
+            String date = w.getShowRange().substring(0, 8);
+            System.out.println("date = " + date);
+            int year = Integer.parseInt(date.substring(0, 4));
+            int month = Integer.parseInt(date.substring(4, 6));
+            int day = Integer.parseInt(date.substring(6, 8));
+            String currentWeekOfMonth = CalendarUtil.getCurrentWeekOfMonth(year,month,day);
+            String[] split = currentWeekOfMonth.split(",");
+            String week = year +"년 "+ split[0]+"월 "+split[1]+"주차";
+
+            response.setWeek(week);
+            weeklyRankingResponses.add(response);
+        }
+        return weeklyRankingResponses;
     }
 }
