@@ -6,13 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Getter
 @Table(name = "company")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JpaCompany {
+public class Company {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "company_id")
     private Long id;
@@ -32,10 +31,11 @@ public class JpaCompany {
 //        this.companyNmEn = companyDto.getCompanyNmEn();
 //        this.companyPartNm = companyDto.getCompanyPartNm();
 //    }
-public JpaCompany(CompanyDto companyDto) {
+public Company(CompanyDto companyDto) {
     this.companyCd = companyDto.getCompanyCd();
     this.companyNm = companyDto.getCompanyNm();
     this.companyNmEn = companyDto.getCompanyNmEn();
     this.companyPartNm = companyDto.getCompanyPartNm();
 }
+
 }

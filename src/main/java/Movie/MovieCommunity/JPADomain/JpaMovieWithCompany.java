@@ -1,7 +1,5 @@
 package Movie.MovieCommunity.JPADomain;
 
-import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,15 +14,15 @@ public class JpaMovieWithCompany {
     @Column(name = "movie_with_company_id")
     private Long id;
 
-    public JpaMovieWithCompany(JpaMovie movie, JpaCompany company) {
+    public JpaMovieWithCompany(Movie movie, Company company) {
         this.movie = movie;
         this.company = company;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id")
-    private JpaMovie movie;
+    private Movie movie;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name="company_id")
-    private JpaCompany company;
+    private Company company;
 }

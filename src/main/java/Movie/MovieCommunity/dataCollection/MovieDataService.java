@@ -7,25 +7,29 @@ import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.domain.*;
 
-import com.querydsl.core.Tuple;
+import Movie.MovieCommunity.naverApi.ApiExamTranslateNmt;
+import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import info.movito.themoviedbapi.TmdbApi;
 import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.TmdbSearch;
 import info.movito.themoviedbapi.model.Collection;
+import info.movito.themoviedbapi.model.CollectionInfo;
 import info.movito.themoviedbapi.model.MovieDb;
 import info.movito.themoviedbapi.model.core.MovieResultsPage;
+import info.movito.themoviedbapi.model.people.PersonCast;
+import info.movito.themoviedbapi.model.people.PersonCrew;
 import kr.or.kobis.kobisopenapi.consumer.rest.KobisOpenAPIRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -37,6 +41,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+//@Component
 public class MovieDataService {
 
 
@@ -53,10 +58,12 @@ public class MovieDataService {
     private final MemberRepository memberRepository;
 //    private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final ApiExamTranslateNmt apiExamTranslateNmt;
     @Autowired
+
     private final EntityManager em;
 
-    private String imageBaseUrl = "https://image.tmdb.org/t/p/w500/";
+    private String imageBaseUrl = "https://image.tmdb.org/t/p/w500";
     private String youtubeBaseUrl = "https://www.youtube.com/watch?v=";
     private String vimeoBaseUrl = "https://vimeo.com/";
     @Value("${movie.secret}")
@@ -72,17 +79,23 @@ public class MovieDataService {
     private HashMap<String, EtcData> etcData = new HashMap<>();
 
 
+//    @PostConstruct
+//    @EventListener(ApplicationReadyEvent.class)
+    //@Transactional
     @PostConstruct
     public void Testing() throws Exception {
         System.out.println("key = " + key[0]);
+//        apiExamTranslateNmt.translation("hello");
 
         // 2018로 넘겨줄시 2018~2023 현재까지 조회(조회 순서는 최신 순)
-//        movieDataCollection("2018");
+//        movieDataCollection("2023");
 
 
 
+//        JpaMovie jpaMovie = new JpaMovie("토르: 러브 앤 썬더");
+//        JpaMovie save = movieRepository.save(jpaMovie);
 //        String searchTitle = "토르: 러브 앤 썬더";
-//        tmdbSearch(searchTitle);
+//        tmdbSearch(searchTitle,save );
 
 
 
@@ -91,7 +104,7 @@ public class MovieDataService {
 
 
 
-        //yearWeeklyBoxOfficeData("20220101");
+//        yearWeeklyBoxOfficeData("20230101");
         //movieDetailData();
 /*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
         List<Movie> list = movieRepository.findByFilter(cond);
@@ -102,7 +115,30 @@ public class MovieDataService {
 //        setMovieEtcData("2022");
 //        log.info("data={}",etcData);
 
-        //countEtc();         // 실행 전 메서드 주석 참고!
+//        countEtc();         // 실행 전 메서드 주석 참고!
+    }
+
+    public List<SeriesDto> selectSeries(Integer collectionId) {
+        List<SeriesDto> seriesDtos = new ArrayList<>();
+        TmdbApi tmdbApi = new TmdbApi(tmdbKey);
+
+        CollectionInfo collectionInfo = tmdbApi.getCollections().getCollectionInfo(collectionId, "ko-kr");
+        for (Collection part : collectionInfo.getParts()) {
+//            System.out.println("part.getId() = " + part.getId());
+//            System.out.println("part.getName() = " + part.getName());
+//            System.out.println("part.getTitle() = " + part.getTitle());
+//            System.out.println("part.getPosterPath() = " + part.getPosterPath());
+//            System.out.println("part.getReleaseDate() = " + part.getReleaseDate());
+//            System.out.println("part.getBackdropPath() = " + part.getBackdropPath());
+            SeriesDto seriesDto = SeriesDto.builder()
+                    .id(part.getId())
+                    .imageUrl(imageBaseUrl+part.getPosterPath())
+                    .title(part.getTitle())
+                    .year(Integer.valueOf(part.getReleaseDate().substring(0, 4)))
+                    .build();
+            seriesDtos.add(seriesDto);
+        }
+        return seriesDtos;
     }
 
     /**
@@ -116,10 +152,10 @@ public class MovieDataService {
         Member member3 = new Member("email3@naver.com", "password", "nickname3", Authority.USER);
         Member member4 = new Member("email4@naver.com", "password", "nickname4", Authority.USER);
 
-        Optional<JpaMovie> movie1 = movieRepository.findById(1l);
-        Optional<JpaMovie> movie2 = movieRepository.findById(2l);
-        Optional<JpaMovie> movie3 = movieRepository.findById(3l);
-        Optional<JpaMovie> movie4 = movieRepository.findById(4l);
+        Optional<Movie> movie1 = movieRepository.findById(1l);
+        Optional<Movie> movie2 = movieRepository.findById(2l);
+        Optional<Movie> movie3 = movieRepository.findById(3l);
+        Optional<Movie> movie4 = movieRepository.findById(4l);
 
         memberRepository.save(member1);
         memberRepository.save(member2);
@@ -295,9 +331,9 @@ public class MovieDataService {
         movieDto.setPrdtStatNm(prdtStatNm);
         movieDto.setTypeNm(typeNm);
         threadMovie.set(movieDto);
-        JpaMovie movie = new JpaMovie(movieDto);
+        Movie movie = new Movie(movieDto);
 
-        JpaMovie savedMovie = movieRepository.save(movie);
+        Movie savedMovie = movieRepository.save(movie);
         keyNames.add("nationNm");
         JSONArrayExtracted(movieInfo,"nations", keyNames, null, savedMovie);
 
@@ -309,9 +345,9 @@ public class MovieDataService {
         keyNames.add("peopleNm");
         JSONArrayExtracted(movieInfo,"directors", keyNames, null, savedMovie);
 
-        keyNames.add("peopleNm");
-        keyNames.add("cast");
-        JSONArrayExtracted(movieInfo,"actors", keyNames, new ActorDto(), savedMovie);
+//        keyNames.add("peopleNm");
+//        keyNames.add("cast");
+//        JSONArrayExtracted(movieInfo,"actors", keyNames, new ActorDto(), savedMovie);
 
         keyNames.add("companyCd");
         keyNames.add("companyNm");
@@ -340,21 +376,21 @@ public class MovieDataService {
         return true;
     }
     @Transactional(propagation = Propagation.REQUIRED)
-    public void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, JpaMovie movie) {
+    public void JSONArrayExtracted(JSONObject havingJsonArray, String arrayName, List<String> keyNames, Object domain, Movie movie) {
         MovieDto movieDto = threadMovie.get();
         JSONArray array = (JSONArray) havingJsonArray.get(arrayName);
         CompanyDto companyDto = null;
-        JpaActor actor = null;
+        Credit actor = null;
         String cast =null;
-        JpaMovieWithActor jpaMovieWithActor = null;
+        MovieWithCredit movieWithCredit = null;
         for(int i=0;i<array.size();i++)
         {
             if (domain instanceof CompanyDto) {
                 companyDto = (CompanyDto) domain;
             }
              else if(domain instanceof ActorDto){
-                 jpaMovieWithActor = new JpaMovieWithActor();
-                jpaMovieWithActor.setMovie(movie);
+                 movieWithCredit = new MovieWithCredit();
+                movieWithCredit.setMovie(movie);
             }
 
 
@@ -365,12 +401,12 @@ public class MovieDataService {
                 if (domain != null) {
                     if (domain instanceof GenreDto) {
                         JpaMovieWithGenre jpaMovieWithGenre;
-                        JpaGenre genre = new JpaGenre(data);
-                        Optional<JpaGenre> genreNm = genreRepository.findByGenreNm(data); // 장르가 있으면 패스, 없으면 저장
+                        Genre genre = new Genre(data);
+                        Optional<Genre> genreNm = genreRepository.findByGenreNm(data); // 장르가 있으면 패스, 없으면 저장
                         if (genreNm.isPresent()) {
                             jpaMovieWithGenre = new JpaMovieWithGenre(movie, genreNm.get());
                         } else{
-                            JpaGenre savedGenre = genreRepository.save(genre);
+                            Genre savedGenre = genreRepository.save(genre);
                             jpaMovieWithGenre = new JpaMovieWithGenre(movie, savedGenre);
                         }
                         movieWithGenreRepository.save(jpaMovieWithGenre);
@@ -378,18 +414,18 @@ public class MovieDataService {
                     }
                     else if (domain instanceof ActorDto) {
                         if (keyNames.get(j).equals("peopleNm")) {
-                             actor = new JpaActor(data);
-                            Optional<JpaActor> actorNm = actorRepository.findByActorNm(data); // 장르가 있으면 패스, 없으면 저장
+                             actor = new Credit(data);
+                            Optional<Credit> actorNm = actorRepository.findByActorNm(data); // 장르가 있으면 패스, 없으면 저장
                             if (actorNm.isPresent()) {
-                                jpaMovieWithActor.setActor(actorNm.get());
+                                movieWithCredit.setCredit(actorNm.get());
                             } else{
-                                JpaActor savedActor = actorRepository.save(actor);
-                                jpaMovieWithActor.setActor(savedActor);
+                                Credit savedActor = actorRepository.save(actor);
+                                movieWithCredit.setCredit(savedActor);
                             }
                         }
                         else if (keyNames.get(j).equals("cast")) {
                             cast = data;
-                            jpaMovieWithActor.setCast(data);
+                            movieWithCredit.setCast(data);
                         }
 
                     } else if (domain instanceof CompanyDto) {
@@ -418,14 +454,14 @@ public class MovieDataService {
             }
             if (domain instanceof ActorDto){
 
-                jpaMovieWithActor.updateData(movie,cast);
-                movieWithActorRepository.save(jpaMovieWithActor);
+                movieWithCredit.updateData(movie,cast);
+                movieWithActorRepository.save(movieWithCredit);
 
             }
             else if (domain instanceof CompanyDto) {
-                JpaCompany jpaCompany = new JpaCompany(companyDto);
-                companyRepository.save(jpaCompany);
-                JpaMovieWithCompany jpaMovieWithCompany = new JpaMovieWithCompany(movie, jpaCompany);
+                Company company = new Company(companyDto);
+                companyRepository.save(company);
+                JpaMovieWithCompany jpaMovieWithCompany = new JpaMovieWithCompany(movie, company);
 
                 movieWithCompanyRepository.save(jpaMovieWithCompany);
             }
@@ -538,7 +574,7 @@ public class MovieDataService {
         for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
 
             if(movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
-                JpaMovie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
+                Movie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
 
                 if (movie.getSalesAcc() == null || movie.getSalesAcc() < weeklyBoxOffice.getSalesAcc()) {
                     movie.setSalesAcc(weeklyBoxOffice.getSalesAcc());
@@ -553,9 +589,9 @@ public class MovieDataService {
 
 //                    List<JpaMovieWithActor> allActor = movieWithActorRepository.findAllActor(movie.getId());
 //                    allActor.stream().forEach(actor -> actor.getActor().setTopMovieCnt(actor.getActor().getTopMovieCnt() + 1));
-                    List<JpaMovieWithActor> movieWithActors = movieWithActorRepository.findByMovieId(movie.getId());
-                    for (JpaMovieWithActor movieWithActor : movieWithActors) {
-                        JpaActor actor = actorRepository.findById(movieWithActor.getActor().getId()).get();
+                    List<MovieWithCredit> movieWithCredits = movieWithActorRepository.findByMovieId(movie.getId());
+                    for (MovieWithCredit movieWithCredit : movieWithCredits) {
+                        Credit actor = actorRepository.findById(movieWithCredit.getCredit().getId()).get();
                         actor.countTopMovieCnt();
                         actorRepository.save(actor);
                     }
@@ -575,18 +611,15 @@ Vimeo: https://vimeo.com/
      */
 
 
-    public void tmdbSearch(String searchTitle, JpaMovie jpaMovie){
-
-
+    public void tmdbSearch(String searchTitle, Movie jpaMovie) throws ParseException {
         TmdbApi tmdbApi = new TmdbApi(tmdbKey);
-
+//        tmdbApi.getPeople().getPersonInfo("")
         Optional<Integer> optionalMovie = searchMovie(tmdbApi, searchTitle);
         if (optionalMovie.isPresent()){ // 영화 데이터가 있을 경우
             TmdbResponseDto tmdbResponseDto = tmdbResponseDtoThreadLocal.get();
             Integer movieId = optionalMovie.get();
             TmdbMovies movies = tmdbApi.getMovies();
-            MovieDb movie = movies.getMovie(movieId, "ko-kr", TmdbMovies.MovieMethod.videos);// 영화 상세 데이터 비디오 url 포함
-
+            MovieDb movie = movies.getMovie(movieId, "ko-kr", TmdbMovies.MovieMethod.videos, TmdbMovies.MovieMethod.credits);// 영화 상세 데이터 비디오 url 포함
             Collection movieCollection = movie.getBelongsToCollection();
             if (movieCollection != null) {
                 int collectionId = movieCollection.getId();
@@ -603,6 +636,9 @@ Vimeo: https://vimeo.com/
                 tmdbResponseDto.setCollectionBackdropPath(collectionBackdropPath);
                 tmdbResponseDto.setCollectionPosterPath(collectionPosterPath);
             }
+//            List<ProductionCompany> productionCompanies = movie.getProductionCompanies();
+
+
 //            System.out.println("movie.getVideos() = " + movie.getVideos());
             if (movie.getVideos().size() != 0){
                 List<Video> tmdbTests = movie.getVideos().stream().map(video -> Video.builder()
@@ -617,9 +653,74 @@ Vimeo: https://vimeo.com/
             }else{
                 log.error("TMDB 영화 비디오가 없습니다.");
             }
+            if(movie.getCredits().getCast().size() != 0){
+                int i =0;
+                Credit credit= null;
+                for (PersonCast cast : movie.getCredits().getCast()) {
+                    if (i<10) {
+                        try{String transName = apiExamTranslateNmt.translation(cast.getName());
+                            credit = Credit.builder()
+                                    .tmCreditId(Long.valueOf(cast.getId()))
+                                    .actorNm(transName)
+                                    .profile_path(imageBaseUrl + cast.getProfilePath())
+                                    .creditCategory(CreditCategory.ACTOR)
+                                    .build();}
+                        catch (RuntimeException e){
+                            credit = Credit.builder()
+                                    .tmCreditId(Long.valueOf(cast.getId()))
+                                    .actorNm(cast.getName())
+                                    .profile_path(imageBaseUrl + cast.getProfilePath())
+                                    .creditCategory(CreditCategory.ACTOR)
+                                    .build();
+                        }
+                        actorRepository.save(credit);
+                        MovieWithCredit ma = credit.addMovieWithActor(jpaMovie, cast.getCharacter());
+                        movieWithActorRepository.save(ma);
+                    }else{
+                        break;
+                    }
+                    i++;
+                }
+            }else{
+                log.error("TMDB 영화 배우가 없습니다.");
+            }if(movie.getCredits().getCrew().size() != 0){
+                for (PersonCrew crew : movie.getCredits().getCrew()) {
+                    if(crew.getJob().equals("Director")) {
+                        Credit credit = null;
+                        try{
+                        String transName = apiExamTranslateNmt.translation(crew.getName());
+                            credit = Credit.builder()
+                                    .tmCreditId(Long.valueOf(crew.getId()))
+                                    .actorNm(transName)
+                                    .profile_path(imageBaseUrl + crew.getProfilePath())
+                                    .creditCategory(CreditCategory.CREW)
+                                    .build();}
+                        catch (RuntimeException e){
+                            credit = Credit.builder()
+                                    .tmCreditId(Long.valueOf(crew.getId()))
+                                    .actorNm(crew.getName())
+                                    .profile_path(imageBaseUrl + crew.getProfilePath())
+                                    .creditCategory(CreditCategory.CREW)
+                                    .build();
+                        }
+
+                        actorRepository.save(credit);
+                        MovieWithCredit ma = credit.addMovieWithActor(jpaMovie, crew.getJob());
+                        movieWithActorRepository.save(ma);
+                    }
+                }
+//                movie.getCredits().getCrew().stream().filter(crew -> crew.getJob().equals("Director")).map(crew -> Credit.builder()
+//                        .tmActorId(Long.valueOf(crew.getId()))
+//                        .actorNm(crew.getName())
+//                        .profile_path(imageBaseUrl + crew.getProfilePath())
+//                        .creditCategory(CreditCategory.CREW)
+//                        .build());
+            }else{
+                log.error("TMDB 영화 감독, 출판 등이 없습니다.");
+            }
+
 
         }
-
     }
 
     private Optional<Integer> searchMovie(TmdbApi tmdbApi, String searchTitle) {
@@ -675,5 +776,36 @@ Vimeo: https://vimeo.com/
         return id;
     }
 
+    public void collectByTmId(int tmId) {
+        try {
+            if (movieRepository.findByTmId(tmId).isEmpty()) {
+                TmdbApi tmdbApi = new TmdbApi(tmdbKey);
+                MovieDb tmMovie = tmdbApi.getMovies().getMovie(Math.toIntExact(tmId), "ko-kr");
+                String releaseDate = tmMovie.getReleaseDate().replace("-", "");
+                String nationNm = tmMovie.getProductionCountries().get(0).getName();
+
+                Movie movie = Movie.builder()
+                        .movieNm(tmMovie.getTitle())
+                        .showTm(tmMovie.getRuntime())
+                        .openDt(Integer.valueOf(releaseDate))
+                        .prdtStatNm(tmMovie.getStatus().equals("Released") ? "개봉" : "개봉예정")
+                        .nationNm(nationNm)
+//                    .watchGradeNm()
+                        .build();
+                tmdbSearch(tmMovie.getTitle(), movie);
+
+                TmdbResponseDto tmdbResponseDto = tmdbResponseDtoThreadLocal.get();
+                if(tmdbResponseDto != null){
+                    movie.addTmdbData(tmdbResponseDto);
+//            System.out.println("tmdbResponseDto = " + tmdbResponseDto);
+                    tmdbResponseDtoThreadLocal.remove();
+                    movieRepository.save(movie);
+                }
+            }
+        }catch(ParseException e){
+
+        }
+
+    }
 
 }

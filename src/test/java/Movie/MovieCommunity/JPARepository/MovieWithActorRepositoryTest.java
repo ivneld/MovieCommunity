@@ -1,6 +1,6 @@
 package Movie.MovieCommunity.JPARepository;
 
-import Movie.MovieCommunity.JPADomain.JpaMovieWithActor;
+import Movie.MovieCommunity.JPADomain.MovieWithCredit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,17 +18,17 @@ class MovieWithActorRepositoryTest {
     MovieWithActorRepository movieWithActorRepository;
     @Test
     public void find(){
-        List<JpaMovieWithActor> mwaList = movieWithActorRepository.findAll();
-        for (JpaMovieWithActor jpaMovieWithActor : mwaList) {
-            System.out.println("jpaMovieWithActor = " + jpaMovieWithActor);
+        List<MovieWithCredit> mwaList = movieWithActorRepository.findAll();
+        for (MovieWithCredit movieWithCredit : mwaList) {
+            System.out.println("jpaMovieWithActor = " + movieWithCredit);
         }
     }
 
     @Test
     public void QueryFindAll(){
-        List<JpaMovieWithActor> mwaList = em.createQuery("select mwa from moviewithactor mwa", JpaMovieWithActor.class).getResultList();
-        for (JpaMovieWithActor jpaMovieWithActor : mwaList) {
-            System.out.println("jpaMovieWithActor = " + jpaMovieWithActor);
+        List<MovieWithCredit> mwaList = em.createQuery("select mwa from moviewithactor mwa", MovieWithCredit.class).getResultList();
+        for (MovieWithCredit movieWithCredit : mwaList) {
+            System.out.println("jpaMovieWithActor = " + movieWithCredit);
         }
 
     }

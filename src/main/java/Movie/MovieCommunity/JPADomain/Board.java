@@ -39,7 +39,7 @@ public class Board extends BaseTimeEntity{
     private Member member;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id")
-    private JpaMovie movie;
+    private Movie movie;
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 //    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -58,7 +58,7 @@ public class Board extends BaseTimeEntity{
         this.movie = boardForm.getMovie();
     }
     @Builder
-    public Board(String title, String content, Member member, JpaMovie movie) {
+    public Board(String title, String content, Member member, Movie movie) {
         this.title = title;
         this.content = content;
         this.member = member;

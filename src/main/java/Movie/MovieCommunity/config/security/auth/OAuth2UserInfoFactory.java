@@ -1,6 +1,6 @@
 package Movie.MovieCommunity.config.security.auth;
 
-import Movie.MovieCommunity.JPADomain.user.Provider;
+import Movie.MovieCommunity.JPADomain.Provider;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.config.security.auth.provider.Google;
 import Movie.MovieCommunity.config.security.auth.provider.Kakao;

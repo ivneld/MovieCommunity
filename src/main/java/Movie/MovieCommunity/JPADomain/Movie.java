@@ -2,14 +2,13 @@ package Movie.MovieCommunity.JPADomain;
 
 import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import Movie.MovieCommunity.JPADomain.dto.TmdbResponseDto;
-import Movie.MovieCommunity.dataCollection.MovieDataService;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,18 +53,21 @@ staffRoleNm	문자열	스텝역할명을 출력합니다.
 @Table(name="movie")
 @Entity(name = "movie")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JpaMovie {
+public class Movie {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "movie_id")
     private Long id;
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String movieCd;
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String movieNm;
 
-    public JpaMovie(Long id, String movieCd, String movieNm, Integer showTm, Integer openDt, String prdtStatNm, String typeNm, String nationNm, String directorNm, String auditNo, String watchGradeNm, int topScore, Long salesAcc, Long audiAcc, List<JpaMovieWithActor> movieWithActors, List<JpaMovieWithCompany> movieWithCompanies, List<JpaMovieWithGenre> movieWithGenres) {
-        this.id = id;
-        this.movieCd = movieCd;
+    public Movie(String movieNm) {
+        this.movieNm = movieNm;
+    }
+
+    @Builder
+    public Movie(  String movieNm, Integer showTm, Integer openDt, String prdtStatNm, String typeNm, String nationNm, String directorNm, String auditNo, String watchGradeNm) {
         this.movieNm = movieNm;
         this.showTm = showTm;
         this.openDt = openDt;
@@ -75,12 +77,6 @@ public class JpaMovie {
         this.directorNm = directorNm;
         this.auditNo = auditNo;
         this.watchGradeNm = watchGradeNm;
-        this.topScore = topScore;
-        this.salesAcc = salesAcc;
-        this.audiAcc = audiAcc;
-        this.movieWithActors = movieWithActors;
-        this.movieWithCompanies = movieWithCompanies;
-        this.movieWithGenres = movieWithGenres;
     }
 
     @Override
@@ -109,9 +105,9 @@ public class JpaMovie {
 
     private Integer showTm;
     private Integer openDt;
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String prdtStatNm;
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private String typeNm;
     //     nations	문자열	제작국가를 나타냅니다.
     @Column()
@@ -135,7 +131,7 @@ public class JpaMovie {
     @Column()
     private String watchGradeNm;//	문자열	관람등급 명칭을 출력합니다.
 
-    public JpaMovie(MovieDto movieDto) {
+    public Movie(MovieDto movieDto) {
         this.movieCd = movieDto.getMovieCd();
         this.movieNm = movieDto.getMovieNm();
         this.showTm = movieDto.getShowTm();
@@ -143,7 +139,6 @@ public class JpaMovie {
         this.prdtStatNm = movieDto.getPrdtStatNm();
         this.typeNm = movieDto.getTypeNm();
         this.nationNm = movieDto.getNationNm();
-        this.directorNm = movieDto.getDirectorNm();
         this.auditNo = movieDto.getAuditNo();
         this.watchGradeNm = movieDto.getWatchGradeNm();
     }
@@ -173,7 +168,7 @@ public class JpaMovie {
     private Long audiAcc;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<JpaMovieWithActor> movieWithActors = new ArrayList<>();
+    private List<MovieWithCredit> movieWithCredits = new ArrayList<>();
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<JpaMovieWithCompany> movieWithCompanies = new ArrayList<>();
