@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class MovieWithGenreCountDto {
+    private Long genreId;
     private String genreNm;
     private Integer count;
 
