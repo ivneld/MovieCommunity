@@ -187,6 +187,7 @@ public class MovieService {
         List<JpaWeeklyBoxOffice> weeklyList = weeklyBoxOfficeRepository.findByMovieCdOrderByYearWeekTime(movie.getMovieCd());
         List<WeeklyRankingResponse> weeklyRankingResponses = new ArrayList<>();
         for (JpaWeeklyBoxOffice w : weeklyList) {
+            System.out.println("weeklyList.size() = " + weeklyList.size());
             System.out.println("w = " + w);
             WeeklyRankingResponse response = WeeklyRankingResponse.builder()
                     .rank(w.getRanking())
@@ -201,7 +202,7 @@ public class MovieService {
             String currentWeekOfMonth = CalendarUtil.getCurrentWeekOfMonth(year,month,day);
             String[] split = currentWeekOfMonth.split(",");
             String week = year +"년 "+ split[0]+"월 "+split[1]+"주차";
-
+            System.out.println("week = " + week);
             response.setWeek(week);
             weeklyRankingResponses.add(response);
         }
