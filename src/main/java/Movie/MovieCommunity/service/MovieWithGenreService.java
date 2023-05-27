@@ -1,6 +1,6 @@
 package Movie.MovieCommunity.service;
 
-import Movie.MovieCommunity.JPADomain.JpaGenre;
+import Movie.MovieCommunity.JPADomain.Genre;
 import Movie.MovieCommunity.JPADomain.dto.MovieWithGenreCountDto;
 import Movie.MovieCommunity.JPARepository.GenreRepository;
 import Movie.MovieCommunity.JPARepository.MovieWithGenreRepositoryCustom;
@@ -38,7 +38,7 @@ public class MovieWithGenreService {
         });
 
         for (MovieWithGenreCountDto movieWithGenreCountDto : result) {
-            JpaGenre jpaGenre = genreRepository.findByGenreNm(movieWithGenreCountDto.getGenreNm()).get();
+            Genre jpaGenre = genreRepository.findByGenreNm(movieWithGenreCountDto.getGenreNm()).get();
             movieWithGenreCountDto.setGenreId(jpaGenre.getId());
         }
         return result;
