@@ -4,7 +4,9 @@ import Movie.MovieCommunity.JPADomain.CreditCategory;
 import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
+import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -48,10 +50,12 @@ public class MovieApiController {
         MovieDetailResponse movieDetailResponse= movieService.movieDetail(movieId, memberId);
         return new ResponseEntity<>(movieDetailResponse, HttpStatus.OK);
     }
-    @GetMapping()
-    public ResponseEntity<?> test(@RequestParam CreditCategory creditCategory, @CurrentMember Long memberId){
-        System.out.println("creditCategory = " + creditCategory);
-        return null;
-    }
+//    @GetMapping("/{movieId}/weekly_rank")
+//    public ResponseEntity<?> findWeeklyRank(@PathVariable(name="movieId") Long movieId,int year,int month, int day){
+//        String currentWeekOfMonth = CalendarUtil.getCurrentWeekOfMonth(year, month, day);
+//        System.out.println("currentWeekOfMonth = " + currentWeekOfMonth);
+//        List<WeeklyRankingResponse> response = movieService.findWeeklyRank(movieId);
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
 }

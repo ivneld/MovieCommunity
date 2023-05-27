@@ -7,9 +7,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface WeeklyBoxOfficeRepository extends JpaRepository<JpaWeeklyBoxOffice, Long> {
 
     List<JpaWeeklyBoxOffice> findByRankingLessThan(Integer ranking);
     List<JpaWeeklyBoxOffice> findByOpenDtBetween(LocalDate startDt,LocalDate endDt);
+
+    List<JpaWeeklyBoxOffice> findByMovieCdOrderByYearWeekTime(String movieCd);
 }
