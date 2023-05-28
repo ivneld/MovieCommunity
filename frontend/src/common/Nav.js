@@ -29,18 +29,9 @@ function Nav(props) {
 							<Link className="nav-link" to="/upcomingmovies"><i className="fas"></i>상영예정작</Link>
 						</li>
 
-						{/* 장르별 */}
-						<li className="nav-item dropdown">
-
-							<div className="nav-link dropdown-toggle" id="navbarDropdown"
-								role="button" data-toggle="dropdown" aria-haspopup="true"
-								aria-expanded="false">장르별</div>
-
-							<div className="dropdown-menu" aria-labelledby="navbarDropdown">
-								<Link className="dropdown-item" to="/bbslist">로맨스</Link>
-								<Link className="dropdown-item" to="/bbswrite">액션</Link>
-								<Link className="dropdown-item" to="/bbswrite">틀만 구현한거임</Link>
-							</div>
+						{/* 장르별  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/genre"><i className="fas"></i>장르별</Link>
 						</li>
 
 						{/* 게시판  */}

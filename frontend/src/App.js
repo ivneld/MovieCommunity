@@ -41,6 +41,7 @@ function App() {
   const Ranking = loadable(() => import('./pages/Ranking'));
   const UpcomingMovies = loadable(() => import('./pages/UpcomingMovies'));
   const Detail = loadable(() => import('./pages/Detail'));
+  const Genre = loadable(() => import('./pages/Genre'));
   
   const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
@@ -93,7 +94,8 @@ function App() {
                 <Route path="/mypage" element={<MyPage />}/>
                 <Route path="/ranking" element={<Ranking />}/>
                 <Route path="/upcomingmovies" element={<UpcomingMovies />}/>
-                <Route path="/detail" element={<Detail />}/>
+                <Route path="/movie/:id" element={<Detail />}/>
+                <Route path="/genre" element={<Genre />}/>
             </Routes>
           </HttpHeadersProvider>
         </AuthProvider>

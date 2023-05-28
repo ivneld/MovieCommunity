@@ -1,0 +1,26 @@
+.slick-prev,
+.slick-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: white;
+  
+  border: none;
+  padding: 0px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.slick-prev:hover,
+.slick-next:hover {
+
+}
+
+.slick-prev {
+  left: 20px;
+}
+
+.slick-next {
+  right: 20px;
+}

@@ -44,7 +44,7 @@ const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) 
                             </div> */}
                             <div style={{display:"flex"}}>
                                 <MovieDiv style={{marginRight:"175px"}}>⭐ {modalData.interest}</MovieDiv>
-                                <MovieDiv><Link to="/detail">+ 더보기</Link></MovieDiv>
+                                <MovieDiv><Link to={`/movie/${modalData.id}`} key={modalData.id} state={{detail : modalData.id}}>+ 더보기</Link></MovieDiv>
                             </div>
                         </div>
                 </Label>
