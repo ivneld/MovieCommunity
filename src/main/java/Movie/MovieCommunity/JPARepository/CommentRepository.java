@@ -13,4 +13,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 //    Page<CommentDto> findByBoardId(Long boardId, Pageable pageable);
     //Page<CommentDto> findByBoardIdAndParentIdIsNull(Long boardId, Pageable pageable);
 //    Page<Comment> findByBoardIdAndParentIdIsNull(Long boardId, Pageable pageable);
+
+    List<Comment> findAllOrderByLikeCountDesc();
+
+    List<Comment> findTop8ByOrderByLikeCountDesc();
+
 }

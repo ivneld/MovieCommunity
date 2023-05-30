@@ -14,10 +14,13 @@ import Movie.MovieCommunity.web.apiDto.comment.CommentAPIRequest;
 import Movie.MovieCommunity.web.apiDto.comment.CommentDeleteAPIRequest;
 import Movie.MovieCommunity.web.apiDto.comment.CommentUpdateAPIRequest;
 import Movie.MovieCommunity.web.form.CommentForm;
+import Movie.MovieCommunity.web.response.CommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -80,6 +83,51 @@ public class CommentService {
 
         commentRepository.delete(findComment.get());
         return true;
+    }
+
+    public List<CommentResponse> commentList() {
+        List<CommentResponse> result = new ArrayList<>();
+        List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc();
+        for (Comment comment : comments) {
+            result.add(CommentResponse.builder()
+                    .memberId(comment.getMember().getId())
+                    .username(comment.getMember().getUsername())
+                    .movieId(comment.getMovie().getId())
+                    .movieNm(comment.getMovie().getMovieNm())
+                    .content(comment.getContent())
+                    .likeCount(comment.getLikeCount())
+                    .build());
+
+        }
+        return result;
+    }
+
+    public List<CommentResponse> top8CommentList() {
+        List<CommentResponse> result = new ArrayList<>();
+        List<Comment> comments = commentRepository.findTop8ByOrderByLikeCountDesc();
+        for (Comment comment : comments) {
+            result.add(CommentResponse.builder()
+                    .memberId(comment.getMember().getId())
+                    .username(comment.getMember().getUsername())
+                    .movieId(comment.getMovie().getId())
+                    .movieNm(comment.getMovie().getMovieNm())
+                    .content(comment.getContent())
+                    .likeCount(comment.getLikeCount())
+                    .build());
+
+        }
+        return result;
+    }
+
+    public Integer plusLike(Long commentId, Long memberId) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        DefaultAssert.isOptionalPresent(comment);
+
+        Optional<Member> member = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(member);
+
+        Integer result = comment.get().plusLikeCount();
+        return result;
     }
 
     private boolean checkMine(CommentAPI commentUpdateAPIRequest, Optional<Member> findMember) {
