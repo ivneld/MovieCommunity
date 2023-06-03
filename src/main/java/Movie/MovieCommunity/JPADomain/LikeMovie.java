@@ -1,5 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,4 +20,9 @@ public class LikeMovie {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id", nullable = false)
     private Movie movie;
+    @Builder
+    public LikeMovie(Member member, Movie movie) {
+        this.member = member;
+        this.movie = movie;
+    }
 }

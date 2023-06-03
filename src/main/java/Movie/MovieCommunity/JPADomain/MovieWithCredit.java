@@ -46,4 +46,7 @@ public class MovieWithCredit {
         this.credit = credit;
         this.cast = cast;
     }
+    public void updateCast(String cast){
+        this.cast =cast;
+    }
 }
