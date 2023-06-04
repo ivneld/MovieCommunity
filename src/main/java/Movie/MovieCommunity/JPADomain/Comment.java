@@ -19,8 +19,9 @@ public class Comment extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String content;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name ="member_id", nullable = false)
     private Member member;
@@ -35,7 +36,7 @@ public class Comment extends BaseTimeEntity{
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> children = new ArrayList<>();
 
-
+    private Integer likeCount;
     @Override
     public String toString() {
         return "Comment{" +
@@ -54,6 +55,12 @@ public class Comment extends BaseTimeEntity{
         this.member = commentForm.getMember();
         this.movie = commentForm.getMovie();
         this.parent = commentForm.getParent();
+        this.likeCount = 0;
+    }
+
+    public Integer plusLikeCount() {
+        this.likeCount += 1;
+        return likeCount;
     }
 }
 
