@@ -29,7 +29,6 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
-//    private final BoardRepository boardRepository;
     private final MovieRepository movieRepository;
     public CommentForm write(CommentAPIRequest commentAPIRequest, Long memberId){
         Optional<Member> findMember = memberRepository.findById(memberId);
@@ -85,6 +84,7 @@ public class CommentService {
         return true;
     }
 
+//    movieNm 삭제
     public List<CommentResponse> commentList() {
         List<CommentResponse> result = new ArrayList<>();
         List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc();
@@ -93,11 +93,9 @@ public class CommentService {
                     .memberId(comment.getMember().getId())
                     .username(comment.getMember().getUsername())
                     .movieId(comment.getMovie().getId())
-                    .movieNm(comment.getMovie().getMovieNm())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
                     .build());
-
         }
         return result;
     }
@@ -110,7 +108,6 @@ public class CommentService {
                     .memberId(comment.getMember().getId())
                     .username(comment.getMember().getUsername())
                     .movieId(comment.getMovie().getId())
-                    .movieNm(comment.getMovie().getMovieNm())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
                     .build());
