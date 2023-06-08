@@ -72,4 +72,7 @@ public class Credit {
         movieWithCredits.add(ma);
         return ma;
     }
+    public void updateNm(String name){
+        this.actorNm = name;
+    }
 }

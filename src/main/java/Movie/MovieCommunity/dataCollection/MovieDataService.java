@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -85,38 +86,23 @@ public class MovieDataService {
     @PostConstruct
     public void Testing() throws Exception {
         System.out.println("key = " + key[0]);
-//        apiExamTranslateNmt.translation("hello");
-
         // 2018로 넘겨줄시 2018~2023 현재까지 조회(조회 순서는 최신 순)
 //        movieDataCollection("2023");
 
-
-
-//        JpaMovie jpaMovie = new JpaMovie("토르: 러브 앤 썬더");
-//        JpaMovie save = movieRepository.save(jpaMovie);
-//        String searchTitle = "토르: 러브 앤 썬더";
-//        tmdbSearch(searchTitle,save );
-
-
-
-//        InitData();// movieDataCollection("2022") 실행 후 사용
-
-
-
-
-//        yearWeeklyBoxOfficeData("20230101");
-        //movieDetailData();
-/*        MovieSearchCond cond = new MovieSearchCond(null, 20230201);
-        List<Movie> list = movieRepository.findByFilter(cond);
-        List<Movie> byPageNum = movieRepository.findByPageNum(list, 1);
-        log.info("list={}", byPageNum);*/
-//
-//        setMovieCd("2022");
-//        setMovieEtcData("2022");
-//        log.info("data={}",etcData);
+        // ! 주간 랭킹 데이터 있을경우만 startDate를 넣고 실행, 없으면 직접 넣기
+//        JpaWeeklyBoxOffice jpaWeeklyBoxOffice = weeklyBoxOfficeRepository.findLastByWeeklyId().orElseThrow(() -> new EntityNotFoundException("엔티티가 없습니다."));
+//        String getDate = jpaWeeklyBoxOffice.getShowRange().substring(0, 8);
+//        int year = Integer.parseInt(getDate.substring(0, 4));
+//        int month = Integer.parseInt(getDate.substring(4, 6));
+//        int day = Integer.parseInt(getDate.substring(6, 8));
+//        String startDate = LocalDate.of(year, month, day).plusWeeks(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//        yearWeeklyBoxOfficeData(startDate);
+        ///////////////////////////////////////////
 
 //        countEtc();         // 실행 전 메서드 주석 참고!
+
     }
+
 
     public List<SeriesDto> selectSeries(Integer collectionId) {
         List<SeriesDto> seriesDtos = new ArrayList<>();
@@ -130,11 +116,14 @@ public class MovieDataService {
 //            System.out.println("part.getPosterPath() = " + part.getPosterPath());
 //            System.out.println("part.getReleaseDate() = " + part.getReleaseDate());
 //            System.out.println("part.getBackdropPath() = " + part.getBackdropPath());
+            Integer year = null;
+            if(!part.getReleaseDate().isEmpty()){
+            year = Integer.valueOf(part.getReleaseDate().substring(0, 4));}
             SeriesDto seriesDto = SeriesDto.builder()
                     .id(part.getId())
                     .imageUrl(imageBaseUrl+part.getPosterPath())
                     .title(part.getTitle())
-                    .year(Integer.valueOf(part.getReleaseDate().substring(0, 4)))
+                    .year(year)
                     .build();
             seriesDtos.add(seriesDto);
         }
@@ -271,6 +260,10 @@ public class MovieDataService {
             for(int j=0;j< movieList.size();j++){
                 JSONObject movieData = (JSONObject)movieList.get(j);
                 String movieCd = (String)movieData.get("movieCd");
+                if (movieRepository.findByMovieCd(movieCd).isPresent()){
+                    log.error("영화 데이터가 있습니다.");
+                    continue;
+                }
                 //String movieNm = (String)movieData.get("movieNm");
                 boolean check = movieDetailData(movieCd, service);
                 if (!check){
@@ -511,6 +504,10 @@ public class MovieDataService {
 
                 String boxofficeType = (String) boxOfficeResult.get("boxofficeType");
                 String showRange = (String) boxOfficeResult.get("showRange");
+                if(showRange == null){
+                    log.info("주간 랭킹 데이터 수집 완료");
+                    break;
+                }
                 String stringDay = showRange.substring(0, 8);
                 LocalDate dateDay = LocalDate.parse(stringDay, formatter);
                 threadStartDay.set(dateDay);
@@ -781,13 +778,17 @@ Vimeo: https://vimeo.com/
             if (movieRepository.findByTmId(tmId).isEmpty()) {
                 TmdbApi tmdbApi = new TmdbApi(tmdbKey);
                 MovieDb tmMovie = tmdbApi.getMovies().getMovie(Math.toIntExact(tmId), "ko-kr");
-                String releaseDate = tmMovie.getReleaseDate().replace("-", "");
+//                System.out.println("tmMovie.getReleaseDate() = " + tmMovie.getReleaseDate());
+                Integer releaseDate = null;
+                if(!tmMovie.getReleaseDate().isEmpty()){
+                    releaseDate = Integer.valueOf(tmMovie.getReleaseDate().replace("-", ""));
+                }
                 String nationNm = tmMovie.getProductionCountries().get(0).getName();
 
                 Movie movie = Movie.builder()
                         .movieNm(tmMovie.getTitle())
                         .showTm(tmMovie.getRuntime())
-                        .openDt(Integer.valueOf(releaseDate))
+                        .openDt(releaseDate)
                         .prdtStatNm(tmMovie.getStatus().equals("Released") ? "개봉" : "개봉예정")
                         .nationNm(nationNm)
 //                    .watchGradeNm()
