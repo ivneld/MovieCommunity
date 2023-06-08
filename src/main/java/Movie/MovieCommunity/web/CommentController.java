@@ -39,6 +39,7 @@ public class CommentController {
     private final CommentService commentService;
 
 
+    // movie id need
     @Operation(method = "get", summary = "더보기 누르기 전 8개 댓글만")
     @ApiResponses(value=
     @ApiResponse(responseCode = "200", description = "댓글 조회 성공", content={@Content(mediaType = "application/json")})
