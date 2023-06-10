@@ -10,10 +10,10 @@ function Logout() {
 	
 	const logout = () => {
 		
-		localStorage.removeItem("bbs_access_token");
+		localStorage.removeItem("accessToken");
 		localStorage.removeItem("email");
 
-		console.log(auth + "님, 성공적으로 로그아웃 되었습니다 🔒");
+		console.log("성공적으로 로그아웃 되었습니다 🔒");
 		setAuth(null);
 		
 		navigate("/");

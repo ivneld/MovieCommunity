@@ -42,6 +42,7 @@ function App() {
   const UpcomingMovies = loadable(() => import('./pages/UpcomingMovies'));
   const Detail = loadable(() => import('./pages/Detail'));
   const Genre = loadable(() => import('./pages/Genre'));
+  const GenreMovies = loadable(() => import('./pages/GenreMovies'));
   
   const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
@@ -55,13 +56,13 @@ function App() {
       });
   };
 
-  const handleLogout = () => {
-    // localStorage.removeItem(ACCESS_TOKEN);
-    // localStorage.removeItem(REFRESH_TOKEN);
-    setAuthenticated(false);
-    setCurrentUser(null);
-    // Alert.success("로그아웃 했습니다.");
-  };
+  // const handleLogout = () => {
+  //   localStorage.removeItem("accessToken");
+  //   localStorage.removeItem("refreshToken");
+  //   setAuthenticated(false);
+  //   setCurrentUser(null);
+  //   // Alert.success("로그아웃 했습니다.");
+  // };
 
   useEffect(() => {
     loadCurrentlyLoggedInUser();
@@ -70,7 +71,7 @@ function App() {
   if (loading) {
     return <LoadingIndicator />;
   }
-
+  console.log(localStorage)
   return (
     <div>
       <BrowserRouter>
@@ -80,7 +81,7 @@ function App() {
         <AuthProvider>
           <HttpHeadersProvider>
             <RefreshToken/>
-            <Nav authenticated={authenticated} onLogout={handleLogout}/>
+            <Nav/>
             <Routes>
                 <Route path="/" element={<Main/>}/>
                 {/* <Route path="/boards" element={<Board/>}/>
@@ -89,13 +90,14 @@ function App() {
                 {/* <Route path="/movienm/:title" element={<Main/>}/> */}
                 <Route path="/auth/login" element={<Login authenticated={authenticated}/>}/>
                 <Route path="/auth/signup" element={<SignUp authenticated={authenticated}/>}/>
-                <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/>
+                {/* <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/> */}
                 <Route path="/logout" element={<Logout />}/>
                 <Route path="/mypage" element={<MyPage />}/>
                 <Route path="/ranking" element={<Ranking />}/>
                 <Route path="/upcomingmovies" element={<UpcomingMovies />}/>
                 <Route path="/movie/:id" element={<Detail />}/>
                 <Route path="/genre" element={<Genre />}/>
+                <Route path="/genre/:id" element={<GenreMovies />}/>
             </Routes>
           </HttpHeadersProvider>
         </AuthProvider>
@@ -111,22 +113,22 @@ function RefreshToken() {
   const { auth, setAuth } = useContext(AuthContext) || {};
   const { headers, setHeaders } = useContext(HttpHeadersContext) || {};
   const navigate = useNavigate();
-
+  
   const handleRefreshToken = async () => {
-	  const refreshToken = localStorage.getItem("bbs_refresh_token");
+	  const refreshToken = localStorage.getItem("refreshToken");
 	  try {
 		  const response = await axios.post("http://localhost:8080/auth/refresh", {refreshToken: refreshToken});
       const { accessToken } = response.data;
       console.log("토큰이 갱신되었습니다");
-      localStorage.setItem("bbs_access_token", accessToken);
+      localStorage.setItem("accessToken", accessToken);
       setHeaders({ "Authorization": `Bearer ${accessToken}` });
     } catch (error) {
       console.log("[Login.js] handleRefreshToken() error :<");
       console.log(error);
       console.log("토큰 갱신 실패");
 
-      localStorage.removeItem("bbs_access_token");
-      localStorage.removeItem("bbs_refresh_token");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       localStorage.removeItem("name");
       alert('refresh 토큰 만료로 로그아웃 됩니다')
       navigate('/logout');
@@ -134,9 +136,15 @@ function RefreshToken() {
 	}
 
 	useEffect(() => {
-	  const accessToken = localStorage.getItem("bbs_access_token");
+	  const accessToken = localStorage.getItem("accessToken");
 	  if (accessToken) { // Check if the access token is expired
-      const decodedToken = jwt_decode(accessToken);
+      let decodedToken;
+      try {
+        decodedToken = jwt_decode(accessToken);
+      } catch (error) {
+        console.log("토큰 디코드 오류:", error);
+        return;
+      }
       const interval = setInterval(() => {
         const currentTime = Math.floor(Date.now() / 1000);
         const timeRemaining = decodedToken.exp - currentTime;

@@ -82,10 +82,10 @@ function SocialLogin() {
   
 		console.log("성공적으로 로그인 되었습니다 🔐");
   
-		localStorage.setItem("bbs_access_token", accessToken);
-		localStorage.setItem("bbs_refresh_token", refreshToken);
+		localStorage.setItem("accessToken", accessToken);
+		localStorage.setItem("refreshToken", refreshToken);
 		setHeaders({ "Authorization": `Bearer ${accessToken}` });
-  
+		console.log(accessToken)
 		navigate("/");
 		window.location.reload();
 	  } catch (error) {

@@ -1,19 +1,24 @@
 package Movie.MovieCommunity.service;
 
 import Movie.MovieCommunity.JPADomain.*;
+import Movie.MovieCommunity.JPARepository.LikeMovieRepository;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPADomain.Comment;
 import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
+import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.dataCollection.MovieDataService;
+import Movie.MovieCommunity.naverApi.ApiExamTranslateNmt;
 import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.MovieSearchResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +26,6 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,6 +40,8 @@ public class MovieService {
     private final MemberRepository memberRepository;
     private final MovieDataService movieDataService;
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
+    private final ApiExamTranslateNmt apiExamTranslateNmt;
+    private final LikeMovieRepository likeMovieRepository;
 
     public List<YearRankingResponse> yearRanking(int openDt, Long memberId){
         Member member;
@@ -83,7 +89,7 @@ public class MovieService {
         }
         return response;
     }
-    @Transactional
+
     public MovieDetailResponse movieDetail(Long movieId, Long memberId){
         try {Member member;
             if(memberId != null){
@@ -120,7 +126,17 @@ public class MovieService {
             }
             for (MovieWithCredit mc : movie.getMovieWithCredits()) {
                 Credit credit = mc.getCredit();
-                movieDetailResponse.addCredit(new CreditDto(credit.getId(), credit.getActorNm(), credit.getProfile_path(), credit.getCreditCategory()));
+                try{
+                    System.out.println("credit.getActorNm() = " + credit.getActorNm());
+                    String tlName = apiExamTranslateNmt.translation(credit.getActorNm());
+                    credit.updateNm(tlName);
+                    System.out.println("mc.getCast() = " + mc.getCast());
+                    String tlCast = apiExamTranslateNmt.translation(mc.getCast());
+                    mc.updateCast(tlCast);}
+                catch (RuntimeException e){
+
+                }
+                movieDetailResponse.addCredit(new CreditDto(credit.getId(), credit.getActorNm(), credit.getProfile_path(), mc.getCast(), credit.getCreditCategory()));
             }
             movieDetailResponse.setWeeklyRanks(getWeeklyRankingResponses(movie));
             if(movie.getCollectionId()!=null && movie.getCollectionId() != 0) {
@@ -133,6 +149,8 @@ public class MovieService {
             return movieDetailResponse;
         }catch(EntityNotFoundException e){
 
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
 
         return null;
@@ -178,10 +196,6 @@ public class MovieService {
         return result;
     }
 
-    public List<WeeklyRankingResponse> findWeeklyRank(Long movieId) {
-        Movie movie = movieRepository.findById(movieId).orElseThrow();
-        return getWeeklyRankingResponses(movie);
-    }
 
     private List<WeeklyRankingResponse> getWeeklyRankingResponses(Movie movie) {
         List<JpaWeeklyBoxOffice> weeklyList = weeklyBoxOfficeRepository.findByMovieCdOrderByYearWeekTime(movie.getMovieCd());
@@ -207,5 +221,33 @@ public class MovieService {
             weeklyRankingResponses.add(response);
         }
         return weeklyRankingResponses;
+    }
+
+    public void interest(Long movieId, Long memberId) {
+        Optional<Movie> findMovie = movieRepository.findById(movieId);
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(findMovie);
+        DefaultAssert.isOptionalPresent(findMember);
+        Optional<LikeMovie> findLikeMovie = likeMovieRepository.findByMovieIdAndMemberId(movieId, memberId);
+        if(findLikeMovie.isPresent()){
+            likeMovieRepository.delete(findLikeMovie.get());
+        }else{
+            LikeMovie likeMovie = LikeMovie.builder()
+                    .movie(findMovie.get())
+                    .member(findMember.get()).build();
+            likeMovieRepository.save(likeMovie);
+        }
+    }
+
+    public List<MovieSearchResponse> movieSearch(String movieNm) {
+        List<Movie> movies = movieRepository.findTop5ByMovieNmStartingWith(movieNm);
+        List<MovieSearchResponse> responseList = movies.stream().map(m -> MovieSearchResponse.builder()
+                .id(m.getId())
+                .posterPath(m.getPosterPath())
+                .movieNm(m.getMovieNm())
+                .openDt(m.getOpenDt())
+                .build()
+        ).collect(Collectors.toList());
+        return responseList;
     }
 }

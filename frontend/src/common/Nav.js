@@ -7,6 +7,14 @@ function Nav(props) {
 
 	const { auth, setAuth } = useContext(AuthContext);
 	
+	const handleLogout = () => {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+		localStorage.removeItem("name")
+		setAuth(null)
+		console.log('로그아웃!')
+	  };
+
 	return (
 		<nav className="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
 			<div className="container">
@@ -16,7 +24,7 @@ function Nav(props) {
 
 						{/* 메인 화면 */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/"><i className="fas fa-home"></i> Home</Link>
+							<Link className="nav-link" to="/"><i className="fas fa-home"></i> SPRING movies</Link>
 						</li>
 
 						{/* 랭킹  */}
@@ -36,7 +44,7 @@ function Nav(props) {
 
 						{/* 게시판  */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/boards"><i className="fas"></i>게시판</Link>
+							<Link className="nav-link" to="/boards"><i className="fas"></i>OTT</Link>
 						</li>
 						
 						{/* 마이페이지  */}
@@ -56,7 +64,7 @@ function Nav(props) {
 
 									{/* 로그아웃 */}
 									<li className="nav-item">
-										<Link className="nav-link" to="/logout"><i className="fas fa-sign-out-alt"></i> 로그아웃</Link>
+										<Link className="nav-link" to="/logout" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> 로그아웃</Link>
 									</li>
 
 								</>

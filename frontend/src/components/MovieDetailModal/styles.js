@@ -2,7 +2,7 @@ import styled from '@emotion/styled';
 
 export const Label = styled.label`
   display: flex;
-  margin-bottom: 16px;
+  margin-bottom: 30px;
 
   & > div {
     padding-bottom: 10px;

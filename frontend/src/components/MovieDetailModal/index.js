@@ -48,7 +48,7 @@ const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) 
                             </div>
                         </div>
                 </Label>
-                    <Button type="submit">게시글 작성</Button>
+                    {/* <Button type="submit">게시글 작성</Button> */}
                 </Form>
             </Modal>
         }

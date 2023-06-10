@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -88,11 +89,20 @@ public class MovieDataService {
         // 2018로 넘겨줄시 2018~2023 현재까지 조회(조회 순서는 최신 순)
 //        movieDataCollection("2023");
 
-//        yearWeeklyBoxOfficeData("20230101");
+        // ! 주간 랭킹 데이터 있을경우만 startDate를 넣고 실행, 없으면 직접 넣기
+//        JpaWeeklyBoxOffice jpaWeeklyBoxOffice = weeklyBoxOfficeRepository.findLastByWeeklyId().orElseThrow(() -> new EntityNotFoundException("엔티티가 없습니다."));
+//        String getDate = jpaWeeklyBoxOffice.getShowRange().substring(0, 8);
+//        int year = Integer.parseInt(getDate.substring(0, 4));
+//        int month = Integer.parseInt(getDate.substring(4, 6));
+//        int day = Integer.parseInt(getDate.substring(6, 8));
+//        String startDate = LocalDate.of(year, month, day).plusWeeks(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+//        yearWeeklyBoxOfficeData(startDate);
+        ///////////////////////////////////////////
+
 //        countEtc();         // 실행 전 메서드 주석 참고!
 
-
     }
+
 
     public List<SeriesDto> selectSeries(Integer collectionId) {
         List<SeriesDto> seriesDtos = new ArrayList<>();
@@ -250,6 +260,10 @@ public class MovieDataService {
             for(int j=0;j< movieList.size();j++){
                 JSONObject movieData = (JSONObject)movieList.get(j);
                 String movieCd = (String)movieData.get("movieCd");
+                if (movieRepository.findByMovieCd(movieCd).isPresent()){
+                    log.error("영화 데이터가 있습니다.");
+                    continue;
+                }
                 //String movieNm = (String)movieData.get("movieNm");
                 boolean check = movieDetailData(movieCd, service);
                 if (!check){
@@ -490,6 +504,10 @@ public class MovieDataService {
 
                 String boxofficeType = (String) boxOfficeResult.get("boxofficeType");
                 String showRange = (String) boxOfficeResult.get("showRange");
+                if(showRange == null){
+                    log.info("주간 랭킹 데이터 수집 완료");
+                    break;
+                }
                 String stringDay = showRange.substring(0, 8);
                 LocalDate dateDay = LocalDate.parse(stringDay, formatter);
                 threadStartDay.set(dateDay);

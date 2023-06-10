@@ -3,12 +3,14 @@ import { useParams, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
 import { MovieDiv, Button, CustomDiv } from "./styles";
 import fetcher from '../../utils/fetcher';
+import fetcherAccessToken from '../../utils/fetcherAccessToken';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './index.css';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import CommentModal from '../../components/CommentModal';
 
 const Detail = () => {
 //    const { id } = useParams();
@@ -57,6 +59,13 @@ const Detail = () => {
         setActiveTab(index);
     };
 
+    const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
+    const onCloseModal = useCallback(() => {
+        setShowMovieDetailModal(false);
+    }, []);
+    const onClickModal = useCallback(() => {
+        setShowMovieDetailModal(true);
+    }, []);
     return(
         <>
             {detailData && <div style={{marginBottom:"100px"}}>
@@ -140,18 +149,55 @@ const Detail = () => {
 
                 <TabPanel>
                     <CustomDiv>한줄 코멘트</CustomDiv>
-                    <div>아직 x</div>
-
+                    <div onClick={() => (onClickModal())}>코멘트 남기기</div>
+                    <Comment/>
+                    <hr/>
                     <CustomDiv>커뮤니티 리뷰</CustomDiv>
                     <div>아직 x</div>
                 </TabPanel>
             </Tabs>
             </div>
-
+            <CommentModal
+                    show={showMovieDetailModal}
+                    onCloseModal={onCloseModal}
+                    setShowMovieDetailModal={setShowMovieDetailModal}
+                    data={detail}
+            />
             </div>
             }
         </>
     )
 };
 
+function Comment(){
+    const { data : commentData, error } = useSWR('http://localhost:8080/comment', fetcherAccessToken, {
+        dedupingInterval: 100000,
+    });
+    const location = useLocation();
+    const detail = location.state.detail;
+    console.log('Comment!')
+    console.log(commentData);
+    return(
+        <>
+            <div>오래된순, 최신순, 추천순</div>
+            <div style={{display:"flex", justifyContent:"center"}}>
+                <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
+                    {commentData?.map((obj, index) => {
+                        if(obj.movieId == detail){
+                        return (
+                            <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
+                                <div>이름 : {obj.username}</div>
+                                <div>내용 : {obj.content}</div>
+                                <div>좋아요 수 : {obj.likeCount}</div>
+                            </div>
+                        )
+                        }
+                    return null;
+                    })}
+                </div>
+            </div>
+            <div>더보기</div>
+        </>
+    )
+}
 export default Detail;

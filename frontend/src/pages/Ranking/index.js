@@ -47,7 +47,7 @@ const Ranking = () => {
             
             <div style={{display:"flex", justifyContent:"center"}}>
                 <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
-                {opendtData.map((obj, index) => {
+                {opendtData?.map((obj, index) => {
                     return (
                         <div key={index} style={{ width: "25%", marginBottom:"20px" }}>
                         {/* <MovieSpan onClick={() => onClickModal(opendtData[index])}> */}
