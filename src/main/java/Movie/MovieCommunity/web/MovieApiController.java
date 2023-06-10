@@ -8,6 +8,7 @@ import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
 import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.MovieSearchResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,4 +63,13 @@ public class MovieApiController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @Operation(method = "get", summary = "영화 검색")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "영화 검색 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = MovieSearchResponse.class))})
+    })
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam String movieNm){
+        List<MovieSearchResponse> response = movieService.movieSearch(movieNm);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

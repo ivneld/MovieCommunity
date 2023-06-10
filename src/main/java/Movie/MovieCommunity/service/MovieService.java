@@ -14,6 +14,7 @@ import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.MovieSearchResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,6 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -237,5 +237,17 @@ public class MovieService {
                     .member(findMember.get()).build();
             likeMovieRepository.save(likeMovie);
         }
+    }
+
+    public List<MovieSearchResponse> movieSearch(String movieNm) {
+        List<Movie> movies = movieRepository.findTop5ByMovieNmStartingWith(movieNm);
+        List<MovieSearchResponse> responseList = movies.stream().map(m -> MovieSearchResponse.builder()
+                .id(m.getId())
+                .posterPath(m.getPosterPath())
+                .movieNm(m.getMovieNm())
+                .openDt(m.getOpenDt())
+                .build()
+        ).collect(Collectors.toList());
+        return responseList;
     }
 }
