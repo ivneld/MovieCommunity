@@ -41,7 +41,12 @@ public class MovieApiController {
     })
     @GetMapping("/year")
     public ResponseEntity<?> yearRanking(@Valid @RequestParam int openDt, @CurrentUser UserPrincipal member){
-        List<YearRankingResponse> yearRankingResponses = movieService.yearRanking(openDt, member.getId());
+        List<YearRankingResponse> yearRankingResponses = null;
+        if (member != null){
+             yearRankingResponses = movieService.yearRanking(openDt, member.getId());
+        }else{
+             yearRankingResponses = movieService.yearRanking(openDt, null);
+        }
         return new ResponseEntity(yearRankingResponses, HttpStatus.OK);
     }
     @Operation(method = "get", summary = "영화 상세 조회")
@@ -50,7 +55,12 @@ public class MovieApiController {
     })
     @GetMapping("/{movieId}")
     public ResponseEntity<?> detail(@PathVariable(name="movieId") Long movieId, @CurrentUser UserPrincipal member){
-        MovieDetailResponse movieDetailResponse= movieService.movieDetail(movieId, member.getId());
+        MovieDetailResponse movieDetailResponse = null;
+        if (member != null){
+            movieDetailResponse= movieService.movieDetail(movieId, member.getId());}
+        else{
+            movieDetailResponse= movieService.movieDetail(movieId, null);
+        }
         return new ResponseEntity<>(movieDetailResponse, HttpStatus.OK);
     }
     @Operation(method = "get", summary = "영화 관심 등록,삭제")
