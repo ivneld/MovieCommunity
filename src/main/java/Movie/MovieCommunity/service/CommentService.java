@@ -85,9 +85,9 @@ public class CommentService {
     }
 
 //    movieNm 삭제
-    public List<CommentResponse> commentList() {
+    public List<CommentResponse> commentList(Long movieId) {
         List<CommentResponse> result = new ArrayList<>();
-        List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc();
+        List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc(movieId);
         for (Comment comment : comments) {
             result.add(CommentResponse.builder()
                     .memberId(comment.getMember().getId())
@@ -100,9 +100,9 @@ public class CommentService {
         return result;
     }
 
-    public List<CommentResponse> top8CommentList() {
+    public List<CommentResponse> top8CommentList(Long movieId) {
         List<CommentResponse> result = new ArrayList<>();
-        List<Comment> comments = commentRepository.findTop8ByOrderByLikeCountDesc();
+        List<Comment> comments = commentRepository.findTop8ByMovieIdIsOrderByLikeCountDesc(movieId);
         for (Comment comment : comments) {
             result.add(CommentResponse.builder()
                     .memberId(comment.getMember().getId())
