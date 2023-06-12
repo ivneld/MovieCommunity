@@ -15,9 +15,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     //Page<CommentDto> findByBoardIdAndParentIdIsNull(Long boardId, Pageable pageable);
 //    Page<Comment> findByBoardIdAndParentIdIsNull(Long boardId, Pageable pageable);
 
-    @Query("select c from comment c order by like_count desc")
-    List<Comment> findAllOrderByLikeCountDesc();
+    @Query("select c from comment c where movie_id = :movieId order by like_count desc")
+    List<Comment> findAllOrderByLikeCountDesc(Long movieId);
 
-    List<Comment> findTop8ByOrderByLikeCountDesc();
+    List<Comment> findTop8ByMovieIdIsOrderByLikeCountDesc(Long movieId);
 
 }
