@@ -89,7 +89,9 @@ public class CommentService {
         List<CommentResponse> result = new ArrayList<>();
         List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc(movieId);
         for (Comment comment : comments) {
+
             result.add(CommentResponse.builder()
+                    .commentId(comment.getId())
                     .memberId(comment.getMember().getId())
                     .username(comment.getMember().getUsername())
                     .movieId(comment.getMovie().getId())
@@ -105,13 +107,13 @@ public class CommentService {
         List<Comment> comments = commentRepository.findTop8ByMovieIdIsOrderByLikeCountDesc(movieId);
         for (Comment comment : comments) {
             result.add(CommentResponse.builder()
+                    .commentId(comment.getId())
                     .memberId(comment.getMember().getId())
                     .username(comment.getMember().getUsername())
                     .movieId(comment.getMovie().getId())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
                     .build());
-
         }
         return result;
     }
