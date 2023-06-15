@@ -5,7 +5,9 @@ import java.util.Date;
 
 
 import Movie.MovieCommunity.JPADomain.mapping.TokenMapping;
+import Movie.MovieCommunity.advice.payload.ErrorCode;
 import Movie.MovieCommunity.config.OAuth2Config;
+import Movie.MovieCommunity.advice.error.ExpiredTokenException;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -62,13 +64,19 @@ public class CustomTokenProviderService {
         Date refreshTokenExpiresIn = new Date(now.getTime() + oAuth2Config.getAuth().getRefreshTokenExpirationMsec());
 
         String secretKey = oAuth2Config.getAuth().getTokenSecret();
-        System.out.println("secretKey = " + secretKey);
+        log.info("secretKey = " + secretKey);
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        System.out.println("keyBytes = " + keyBytes);
+        log.info("keyBytes = " + keyBytes);
         Key key = Keys.hmacShaKeyFor(keyBytes);
-        System.out.println("key = " + key);
+        log.info("userPrincipal = " + userPrincipal);
+        log.info("userPrincipal.getId() = " + userPrincipal.getId());
+        log.info("userPrincipal.getEmail() = " + userPrincipal.getEmail());
+        log.info("userPrincipal.getName() = " + userPrincipal.getName());
+        log.info("userPrincipal.getUsername() = " + userPrincipal.getUsername());
+//        userPrincipal.get
         String accessToken = Jwts.builder()
                 .setSubject(Long.toString(userPrincipal.getId()))
+                .setAudience(userPrincipal.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(accessTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -92,11 +100,13 @@ public class CustomTokenProviderService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
+        log.info("토큰 subject = {}", claims.getAudience());
+        log.info("토큰 subject = {}", claims.getSubject());
         return Long.parseLong(claims.getSubject());
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationById(String token){
+        log.info("ID로 인증 찾기");
         Long userId = getUserIdFromToken(token);
         UserDetails userDetails = customUserDetailsService.loadUserById(userId);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -129,6 +139,27 @@ public class CustomTokenProviderService {
             log.error("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException ex) {
             log.error("만료된 JWT 토큰입니다.");
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_ACCESS_TOKEN);
+        } catch (UnsupportedJwtException ex) {
+            log.error("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException ex) {
+            log.error("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            //log.info("bearerToken = {} \n oAuth2Config.getAuth()={}", token, oAuth2Config.getAuth().getTokenSecret());
+            Jwts.parserBuilder().setSigningKey(oAuth2Config.getAuth().getTokenSecret()).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException ex) {
+            log.error("잘못된 JWT 서명입니다.");
+        } catch (MalformedJwtException ex) {
+            log.error("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException ex) {
+            log.error("만료된 JWT 토큰입니다.");
+            throw new ExpiredTokenException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         } catch (UnsupportedJwtException ex) {
             log.error("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException ex) {

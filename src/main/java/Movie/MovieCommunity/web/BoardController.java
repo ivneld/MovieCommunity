@@ -2,7 +2,7 @@
 //
 //import Movie.MovieCommunity.JPADomain.Board;
 //import Movie.MovieCommunity.JPADomain.Comment;
-//import Movie.MovieCommunity.JPADomain.JpaMovie;
+//import Movie.MovieCommunity.JPADomain.movie.JpaMovie;
 //import Movie.MovieCommunity.JPADomain.Member;
 ////import Movie.MovieCommunity.JPARepository.BoardRepository;
 //import Movie.MovieCommunity.JPARepository.CommentRepository;

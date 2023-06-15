@@ -58,6 +58,7 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
 
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", tokenMapping.getAccessToken())
+                .queryParam("refresh_token", tokenMapping.getRefreshToken())
                 .build().toUriString();
     }
 

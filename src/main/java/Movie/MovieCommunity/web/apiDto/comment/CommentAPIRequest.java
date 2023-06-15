@@ -7,8 +7,8 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CommentAPIRequest{
     @NotNull
-    private Long boardId;
+    private Long movieId;
     @NotNull
     private String content;
-    private Long parentId;
+    //private Long parentId;
 }

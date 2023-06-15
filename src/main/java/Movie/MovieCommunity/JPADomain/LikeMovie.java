@@ -1,11 +1,12 @@
 package Movie.MovieCommunity.JPADomain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name="like_movie")@Table(name = "like_movie")
 @Getter
 @NoArgsConstructor
 public class LikeMovie {
@@ -18,5 +19,10 @@ public class LikeMovie {
     private Member member;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="movie_id", nullable = false)
-    private JpaMovie movie;
+    private Movie movie;
+    @Builder
+    public LikeMovie(Member member, Movie movie) {
+        this.member = member;
+        this.movie = movie;
+    }
 }

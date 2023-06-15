@@ -1,7 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
 import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,13 +10,16 @@ import javax.persistence.*;
 @Getter
 @Table(name = "genre")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JpaGenre {
-    public JpaGenre(String genreNm) {
+public class Genre {
+    public Genre(String genreNm) {
         this.genreNm = genreNm;
     }
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "genre_id")
     private Long id;
+    @Column(nullable = false)
     private String genreNm;
+
+
 }

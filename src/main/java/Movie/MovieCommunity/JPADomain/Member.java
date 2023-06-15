@@ -1,13 +1,9 @@
 package Movie.MovieCommunity.JPADomain;
 
-import Movie.MovieCommunity.JPADomain.user.Provider;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +26,24 @@ public class Member  extends BaseTimeEntity{
     private String password;
     private String name;
     private String imageUrl;
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", emailVerified=" + emailVerified +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", authority=" + authority +
+                ", provider=" + provider +
+                ", providerId='" + providerId + '\'' +
+                '}';
+    }
+
     @Enumerated(EnumType.STRING)
     private Authority authority;
 //    @NotNull

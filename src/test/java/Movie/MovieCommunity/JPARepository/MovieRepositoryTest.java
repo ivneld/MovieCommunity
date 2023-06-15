@@ -1,6 +1,6 @@
 package Movie.MovieCommunity.JPARepository;
 
-import Movie.MovieCommunity.JPADomain.JpaMovie;
+import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @SpringBootTest
 @Transactional
@@ -30,26 +31,26 @@ em.clear();
         movieDto.setMovieNm("Name");
 //        JpaMovie jpaMovie2 = byId.get();
 //        jpaMovie2.setMovieCd("BBBBBBBBBBBBBB");
-        JpaMovie jpaMovie = new JpaMovie(movieDto);
-        JpaMovie jpaMovie1 = new JpaMovie((movieDto));
-        JpaMovie jpaMovie2 = new JpaMovie((movieDto));
-        JpaMovie jpaMovie3 = new JpaMovie((movieDto));
-        JpaMovie jpaMovie4 = new JpaMovie((movieDto));
+        Movie movie = new Movie(movieDto);
+        Movie movie1 = new Movie((movieDto));
+        Movie movie2 = new Movie((movieDto));
+        Movie movie3 = new Movie((movieDto));
+        Movie movie4 = new Movie((movieDto));
 
 
-        JpaMovie save = movieRepository.save(jpaMovie);
-        movieRepository.save(jpaMovie1);
-        movieRepository.save(jpaMovie2);
-        movieRepository.save(jpaMovie3);
-        movieRepository.save(jpaMovie4);
+        Movie save = movieRepository.save(movie);
+        movieRepository.save(movie1);
+        movieRepository.save(movie2);
+        movieRepository.save(movie3);
+        movieRepository.save(movie4);
 
 
 
         movieDto.setDirectorNm("5432");
-        jpaMovie1.updateData(movieDto);
-        jpaMovie2.updateData(movieDto);
-        jpaMovie3.updateData(movieDto);
-        jpaMovie4.updateData(movieDto);
+        movie1.updateData(movieDto);
+        movie2.updateData(movieDto);
+        movie3.updateData(movieDto);
+        movie4.updateData(movieDto);
 
 
 //        System.out.println("===============movieDto = " + movieDto);
@@ -58,5 +59,11 @@ em.clear();
 
     }
 
+    @Test
+    public void deleteTest(){
+        Optional<Movie> findMovie = movieRepository.findById(8l);
+        Movie movie = findMovie.get();
+        movieRepository.delete(movie);
+    }
 
 }

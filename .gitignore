@@ -3,7 +3,9 @@ HELP.md
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
+src/test
 !**/src/test/**/build/
+.DS_Store
 
 ### STS ###
 .apt_generated

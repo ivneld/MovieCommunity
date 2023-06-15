@@ -1,6 +1,6 @@
 package Movie.MovieCommunity.config.security.auth.provider;
 
-import Movie.MovieCommunity.JPADomain.user.Provider;
+import Movie.MovieCommunity.JPADomain.Provider;
 import Movie.MovieCommunity.config.security.auth.OAuth2UserInfo;
 
 import java.util.Map;

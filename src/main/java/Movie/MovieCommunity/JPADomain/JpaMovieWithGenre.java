@@ -1,7 +1,5 @@
 package Movie.MovieCommunity.JPADomain;
 
-import lombok.AccessLevel;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,17 +14,17 @@ public class JpaMovieWithGenre {
     @Column(name = "movie_with_genre_id")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="movie_id",nullable = false)
-    private JpaMovie movie;
+    @JoinColumn(name="movie_id")
+    private Movie movie;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="genre_id",nullable = false)
-    private JpaGenre genre;
-    public JpaMovieWithGenre(JpaMovie movie, JpaGenre genre) {
+    @JoinColumn(name="genre_id")
+    private Genre genre;
+    public JpaMovieWithGenre(Movie movie, Genre genre) {
         this.movie = movie;
         this.genre = genre;
     }
 
-    public void setMovie(JpaMovie movie) {
+    public void setMovie(Movie movie) {
         this.movie = movie;
     }
 }
