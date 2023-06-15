@@ -121,9 +121,8 @@ function OpendtApi() {
                 <iframe zIndex="1" width="800" height="450" src={targetUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, color: 'white', textShadow:"4px 2px 4px black",fontWeight: 'bold', fontSize: '100px', padding: '0 20px' }}>1</span>
             </PosterContainer1>
-            
             <Slider {...sliderSettings}>
-                    {opendtData.map((obj, index) => {
+                    {opendtData?.map((obj, index) => {
                         if(index >= 1){
                         return (
                             <div key={index} style={{ marginRight:"20px" }}>

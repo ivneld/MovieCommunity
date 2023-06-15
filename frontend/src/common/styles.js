@@ -1,37 +1,18 @@
 import styled from '@emotion/styled';
 
-export const MovieDiv = styled.div`
-  font-size: 17.5px;
-  margin-right: 30px;
-  margin-bottom: 10px;
-`;
-
-export const CustomDiv = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-`;
-
-export const InterestSpan = styled.span`
-  font-size: 32px;
-  color: white;
-  margin: 0 35%;
-  padding: 5px 12px;
-  border: 1px solid black;
-  border-radius: 30px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-//여기부터 CommentModal
-export const TextArea = styled.textarea`
-  width: 550px;
-  max-width: 550px;
+export const InputArea = styled.input`
+  width: 250px;
+  max-width: 250px;
+  height: 30px;
+  max-height: 30px;
 `;
 export const Form = styled.form`
   margin: 0 auto;
-  width: 700px;
-  max-width: 700px;
+  width: 250px;
+  max-width: 250px;
+  height: 30px;
+  max-height: 30px;
+
 `;
 
 export const Button = styled.button`

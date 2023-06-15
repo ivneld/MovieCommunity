@@ -1,10 +1,14 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import { InputArea, Form } from "./styles";
+import fetcher from "../utils/fetcher";
+import useSWR from 'swr';
+import "./nav.css"
 
 function Nav(props) {
-
+	const navigate = useNavigate();
 	const { auth, setAuth } = useContext(AuthContext);
 	
 	const handleLogout = () => {
@@ -14,6 +18,26 @@ function Nav(props) {
 		setAuth(null)
 		console.log('로그아웃!')
 	  };
+
+	const [searchQuery, setSearchQuery] = useState("");
+	const { data: searchResults } = useSWR(`http://localhost:8080/movie/search?movieNm=${searchQuery}`, fetcher);
+	
+	// 검색목록 엔터 시 (영화이름 끝까지 안쳐도 가장 위에 있는 영화로 검색됨)
+	const handleSearchSubmit = (e) => {
+		e.preventDefault();
+		if (searchQuery && searchResults && searchResults.length > 0) {
+			navigate(`/movie/${searchResults[0].id}`, { state: { detail: searchResults[0].id } });
+		}
+		setSearchQuery("");
+	};
+
+	// 검색목록 클릭 시
+	const clickSearchSubmit = (id) => {
+		if (searchQuery && searchResults && searchResults.length > 0) {
+			navigate(`/movie/${id}`, { state: { detail: id } });
+		}
+		setSearchQuery("");
+	};
 
 	return (
 		<nav className="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
@@ -52,6 +76,25 @@ function Nav(props) {
 							<Link className="nav-link" to="/mypage"><i className="fas"></i>마이페이지</Link>
 						</li>
 					</ul>
+
+					<ul>
+						{/* <Form onSubmit={handleSubmit}> */}
+						<Form className="search-container" onSubmit={handleSearchSubmit}>
+							<InputArea
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								placeholder="원하는 영화를 발견해보세요"
+							/>
+							  {searchResults && searchResults.length > 0 && searchQuery && (
+									<ul className="autocomplete-results">
+									{searchResults.map((result) => (
+										<li key={result.id} onClick={() => (clickSearchSubmit(result.id))}>{result.movieNm}</li>
+									))}
+									</ul>
+								)}
+						</Form>
+					</ul>
+
 					<ul className="navbar-nav ml-auto">
 
 						{							
