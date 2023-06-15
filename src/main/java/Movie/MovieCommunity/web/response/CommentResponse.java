@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentResponse {
 
+    private Long commentId;
     private Long memberId;
     private String username;
     private Long movieId;
@@ -15,7 +16,8 @@ public class CommentResponse {
     private Integer likeCount;
 
     @Builder
-    public CommentResponse(Long memberId, String username, Long movieId, String content, Integer likeCount) {
+    public CommentResponse(Long commentId, Long memberId, String username, Long movieId, String content, Integer likeCount) {
+        this.commentId = commentId;
         this.memberId = memberId;
         this.username = username;
         this.movieId = movieId;
