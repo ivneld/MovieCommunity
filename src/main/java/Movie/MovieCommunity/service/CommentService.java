@@ -57,7 +57,7 @@ public class CommentService {
         Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
-        if (!checkMine(commentUpdateAPIRequest, findMember)){
+        if (checkMine(findComment.get(), findMember)){
             return false;
         }
 
@@ -74,7 +74,7 @@ public class CommentService {
         Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
-        if (!checkMine(commentDeleteAPIRequest, findMember)){
+        if (checkMine(findComment.get(), findMember)){
             return false;
         }
 
@@ -82,8 +82,8 @@ public class CommentService {
         return true;
     }
 
-    private boolean checkMine(CommentAPI commentUpdateAPIRequest, Optional<Member> findMember) {
-        if (commentUpdateAPIRequest.getMemberId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
+    private boolean checkMine(Comment comment, Optional<Member> findMember) {
+        if (comment.getMember().getId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
             return true;
         }
         return false;
