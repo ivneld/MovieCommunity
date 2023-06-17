@@ -14,10 +14,13 @@ import Movie.MovieCommunity.web.apiDto.comment.CommentAPIRequest;
 import Movie.MovieCommunity.web.apiDto.comment.CommentDeleteAPIRequest;
 import Movie.MovieCommunity.web.apiDto.comment.CommentUpdateAPIRequest;
 import Movie.MovieCommunity.web.form.CommentForm;
+import Movie.MovieCommunity.web.response.CommentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,7 +29,6 @@ import java.util.Optional;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
-//    private final BoardRepository boardRepository;
     private final MovieRepository movieRepository;
     public CommentForm write(CommentAPIRequest commentAPIRequest, Long memberId){
         Optional<Member> findMember = memberRepository.findById(memberId);
@@ -82,6 +84,53 @@ public class CommentService {
         return true;
     }
 
+//    movieNm 삭제
+    public List<CommentResponse> commentList(Long movieId) {
+        List<CommentResponse> result = new ArrayList<>();
+        List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc(movieId);
+        for (Comment comment : comments) {
+
+            result.add(CommentResponse.builder()
+                    .commentId(comment.getId())
+                    .memberId(comment.getMember().getId())
+                    .username(comment.getMember().getUsername())
+                    .movieId(comment.getMovie().getId())
+                    .content(comment.getContent())
+                    .likeCount(comment.getLikeCount())
+                    .build());
+        }
+        return result;
+    }
+
+    public List<CommentResponse> top8CommentList(Long movieId) {
+        List<CommentResponse> result = new ArrayList<>();
+        List<Comment> comments = commentRepository.findTop8ByMovieIdIsOrderByLikeCountDesc(movieId);
+        for (Comment comment : comments) {
+            result.add(CommentResponse.builder()
+                    .commentId(comment.getId())
+                    .memberId(comment.getMember().getId())
+                    .username(comment.getMember().getUsername())
+                    .movieId(comment.getMovie().getId())
+                    .content(comment.getContent())
+                    .likeCount(comment.getLikeCount())
+                    .build());
+        }
+        return result;
+    }
+
+    public Integer plusLike(Long commentId, Long memberId) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        DefaultAssert.isOptionalPresent(comment);
+
+        Optional<Member> member = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(member);
+
+        Integer result = comment.get().plusLikeCount();
+        return result;
+    }
+
+    private boolean checkMine(CommentAPI commentUpdateAPIRequest, Optional<Member> findMember) {
+        if (commentUpdateAPIRequest.getMemberId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
     private boolean checkMine(Comment comment, Optional<Member> findMember) {
         if (comment.getMember().getId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
             return true;

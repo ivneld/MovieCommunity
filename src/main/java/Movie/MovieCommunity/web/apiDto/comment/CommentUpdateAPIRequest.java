@@ -10,7 +10,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
 public class CommentUpdateAPIRequest extends CommentAPI{
-
+    @NotNull
+    private Long commentId;
     @NotNull
     private String content;
 }
