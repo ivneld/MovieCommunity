@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) => {
     const navigate = useNavigate();
-
+    console.log('z',modalData)
     const onSubmit = useCallback(
         (e) => {
           e.preventDefault();
@@ -43,7 +43,12 @@ const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) 
                                 <MovieDiv>{modalData.prdtStatNm}</MovieDiv>
                             </div> */}
                             <div style={{display:"flex"}}>
-                                <MovieDiv style={{marginRight:"175px"}}>⭐ {modalData.interest}</MovieDiv>
+                                {modalData.myInterest === false &&
+                                    <MovieDiv style={{marginRight:"175px"}}>🤍 {modalData.interest}</MovieDiv>
+                                }
+                                {modalData.myInterest === true &&
+                                    <MovieDiv style={{marginRight:"175px"}}>💙 {modalData.interest}</MovieDiv>
+                                }
                                 <MovieDiv><Link to={`/movie/${modalData.id}`} key={modalData.id} state={{detail : modalData.id}}>+ 더보기</Link></MovieDiv>
                             </div>
                         </div>
@@ -54,6 +59,6 @@ const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) 
         }
         </>
     )
-}
+}                           
 
 export default MovieDetailModal;

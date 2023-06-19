@@ -88,7 +88,15 @@ function Nav(props) {
 							  {searchResults && searchResults.length > 0 && searchQuery && (
 									<ul className="autocomplete-results">
 									{searchResults.map((result) => (
-										<li key={result.id} onClick={() => (clickSearchSubmit(result.id))}>{result.movieNm}</li>
+										<li key={result.id} onClick={() => (clickSearchSubmit(result.id))}>
+											<div style={{display:"flex"}}>
+												<div>
+													<div>{result.movieNm}</div>
+													<div>{result.openDt}</div>
+												</div>
+												<img src={result.posterPath} style={{marginLeft:"auto", marginRight:"10px"}} height="50px" alt='포스터주소'/>
+											</div>
+										</li>
 									))}
 									</ul>
 								)}

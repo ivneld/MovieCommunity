@@ -26,6 +26,7 @@ const Detail = () => {
     if (error) console.log('데이터를 불러오는 중에 오류가 발생했습니다.')
     if (!detailData) console.log('데이터를 불러오는 중입니다...')
     console.log(detailData)
+    const backgroundPoster = detailData?.posterPath?.replace('w500', 'w1280');
     const prevArrow = (
         <button className="slick-prev" aria-label="Previous" type="button"/>
     );
@@ -63,7 +64,7 @@ const Detail = () => {
         setActiveTab(index);
     };
 
-    const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
+    const [showMovieDetailModal,setShowMovieDetailModal] = useState(false); // 댓글 생성
     const onCloseModal = useCallback(() => {
         setShowMovieDetailModal(false);
     }, []);
@@ -73,7 +74,9 @@ const Detail = () => {
 
     const moveRef = useRef(null)
     const handleScroll = () => {
-        moveRef.current.scrollIntoView({behavior:"smooth"})
+        const yOffset = -60; // 원하는 만큼의 위쪽 여백을 설정합니다.
+        const y = moveRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
     }
     const onClickInterest = async () => {
         if (!auth){
@@ -91,29 +94,47 @@ const Detail = () => {
             movieId: detail
         }
         try{
-            if (detailData.myInterest==false) {
-                console.log('좋아요 등록!')
-            }
-            else if (detail.myInterest==true) {
-                console.log('좋아요 취소!')
-            }
-            const response = await axios.post(`http://localhost:8080/movie/${detail}/interest`, req, config);
             // mutate 함수는 SWR 캐시 갱신하고 컴포넌트 리렌더링
             // mutatae 함수를 호출 할 때, 적절한 키 값 필요 (updatedData)
             // updatedData는 detailData를 복제한 후, myInterest 값을 반전시킴
             const updatedData = { ...detailData, myInterest: !detailData.myInterest };
-            mutate(`http://localhost:8080/movie/${detail}`, updatedData);
+
+            if (detailData.myInterest==false) {
+                console.log('좋아요 등록!')
+                updatedData.interest += 1 // // OPTIMISTIC UI: 가정된 성공에 따라 UI 먼저 업데이트
+            }
+            else if (detailData.myInterest==true) {
+                console.log('좋아요 취소!')
+                updatedData.interest -= 1 // // OPTIMISTIC UI: 가정된 실패에 따라 UI 먼저 업데이트
+            }
+            mutate(`http://localhost:8080/movie/${detail}`, updatedData, false); // SWR 캐시 갱신하지 않음
+
+
+            const response = await axios.post(`http://localhost:8080/movie/${detail}/interest`, req, config);
+            
+            if (response.status === 200) {
+                console.log('좋아요 성공!');
+                mutate(`http://localhost:8080/movie/${detail}`); // 서버 응답에 따라 SWR 캐시 갱신하여 UI 업데이트
+              }
         } catch(error){
             console.error('좋아요 실패! :',error)
+            mutate(`http://localhost:8080/movie/${detail}`); // 에러 발생 시, SWR 캐시 갱신하여 UI 업데이트
         }
     }
-
+    // optimistic UI 관련 설명
+    // 1. onClickInterest 함수 내에서 updatedData를 생성하여 가정된 성공에 따라 interest 값을 업데이트합니다.
+    // 2. mutate 함수를 호출할 때 revalidate 매개변수를 false로 설정하여 SWR 캐시를 갱신하지 않습니다.
+    // 3. axios.post를 통해 서버로 요청을 보내고, 성공적인 응답을 받았을 경우에는 console.log를 통해 성공 메시지를 출력하고, mutate 함수를 호출하여 SWR 캐시를 갱신하여 UI를 업데이트합니다.
+    // 4. catch 블록에서 예외가 발생한 경우에도 mutate 함수를 호출하여 SWR 캐시를 갱신하여 UI를 업데이트합니다.
+    // 결론 : 이렇게 OPTIMISTIC UI를 적용하면, 좋아요 등록 및 취소를 할 때 서버 응답을 기다리지 않고 UI를 먼저 업데이트할 수 있습니다.
+    //        그러나 만약 서버 응답이 예상과 다른 경우에는 UI가 업데이트되어 일시적인 불일치가 발생할 수 있습니다.
+    //        이를 해결하기 위해 서버 응답에 따라 SWR 캐시를 다시 갱신하여 정확한 데이터를 받아올 수 있도록 처리되어 있습니다.
     return(
         <>
             {detailData && 
                 <div style={{marginBottom:"100px"}}>
                     <div style={{backgroundColor:"black",height:"9vh"}}></div>
-                    <div style={{display: "flex", backgroundImage:`url(${detailData.posterPath})`, backgroundSize:"cover", backgroundRepeat: 'no-repeat', backgroundPosition: 'center', width: '100%', height:'75vh'}}>
+                    <div style={{display: "flex", backgroundImage:`url(${backgroundPoster})`, backgroundSize:"cover", backgroundRepeat: 'no-repeat', backgroundPosition: 'center', width: '100%', height:'75vh'}}>
                         <div style={{fontWeight:"bold", fontSize:"72px", textShadow:"4px 2px 4px black", color:"white", marginTop:"auto", marginLeft:"100px", marginBottom:"80px"}}>{detailData.movieNm}</div>
                 
                         <div style={{marginLeft: "auto", marginTop:"auto", marginBottom:"25px"}}>
@@ -126,11 +147,11 @@ const Detail = () => {
                             }
                         </div>
                     </div>
-                    <div ref={moveRef} style={{backgroundColor:"black", height:"9vh"}}>
+                    <div style={{backgroundColor:"black", height:"9vh"}}>
                         <div onClick={handleScroll} style={{display:"flex", justifyContent:"center", fontSize:"55px", cursor:"pointer"}}>🔽</div>
                     </div>
 
-                    <div style={{height:'100vh'}}>
+                    <div ref={moveRef} style={{height:'100vh'}}>
                         <Tabs selectedIndex={activeTab} onSelect={handleTabChange}>
                             <TabList>
                             <Tab>기본정보</Tab>
@@ -225,7 +246,7 @@ const CommentModal = ({show, onCloseModal, data}) => {
     const handleChange = (event) => {
       setComment(event.target.value);
     };
-    console.log(auth)
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!auth){
@@ -235,7 +256,6 @@ const CommentModal = ({show, onCloseModal, data}) => {
         }
         try{
             const accessToken = localStorage.getItem('accessToken');
-            const name = localStorage.getItem('name');
             const config = {
                 headers:{
                     Authorization : `Bearer ${accessToken}`
@@ -244,17 +264,21 @@ const CommentModal = ({show, onCloseModal, data}) => {
             const req = {
                     movieId: data,
                     content: comment,
-                    username: auth,
             }
             const response = await axios.post("http://localhost:8080/comment/new", req, config);
-            console.log('댓글 등록 성공!')
-            setComment('');
             onCloseModal()
+            mutate(`http://localhost:8080/comment/${data}`); // 코멘트 가져오기 업데이트
+            mutate(`http://localhost:8080/comment/more/${data}`); // 코멘트 가져오기 업데이트
+            console.log('댓글 등록이 완료되었습니다.')
+            alert('댓글 등록이 완료되었습니다.')
+            setComment('');
         } catch(error){
-            console.error('댓글 등록 실패:',error)
+            console.error('댓글 등록 실패!:', error)
+            onCloseModal()
             setComment('');
         }
     };
+
     return(
         <>
             <Modal2 show={show} onCloseModal={onCloseModal}>
@@ -280,6 +304,71 @@ const CommentModal = ({show, onCloseModal, data}) => {
     )
 }
 
+const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
+    const { auth, setAuth } = useContext(AuthContext);
+    const [comment, setComment] = useState('');
+
+    const handleChange = (event) => {
+      setComment(event.target.value);
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        if (!auth){
+            setComment('');
+            alert('로그인이 필요한 기능입니다.')
+            return;
+        }
+        try{
+            const accessToken = localStorage.getItem('accessToken');
+            const config = {
+                headers:{
+                    Authorization : `Bearer ${accessToken}`
+                }
+            }
+            const req = {
+                    content: comment,
+                    commentId: commentId,
+            }
+            const response = await axios.put("http://localhost:8080/comment", req, config);
+            onCloseModal()
+            mutate(`http://localhost:8080/comment/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`http://localhost:8080/comment/more/${detail}`); // 코멘트 가져오기 업데이트
+            console.log('댓글 수정이 완료되었습니다.')
+            alert('댓글 수정이 완료되었습니다.')
+            setComment('');
+        } catch(error){
+            console.error('댓글 수정 실패!:', error)
+            onCloseModal()
+            setComment('');
+        }
+    };
+
+    return(
+        <>
+            <Modal2 show={show} onCloseModal={onCloseModal}>
+                <Form onSubmit={handleSubmit}>
+      
+                        <div style={{marginBottom:"20px"}}>
+                            <span style={{fontSize:"27.5px", fontWeight:"bold"}}>코멘트 수정하기</span>
+                        </div>
+            
+                        <TextArea
+                            value={comment}
+                            onChange={handleChange}
+                            placeholder="영화에 대한 의견을 자유롭게 남겨주세요"
+                        />
+
+                        <div style={{display:"flex"}}>
+                            <button type="submit">등록</button>
+                        </div>
+          
+                </Form>
+            </Modal2>
+        </>
+    )
+}
+
 function Comment(){
     const location = useLocation();
     const detail = location.state.detail;
@@ -287,17 +376,49 @@ function Comment(){
         dedupingInterval: 100000,
     });
 
-    const { data : moreData, error2 } = useSWR(`http://localhost:8080/comment/more/${detail}`, fetcher, {
+    const [isMoreData, setIsMoreData] = useState(false)
+
+    const { data : moreData, error2 } = useSWR(isMoreData ? `http://localhost:8080/comment/more/${detail}` : null, fetcher, { // useSWR를 조건부로 사용
         dedupingInterval: 100000,
     });
 
-    const [isMoreData, setIsMoreData] = useState(false)
-    console.log(commentData)
-    console.log(moreData)
+    const [showMovieDetailModal2,setShowMovieDetailModal2] = useState(false); // 댓글 수정
+    const [updateCommentId, setUpdateCommentId] = useState(null)
+    const onCloseModal2 = useCallback(() => {
+        setShowMovieDetailModal2(false);
+        setUpdateCommentId(null)
+    }, []);
+    const onClickModal2 = useCallback((e) => {
+        setShowMovieDetailModal2(true);
+        setUpdateCommentId(e)
+    }, []);
 
+    const handleDelete = async (commentId) => { // 댓글 삭제
+        try{
+            const accessToken = localStorage.getItem('accessToken');
+            const response = await axios.delete('http://localhost:8080/comment', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+                data: {
+                    commentId: commentId
+                }
+            })
+            mutate(`http://localhost:8080/comment/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`http://localhost:8080/comment/more/${detail}`); // 코멘트 가져오기 업데이트
+            console.log('댓글 삭제가 완료되었습니다.');
+            alert('댓글 삭제가 완료되었습니다.')
+        }
+        catch(error){
+            console.error('댓글 삭제 실패!', error);
+        }
+    }
+    console.log('updateCommentId:',updateCommentId)
     return(
         <>
             <div>오래된순, 최신순, 추천순</div>
+
+            {/* 코멘트 8개만 */}
             <div style={{display:"flex", justifyContent:"center"}}>
                 <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
                     {!isMoreData &&
@@ -305,14 +426,14 @@ function Comment(){
                         if(obj.movieId == detail){
                         return (
                             <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
-                                <div style={{display:"flex"}}>
-                                    <div>이름 : {obj.username}</div>
-                                    <div>좋아요 수 : {obj.likeCount}</div>
+                                <div style={{display:"flex", fontSize:"30px"}}>
+                                    <div style={{marginLeft:"20px"}}>{obj.username}</div>
+                                    <div style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                 </div>
-                                <div>내용 : {obj.content}</div>
-                                <div style={{display:"flex"}}>
-                                    <div>수정</div>
-                                    <div>삭제</div>
+                                <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
+                                <div style={{display:"flex", fontSize:"24px"}}>
+                                    <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
+                                    <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
                                 </div>
                             </div>
                         )
@@ -322,6 +443,7 @@ function Comment(){
                 </div>
             </div>
 
+            {/* 코멘트 전체 */}
             <div style={{display:"flex", justifyContent:"center"}}>
                 <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
                     {isMoreData &&
@@ -329,14 +451,14 @@ function Comment(){
                         if(obj.movieId == detail){
                         return (
                             <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
-                                <div style={{display:"flex"}}>
-                                    <div>이름 : {obj.username}</div>
-                                    <div>좋아요 수 : {obj.likeCount}</div>
+                                <div style={{display:"flex", fontSize:"30px"}}>
+                                    <div style={{marginLeft:"20px"}}>{obj.username}</div>
+                                    <div style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                 </div>
-                                <div>내용 : {obj.content}</div>
-                                <div style={{display:"flex"}}>
-                                    <div>수정</div>
-                                    <div>삭제</div>
+                                <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
+                                <div style={{display:"flex", fontSize:"24px"}}>
+                                    <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
+                                    <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
                                 </div>
                             </div>
                         )
@@ -351,6 +473,13 @@ function Comment(){
             {isMoreData &&
                 <div onClick={() => (setIsMoreData(false))} style={{cursor:"pointer"}}>🔺닫기</div>
             }
+            <UpdateModal
+                show={showMovieDetailModal2}
+                onCloseModal={onCloseModal2}
+                setShowMovieDetailModal={setShowMovieDetailModal2}
+                commentId={updateCommentId}
+                detail={detail}
+            />
         </>
     )
 }
