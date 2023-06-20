@@ -59,7 +59,7 @@ public class CommentService {
         Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
-        if (!checkMine(commentUpdateAPIRequest, findMember)){
+        if (checkMine(findComment.get(), findMember)){
             return false;
         }
 
@@ -76,7 +76,7 @@ public class CommentService {
         Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
 
-        if (!checkMine(commentDeleteAPIRequest, findMember)){
+        if (checkMine(findComment.get(), findMember)){
             return false;
         }
 
@@ -93,7 +93,7 @@ public class CommentService {
             result.add(CommentResponse.builder()
                     .commentId(comment.getId())
                     .memberId(comment.getMember().getId())
-                    .username(comment.getMember().getUsername())
+                    .username(comment.getMember().getName())
                     .movieId(comment.getMovie().getId())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
@@ -109,7 +109,7 @@ public class CommentService {
             result.add(CommentResponse.builder()
                     .commentId(comment.getId())
                     .memberId(comment.getMember().getId())
-                    .username(comment.getMember().getUsername())
+                    .username(comment.getMember().getName())
                     .movieId(comment.getMovie().getId())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
@@ -136,8 +136,9 @@ public class CommentService {
         comment.get().updateLikeCount(count);
         return count;
     }
-    private boolean checkMine(CommentAPI commentUpdateAPIRequest, Optional<Member> findMember) {
-        if (commentUpdateAPIRequest.getMemberId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
+
+    private boolean checkMine(Comment comment, Optional<Member> findMember) {
+        if (comment.getMember().getId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
             return true;
         }
         return false;

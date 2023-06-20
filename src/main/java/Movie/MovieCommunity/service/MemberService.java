@@ -1,73 +1,51 @@
-//package Movie.MovieCommunity.service;
-//
-//import Movie.MovieCommunity.JPADomain.Member;
-//import Movie.MovieCommunity.JPARepository.MemberRepository;
-//import Movie.MovieCommunity.config.SecurityUtil;
-//import Movie.MovieCommunity.web.dto.MemberResponseDto;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//
-//@Service
-//@RequiredArgsConstructor
-//@Transactional(readOnly = true)
-//public class MemberService {
-//    private final MemberRepository memberRepository;
-//    private final PasswordEncoder passwordEncoder;
-//
-//    public MemberResponseDto getMyInfoBySecurity() {
-//        return memberRepository.findById(SecurityUtil.getCurrentMemberId())
-//                .map(MemberResponseDto::of)
-//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
-//    }
-//
-//    @Transactional
-//    public MemberResponseDto changeMemberNickname(String email, String nickname) {
-//        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
-//        member.setNickname(nickname);
-//        return MemberResponseDto.of(memberRepository.save(member));
-//    }
-//
-//    @Transactional
-//    public MemberResponseDto changeMemberPassword(String email, String exPassword, String newPassword) {
-//        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다"));
-//        if (!passwordEncoder.matches(exPassword, member.getPassword())) {
-//            throw new RuntimeException("비밀번호가 맞지 않습니다");
-//        }
-//        member.setPassword(passwordEncoder.encode((newPassword)));
-//        return MemberResponseDto.of(memberRepository.save(member));
-//
-//
-//
-//
-////    public Member join(AddMemberForm memberForm){
-////        Optional<Member> getMember = memberRepository.findByEmail(memberForm.getEmail());
-////        System.out.println(getMember.isEmpty());
-////        if (getMember.isEmpty()) {
-////            Member member = new Member(memberForm);
-////            memberRepository.save(member);
-////            return member;
-////        }
-////        else{
-////            return null;
-////        }
-////    }
-////    public Member login(LoginForm loginForm){
-////        Optional<Member> getMember = memberRepository.findByEmail(loginForm.getEmail());
-////        if(getMember.isPresent()){
-////            Member member = getMember.get();
-////            if (member.getPassword().equals(loginForm.getPassword())){
-////                return member;
-////            }
-////            else{
-////                return null;
-////            }
-////        }
-////        else{
-////            return null;
-////        }
-//
-//
-//    }
-//}
+package Movie.MovieCommunity.service;
+
+import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPADomain.Movie;
+import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.JPARepository.MovieRepository;
+
+import Movie.MovieCommunity.JPARepository.MovieWithGenreRepository;
+import Movie.MovieCommunity.util.CustomPageImpl;
+import Movie.MovieCommunity.web.apiDto.movie.entityDto.LikeGenreDto;
+import Movie.MovieCommunity.web.apiDto.movie.response.MovieLikeGenreResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.MovieLikeResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class MemberService {
+    private final MovieRepository movieRepository;
+    private final MovieWithGenreRepository movieWithGenreRepository;
+    public Page<MovieLikeResponse> findLikeMovie(Pageable pageable, Long memberId) {
+        Page<Movie> likeMovieList = movieRepository.findByLikeMovie(pageable, memberId);
+        List<MovieLikeResponse> responseList = likeMovieList.stream().map(lm -> MovieLikeResponse.builder()
+                .id(lm.getId())
+                .tmId(lm.getTmId())
+                .posterPath(lm.getPosterPath())
+                .movieNm(lm.getMovieNm())
+                .openDt(lm.getOpenDt()).build()
+        ).collect(Collectors.toList());
+        return new CustomPageImpl<>(responseList, pageable, likeMovieList.getTotalElements());
+    }
+
+    public List<LikeGenreDto> findLikeMovieGenre(Long memberId) {
+        List<Movie> likeMovieList = movieRepository.findByLikeMovieList(memberId);
+        List<Long> movieIdList = likeMovieList.stream().map(lm -> lm.getId()).collect(Collectors.toList());
+        List<LikeGenreDto> response = movieWithGenreRepository.findByLikeGenreCnt(movieIdList);
+
+
+        return response;
+    }
+}
+
