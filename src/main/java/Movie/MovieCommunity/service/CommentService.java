@@ -129,6 +129,13 @@ public class CommentService {
         return result;
     }
 
+    public Integer updateLike(Long commentId, Integer count) {
+        Optional<Comment> comment = commentRepository.findById(commentId);
+        DefaultAssert.isOptionalPresent(comment);
+
+        comment.get().updateLikeCount(count);
+        return count;
+    }
     private boolean checkMine(CommentAPI commentUpdateAPIRequest, Optional<Member> findMember) {
         if (commentUpdateAPIRequest.getMemberId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
             return true;
