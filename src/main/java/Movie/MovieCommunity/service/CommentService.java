@@ -129,11 +129,6 @@ public class CommentService {
         return result;
     }
 
-<<<<<<< HEAD
-
-    private boolean checkMine(Comment comment, Optional<Member> findMember) {
-        if (comment.getMember().getId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
-=======
     public Integer updateLike(Long commentId, Integer count) {
         Optional<Comment> comment = commentRepository.findById(commentId);
         DefaultAssert.isOptionalPresent(comment);
@@ -141,9 +136,9 @@ public class CommentService {
         comment.get().updateLikeCount(count);
         return count;
     }
-    private boolean checkMine(CommentAPI commentUpdateAPIRequest, Optional<Member> findMember) {
-        if (commentUpdateAPIRequest.getMemberId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
->>>>>>> 88c216ee8671256866ac0fb09637e311b7deab63
+
+    private boolean checkMine(Comment comment, Optional<Member> findMember) {
+        if (comment.getMember().getId() != findMember.get().getId()){ // 댓글 작성자가 아닌 경우 예외처리
             return true;
         }
         return false;
