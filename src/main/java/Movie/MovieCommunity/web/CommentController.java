@@ -70,11 +70,11 @@ public class CommentController {
 //    }
 
 
-    @Operation(method = "get", summary = "댓글 좋아요 버튼 클릭")
+    @Operation(method = "put", summary = "댓글 좋아요 버튼 클릭")
     @ApiResponses(value =
-    @ApiResponse(responseCode = "202", description = "댓글 좋아요 수를 받아서 DB업데이트 후 반환", content = {@Content(mediaType = "application/json")})
+    @ApiResponse(responseCode = "202", description = "댓글 좋아요 수를 받아서 DB수정 후 반환", content = {@Content(mediaType = "application/json")})
     )
-    @GetMapping("/like/update")
+    @PutMapping("/like/update")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Integer like(@Valid @RequestBody CommentLikeApiRequest commentLikeApiRequest, @CurrentUser UserPrincipal member) {
         return commentService.updateLike(commentLikeApiRequest.getCommentId(), commentLikeApiRequest.getLike());
