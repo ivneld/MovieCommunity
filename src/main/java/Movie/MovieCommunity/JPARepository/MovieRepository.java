@@ -27,6 +27,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     )
     Page<Movie> findByLikeMovie(Pageable pageable, Long memberId);
 
+
+    @Query(value = "select m from movie m join fetch m.likeMovies lm join fetch lm.member mem where mem.id = :memberId")
+    List<Movie> findByLikeMovieList(Long memberId);
     List<Movie> findTop5ByMovieNmStartingWith(String movieNm);
 
 }

@@ -5,6 +5,7 @@ import Movie.MovieCommunity.web.dto.CommentDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -13,4 +14,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 //    Page<CommentDto> findByBoardId(Long boardId, Pageable pageable);
     //Page<CommentDto> findByBoardIdAndParentIdIsNull(Long boardId, Pageable pageable);
 //    Page<Comment> findByBoardIdAndParentIdIsNull(Long boardId, Pageable pageable);
+
+    @Query("select c from comment c where movie_id = :movieId order by like_count desc")
+    List<Comment> findAllOrderByLikeCountDesc(Long movieId);
+
+    List<Comment> findTop8ByMovieIdIsOrderByLikeCountDesc(Long movieId);
+
 }

@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
-public class CommentUpdateAPIRequest extends CommentAPI{
-
+public class CommentUpdateAPIRequest{
+    @NotNull
+    private Long commentId;
     @NotNull
     private String content;
 }

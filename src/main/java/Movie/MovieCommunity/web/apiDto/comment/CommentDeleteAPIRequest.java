@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class CommentDeleteAPIRequest extends CommentAPI{
-
+public class CommentDeleteAPIRequest{
+    @NotNull
+    private Long commentId;
 }
