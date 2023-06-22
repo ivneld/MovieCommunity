@@ -181,18 +181,11 @@ public class Movie {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
-    private String overview;
+
 
     private String releaseDate;
-    private String backdropPath;
-    private String posterPath;
-    private Long popularity;
-    private Long voteAverage;
-    private Integer voteCount;
-    private Integer collectionId;
-    private String seriesName;
-    private String collectionBackdropPath;
-    private String collectionPosterPath;
+
+
     @OneToMany(mappedBy = "movie")
 
 
