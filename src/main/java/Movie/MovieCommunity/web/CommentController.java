@@ -77,7 +77,7 @@ public class CommentController {
     @PutMapping("/like/update")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public Integer like(@Valid @RequestBody CommentLikeApiRequest commentLikeApiRequest, @CurrentUser UserPrincipal member) {
-        return commentService.updateLike(commentLikeApiRequest.getCommentId(), commentLikeApiRequest.getLike());
+        return commentService.updateLike(commentLikeApiRequest, member.getId());
     }
 
     @Operation(method = "post", summary = "댓글 생성")
