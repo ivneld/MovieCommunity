@@ -3,6 +3,12 @@ package Movie.MovieCommunity.dataCollection;
 
 import Movie.MovieCommunity.JPADomain.dto.TvDto;
 import Movie.MovieCommunity.JPADomain.dto.TvGenreNameDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -26,6 +32,8 @@ import java.util.*;
 
 
 //https://api.themoviedb.org/3/discover/tv?api_key=e2d17df18876333027066f263663d8db&with_watch_providers=8
+
+@Tag(name = "ott", description = "ott 순위 api")
 @Slf4j
 @RestController
 @RequestMapping
@@ -38,7 +46,10 @@ public class TvDataService {
 
     private final String posterUrl="https://image.tmdb.org/t/p/w500";
 
-
+    @Operation(method = "get", summary = "popularity 기준 Top20 ott5개 순위 모아놓은것")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "ott 순위 총합 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
+    })
     @GetMapping("/tv")
     public JSONArray requestAPI(Model model) {
 
@@ -76,6 +87,10 @@ public class TvDataService {
         return array;
     }
 
+    @Operation(method = "get", summary = "popularity 기준 Top20 netflix 순위")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "ott netflix 순위 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
+    })
     @GetMapping("/tv/netflix")
     public JSONArray requestNeflixAPI(Model model) {
         JSONArray array= new JSONArray();
@@ -87,6 +102,10 @@ public class TvDataService {
         return array;
     }
 
+    @Operation(method = "get", summary = "popularity 기준 Top20 disneyPlus 순위")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "ott disneyPlus 순위 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
+    })
     @GetMapping("/tv/disneyPlus")
     public JSONArray requestdisneyPlusAPI(Model model) {
         JSONArray array= new JSONArray();
@@ -98,7 +117,10 @@ public class TvDataService {
         return array;
     }
 
-    @GetMapping("/tv/waave")
+    @Operation(method = "get", summary = "popularity 기준 Top20 waave 순위")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "ott waave 순위 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
+    })
     public JSONArray requestWaaveAPI(Model model) {
         JSONArray array= new JSONArray();
         List<TvDto> WavveTvInformation= new ArrayList<>();
@@ -109,6 +131,10 @@ public class TvDataService {
         return array;
     }
 
+    @Operation(method = "get", summary = "popularity 기준 Top20 watcha 순위")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "ott watcha 순위 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
+    })
     @GetMapping("/tv/watcha")
     public JSONArray requestWatchaAPI(Model model) {
         JSONArray array= new JSONArray();
@@ -120,6 +146,10 @@ public class TvDataService {
         return array;
     }
 
+    @Operation(method = "get", summary = "popularity 기준 Top20 appleTv 순위")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "ott appleTv 순위 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
+    })
     @GetMapping("/tv/appleTv")
     public JSONArray requestAppleAPIR(Model model){
         JSONArray array= new JSONArray();
