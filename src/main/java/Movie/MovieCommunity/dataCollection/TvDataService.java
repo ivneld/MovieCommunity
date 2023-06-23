@@ -94,6 +94,7 @@ public class TvDataService {
         paramMap.put("api_key", tmdbKey);                        // 발급받은 인증키
         paramMap.put("language", "ko-KR");                       // 조회하고자 하는 날짜
         paramMap.put("page","1");
+        paramMap.put("sort_by","popularity.desc");
         paramMap.put("timezone","Korea");
         paramMap.put("with_watch_providers",watch_provider);
         paramMap.put("watch_region","KR");
