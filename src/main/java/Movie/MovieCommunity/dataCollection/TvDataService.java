@@ -76,6 +76,61 @@ public class TvDataService {
         return array;
     }
 
+    @GetMapping("/tv/netflix")
+    public JSONArray requestNeflixAPI(Model model) {
+        JSONArray array= new JSONArray();
+        List<TvDto> NetflixTvInformation= new ArrayList<>();
+        LinkedHashMap<String, String> NetflixParamMap = new LinkedHashMap<String, String>();
+        NetflixParamMap =paramMapSet(NetflixParamMap,"8");
+        List<TvDto> Netflix = extracted(model, NetflixTvInformation, NetflixParamMap, 8);
+        array.add(Netflix);
+        return array;
+    }
+
+    @GetMapping("/tv/disneyPlus")
+    public JSONArray requestdisneyPlusAPI(Model model) {
+        JSONArray array= new JSONArray();
+        List<TvDto> DisneyPlusTvInformation= new ArrayList<>();
+        LinkedHashMap<String, String> DisneyPlusParamMap = new LinkedHashMap<String, String>();
+        DisneyPlusParamMap =paramMapSet(DisneyPlusParamMap,"337");
+        List<TvDto> DisneyPlus = extracted(model, DisneyPlusTvInformation, DisneyPlusParamMap,337);
+        array.add(DisneyPlus);
+        return array;
+    }
+
+    @GetMapping("/tv/waave")
+    public JSONArray requestWaaveAPI(Model model) {
+        JSONArray array= new JSONArray();
+        List<TvDto> WavveTvInformation= new ArrayList<>();
+        LinkedHashMap<String, String> WavveParamMap = new LinkedHashMap<String, String>();
+        WavveParamMap =paramMapSet(WavveParamMap,"356");
+        List<TvDto> Wavve = extracted(model, WavveTvInformation, WavveParamMap,356);
+        array.add(Wavve);
+        return array;
+    }
+
+    @GetMapping("/tv/watcha")
+    public JSONArray requestWatchaAPI(Model model) {
+        JSONArray array= new JSONArray();
+        List<TvDto> WatchaTvInformation= new ArrayList<>();
+        LinkedHashMap<String, String> WatchaParamMap = new LinkedHashMap<String, String>();
+        WatchaParamMap =paramMapSet(WatchaParamMap,"97");
+        List<TvDto> Watcha = extracted(model, WatchaTvInformation, WatchaParamMap, 97);
+        array.add( Watcha);
+        return array;
+    }
+
+    @GetMapping("/tv/appleTv")
+    public JSONArray requestAppleAPIR(Model model){
+        JSONArray array= new JSONArray();
+        List<TvDto> AppleTvInformation= new ArrayList<>();
+        LinkedHashMap<String, String> AppleParamMap = new LinkedHashMap<String, String>();
+        AppleParamMap =paramMapSet(AppleParamMap,"350");
+        List<TvDto> Apple = extracted(model, AppleTvInformation, AppleParamMap,350);
+        array.add(Apple);
+        return array;
+    }
+
     public String makeQueryString(Map<String, String> paramMap) {
         final StringBuilder sb = new StringBuilder();
 
