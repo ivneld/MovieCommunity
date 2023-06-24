@@ -6,6 +6,7 @@ import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.CommentService;
 import Movie.MovieCommunity.web.apiDto.comment.CommentAPIRequest;
 import Movie.MovieCommunity.web.apiDto.comment.CommentDeleteAPIRequest;
+import Movie.MovieCommunity.web.apiDto.comment.CommentLikeApiRequest;
 import Movie.MovieCommunity.web.apiDto.comment.CommentUpdateAPIRequest;
 import Movie.MovieCommunity.web.form.CommentForm;
 import Movie.MovieCommunity.web.response.CommentResponse;
@@ -58,14 +59,25 @@ public class CommentController {
         return commentService.commentList(movieId);
     }
 
-    @Operation(method = "get", summary = "댓글 좋아요 버튼 클릭")
-    @ApiResponses(value=
-    @ApiResponse(responseCode = "202", description = "댓글 좋아요 성공 처리 후 좋아요 수 반환", content={@Content(mediaType = "application/json")})
+//    @Operation(method = "get", summary = "댓글 좋아요 버튼 클릭")
+//    @ApiResponses(value=
+//    @ApiResponse(responseCode = "202", description = "댓글 좋아요 성공 처리 후 좋아요 수 반환", content={@Content(mediaType = "application/json")})
+//    )
+//    @GetMapping("/like/{comment_id}")
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public Integer like(@PathVariable("comment_id") Long commentId, @CurrentUser UserPrincipal member) {
+//        return commentService.plusLike(commentId, member.getId());
+//    }
+
+
+    @Operation(method = "put", summary = "댓글 좋아요 버튼 클릭")
+    @ApiResponses(value =
+    @ApiResponse(responseCode = "202", description = "댓글 좋아요 수를 받아서 DB수정 후 반환", content = {@Content(mediaType = "application/json")})
     )
-    @GetMapping("/like/{comment_id}")
+    @PutMapping("/like/update")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public Integer like(@PathVariable("comment_id") Long commentId, @CurrentUser UserPrincipal member) {
-        return commentService.plusLike(commentId, member.getId());
+    public Integer like(@Valid @RequestBody CommentLikeApiRequest commentLikeApiRequest, @CurrentUser UserPrincipal member) {
+        return commentService.updateLike(commentLikeApiRequest, member.getId());
     }
 
     @Operation(method = "post", summary = "댓글 생성")

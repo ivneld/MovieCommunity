@@ -62,6 +62,11 @@ public class Comment extends BaseTimeEntity{
         this.likeCount += 1;
         return likeCount;
     }
+
+    public Integer updateLikeCount(Integer count) {
+        this.likeCount = count;
+        return count;
+    }
 }
 
 
