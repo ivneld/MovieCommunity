@@ -62,7 +62,9 @@ public class Member  extends BaseTimeEntity{
     private List<LikeMovie> likeMovies = new ArrayList<>();
 
     @Builder
-    public Member(String name, String email, String password, Authority authority, Provider provider, String providerId, String imageUrl){
+    public Member(Long id, String nickname, String name, String email, String password, Authority authority, Provider provider, String providerId, String imageUrl){
+        this.id=id;
+        this.nickname=nickname;
         this.email = email;
         this.password = password;
         this.name = name;
@@ -77,6 +79,8 @@ public class Member  extends BaseTimeEntity{
         this.nickname = nickname;
         this.authority = authority;
     }
+
+
 
     public void updateName(String name){
         this.name = name;

@@ -20,6 +20,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -31,6 +32,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         prePostEnabled = true)
 public class SecurityConfig {
     AuthenticationManager authenticationManager;
+    private final AuthenticationFailureHandler customFailureHandler2;
     private final CustomUserDetailsService customUserDetailsService;
     private final CustomDefaultOAuth2UserService customOAuth2UserService;
     private final CustomSimpleUrlAuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
@@ -40,6 +42,7 @@ public class SecurityConfig {
     public CustomOncePerRequestFilter customOncePerRequestFilter() {
         return new CustomOncePerRequestFilter();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,7 +54,6 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
 
     @Bean
 //    @Order(SecurityProperties.BASIC_AUTH_ORDER)
@@ -70,6 +72,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .formLogin()
+                .failureHandler(customFailureHandler2)
                 .disable()
                 .httpBasic()
                 .disable()
@@ -77,7 +80,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/", "/error","/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/movie/**", "/genre/**","/comment/**","/tv/**")
+                .antMatchers("/", "/community/**","/posts/**","/posts/read/**", "/posts/search/**","/error","/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/movie/**", "/genre/**","/comment/**","/tv/**")
                 .permitAll()
                 .antMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
                 .permitAll()

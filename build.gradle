@@ -89,3 +89,4 @@ compileQuerydsl {
 test.onlyIf {
 	!project.hasProperty('test')
 }
+
