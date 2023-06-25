@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class MemberService {
     private final MovieRepository movieRepository;
     private final MovieWithGenreRepository movieWithGenreRepository;
-    public Page<MovieLikeResponse> findLikeMovie(Pageable pageable, Long memberId) {
+    public CustomPageImpl<MovieLikeResponse> findLikeMovie(Pageable pageable, Long memberId) {
         Page<Movie> likeMovieList = movieRepository.findByLikeMovie(pageable, memberId);
         List<MovieLikeResponse> responseList = likeMovieList.stream().map(lm -> MovieLikeResponse.builder()
                 .id(lm.getId())

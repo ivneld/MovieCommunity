@@ -4,6 +4,7 @@ import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MemberService;
 import Movie.MovieCommunity.service.MovieService;
+import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.util.CustomPageRequest;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.LikeGenreDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieLikeGenreResponse;
@@ -37,16 +38,16 @@ public class MemberController {
     private final MemberService memberService;
     @Operation(method = "get", summary = "관심 영화 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "관심 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = MovieLikeResponse.class))})
+            @ApiResponse(responseCode = "200",description = "관심 영화 조회 성공", useReturnTypeSchema = true)
     })
     @GetMapping("/{memberId}/movie")
-    public ResponseEntity<Page<MovieLikeResponse>> findLikeMovie(CustomPageRequest pageRequest,@PathVariable Long memberId , @CurrentUser UserPrincipal member){
+    public ResponseEntity<CustomPageImpl<MovieLikeResponse>> findLikeMovie(CustomPageRequest pageRequest,@PathVariable Long memberId , @CurrentUser UserPrincipal member){
         if(memberId != member.getId()){
             throw new RuntimeException("권한이 없습니다.");
         }
         PageRequest of = pageRequest.of("id");
         Pageable pageable = (Pageable) of;
-        Page<MovieLikeResponse> response = memberService.findLikeMovie(pageable, memberId);
+        CustomPageImpl<MovieLikeResponse> response = memberService.findLikeMovie(pageable, memberId);
         return new ResponseEntity(response, HttpStatus.OK);
     }
     @Operation(method = "get", summary = "관심 영화 장르 조회")
