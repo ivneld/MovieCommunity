@@ -1,4 +1,4 @@
-package Movie.MovieCommunity.community.infrastructure.persistence;
+package Movie.MovieCommunity.community.repository;
 
 
 import Movie.MovieCommunity.community.domain.Comment;

@@ -1,13 +1,13 @@
-package Movie.MovieCommunity.community.application;
+package Movie.MovieCommunity.community.service;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
-import Movie.MovieCommunity.community.application.dto.CommentDto;
+import Movie.MovieCommunity.community.dto.CommentDto;
 import Movie.MovieCommunity.community.domain.Comment;
 import Movie.MovieCommunity.community.domain.Posts;
-import Movie.MovieCommunity.community.infrastructure.persistence.CommunityCommentRepository;
-import Movie.MovieCommunity.community.infrastructure.persistence.PostsRepository;
+import Movie.MovieCommunity.community.repository.CommunityCommentRepository;
+import Movie.MovieCommunity.community.repository.PostsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

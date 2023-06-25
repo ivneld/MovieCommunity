@@ -1,11 +1,11 @@
-package Movie.MovieCommunity.community.application;
+package Movie.MovieCommunity.community.service;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
-import Movie.MovieCommunity.community.application.dto.PostsDto;
+import Movie.MovieCommunity.community.dto.PostsDto;
 import Movie.MovieCommunity.community.domain.Posts;
-import Movie.MovieCommunity.community.infrastructure.persistence.PostsRepository;
+import Movie.MovieCommunity.community.repository.PostsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

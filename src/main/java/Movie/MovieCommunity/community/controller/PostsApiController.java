@@ -1,9 +1,9 @@
-package Movie.MovieCommunity.community.presentation;
+package Movie.MovieCommunity.community.controller;
 
 
-import Movie.MovieCommunity.community.application.PostsService;
-import Movie.MovieCommunity.community.application.dto.PostsDto;
-import Movie.MovieCommunity.community.application.dto.UserDto;
+import Movie.MovieCommunity.community.service.PostsService;
+import Movie.MovieCommunity.community.dto.PostsDto;
+import Movie.MovieCommunity.community.dto.UserDto;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

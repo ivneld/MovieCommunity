@@ -1,4 +1,4 @@
-package Movie.MovieCommunity.community.application.dto;
+package Movie.MovieCommunity.community.dto;
 
 
 import Movie.MovieCommunity.JPADomain.Authority;
