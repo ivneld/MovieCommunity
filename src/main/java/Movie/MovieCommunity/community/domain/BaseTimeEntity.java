@@ -10,9 +10,6 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * 공통적으로 사용되는 컬럼이므로, 이를 상속한 클래스에서 컬럼을 추가
- */
 
 @Getter
 @MappedSuperclass
