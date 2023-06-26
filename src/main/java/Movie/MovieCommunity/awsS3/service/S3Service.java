@@ -1,6 +1,9 @@
 package Movie.MovieCommunity.awsS3.service;
 
 
+import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
+import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
+import Movie.MovieCommunity.community.domain.Comment;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -12,6 +15,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -36,7 +40,7 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public String CLOUD_FRONT_DOMAIN_NAME = "pdfresource.s3.ap-northeast-2.amazonaws.com";
+    public static final String CLOUD_FRONT_DOMAIN_NAME = "pdfresource.s3.ap-northeast-2.amazonaws.com";
 
     @PostConstruct
     public void setS3Client() {
@@ -48,19 +52,10 @@ public class S3Service {
                 .build();
     }
 
-    public String upload(String currentFilePath, MultipartFile file) throws IOException {
+    public String upload(MultipartFile file) throws IOException {
         // 고유한 key 값을 갖기위해 현재 시간을 postfix로 붙여줌
         SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmss");
         String fileName = file.getOriginalFilename() + "-" + date.format(new Date());
-
-        // key가 존재하면 기존 파일은 삭제
-        if ("".equals(currentFilePath) == false && currentFilePath != null) {
-            boolean isExistObject = s3Client.doesObjectExist(bucket, currentFilePath);
-
-            if (isExistObject == true) {
-                s3Client.deleteObject(bucket, currentFilePath);
-            }
-        }
 
         // 파일 업로드
         s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)

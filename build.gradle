@@ -50,6 +50,7 @@ dependencies {
 	//aws s3
 	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
 	implementation 'com.amazonaws:aws-java-sdk-s3'
+	compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
 
 
 	//querydsl 추가

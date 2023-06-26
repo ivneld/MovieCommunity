@@ -18,7 +18,8 @@ public class GalleryDto {
         GalleryEntity build = GalleryEntity.builder()
                 .id(id)
                 .title(title)
-                .filePath(filePath)
+                .filePath(imgFullPath)
+           //     .imgFullPath(imgFullPath)
                 .build();
         return build;
     }

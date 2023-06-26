@@ -6,12 +6,14 @@ import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import Movie.MovieCommunity.awsS3.dto.GalleryDto;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class GalleryService {
     private S3Service s3Service;
     private GalleryRepository galleryRepository;
@@ -38,5 +40,22 @@ public class GalleryService {
                 .filePath(galleryEntity.getFilePath())
                 .imgFullPath("https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + galleryEntity.getFilePath())
                 .build();
+    }
+
+    @Transactional
+    public void delete(Long galleryId) {
+        GalleryEntity gallery = galleryRepository.findById(galleryId).orElseThrow(() ->
+                new IllegalArgumentException("해당 이미지가 존재하지 않습니다. id=" + galleryId));
+
+        galleryRepository.delete(gallery);
+    }
+
+    @Transactional
+    public GalleryDto read(Long galleryId) {
+        GalleryEntity gallery = galleryRepository.findById(galleryId).orElseThrow(() ->
+                new IllegalArgumentException("해당 이미지가 존재하지 않습니다. id=" + galleryId));
+
+        GalleryDto galleryDto = convertEntityToDto(gallery);
+        return galleryDto;
     }
 }
