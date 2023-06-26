@@ -121,6 +121,7 @@ public class TvDataService {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "ott waave 순위 조회 성공", content={@Content(mediaType = "application/json",schema = @Schema(implementation = TvDto.class))})
     })
+    @GetMapping("/tv/waave")
     public JSONArray requestWaaveAPI(Model model) {
         JSONArray array= new JSONArray();
         List<TvDto> WavveTvInformation= new ArrayList<>();
