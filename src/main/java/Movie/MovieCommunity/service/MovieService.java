@@ -1,24 +1,23 @@
 package Movie.MovieCommunity.service;
 
 import Movie.MovieCommunity.JPADomain.*;
-import Movie.MovieCommunity.JPARepository.LikeMovieRepository;
-import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.JPADomain.Comment;
 import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
-import Movie.MovieCommunity.JPARepository.MovieRepository;
-import Movie.MovieCommunity.JPARepository.WeeklyBoxOfficeRepository;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.dataCollection.MovieDataService;
 import Movie.MovieCommunity.naverApi.ApiExamTranslateNmt;
 import Movie.MovieCommunity.util.CalendarUtil;
+import Movie.MovieCommunity.util.CustomPageImpl;
+import Movie.MovieCommunity.web.apiDto.credit.CreditDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
+import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieSearchResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +41,7 @@ public class MovieService {
     private final WeeklyBoxOfficeRepository weeklyBoxOfficeRepository;
     private final ApiExamTranslateNmt apiExamTranslateNmt;
     private final LikeMovieRepository likeMovieRepository;
-
+    private final ActorRepository actorRepository;
     public List<YearRankingResponse> yearRanking(int openDt, Long memberId){
         Member member;
         if(memberId != null){
@@ -238,7 +237,7 @@ public class MovieService {
             likeMovieRepository.save(likeMovie);
         }
     }
-
+    @Transactional(readOnly = true)
     public List<MovieSearchResponse> movieSearch(String movieNm) {
         List<Movie> movies = movieRepository.findTop5ByMovieNmStartingWith(movieNm);
         List<MovieSearchResponse> responseList = movies.stream().map(m -> MovieSearchResponse.builder()
@@ -249,5 +248,41 @@ public class MovieService {
                 .build()
         ).collect(Collectors.toList());
         return responseList;
+    }
+    @Transactional(readOnly = true)
+    public SearchDetailResponse detailSearch(String search){
+        List<Movie> movies = movieRepository.findTop4ByMovieNmContaining(search);
+        List<MovieDetailSearchDto> movieSearch = movies.stream().map(m -> MovieDetailSearchDto.builder()
+                .id(m.getId())
+                .posterPath(m.getPosterPath())
+                .movieNm(m.getMovieNm())
+                .openDt(m.getOpenDt())
+                .nationNm(m.getNationNm())
+                .build()
+        ).collect(Collectors.toList());
+
+        List<Credit> credits = actorRepository.findTop4ByActorNmContaining(search);
+        List<CreditDetailSearchDto> creditSearch = credits.stream().map(c -> CreditDetailSearchDto.builder()
+                .id(c.getId())
+                .actorNm(c.getActorNm())
+                .creditCategory(c.getCreditCategory())
+                .profileUrl(c.getProfile_path())
+                .build()
+        ).collect(Collectors.toList());
+
+        return new SearchDetailResponse(movieSearch, creditSearch);
+    }
+    @Transactional(readOnly = true)
+    public CustomPageImpl<MovieDetailSearchDto> movieDetailSearch(String search, Pageable pageable){
+        Page<Movie> movies   = movieRepository.findPageByMovieNmContaining(search, pageable);
+        List<MovieDetailSearchDto> movieSearch = movies.stream().map(m -> MovieDetailSearchDto.builder()
+                .id(m.getId())
+                .posterPath(m.getPosterPath())
+                .movieNm(m.getMovieNm())
+                .openDt(m.getOpenDt())
+                .nationNm(m.getNationNm())
+                .build()
+        ).collect(Collectors.toList());
+        return new CustomPageImpl<>(movieSearch, pageable, movies.getTotalElements());
     }
 }
