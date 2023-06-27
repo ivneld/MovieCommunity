@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,9 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 
+import static Movie.MovieCommunity.awsS3.service.S3Service.CLOUD_FRONT_DOMAIN_NAME;
+
+@Slf4j
 @RestController
 @AllArgsConstructor
 @Tag(name="gallery", description = "커뮤니티 이미지 저장 api")
@@ -42,18 +47,18 @@ public class GalleryController {
         return galleryDtoList;
     }
 
-    @Operation(method = "post", summary = "이미지 수정/ 이미지 등록")
-    @ApiResponses(value=
-    @ApiResponse(responseCode = "200", description = "이미지 수정/ 이미지 등록")
-    )
-    @PostMapping("/gallery")
-    public String execWrite(MultipartFile file) throws IOException {
+    @PostMapping(path= "/gallery", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(method = "post", summary = "이미지 등록")
+    @ApiResponse(responseCode = "200", description = "이미지 등록 성공")
+    public GalleryDto execWrite(@RequestPart MultipartFile file) throws IOException {
+
         GalleryDto galleryDto = new GalleryDto();
         String imgPath = s3Service.upload(file);
         galleryDto.setFilePath(imgPath);
+        galleryDto.setImgFullPath(CLOUD_FRONT_DOMAIN_NAME+imgPath);
         galleryService.savePost(galleryDto);
 
-        return imgPath;
+        return galleryDto;
     }
 
 
