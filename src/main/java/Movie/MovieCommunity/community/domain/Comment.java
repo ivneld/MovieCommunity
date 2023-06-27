@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class Comment {
     private String modifiedDate;
 
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "posts_id")
     private Posts posts;
 

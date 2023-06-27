@@ -3,10 +3,9 @@ package Movie.MovieCommunity.community.controller;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.community.dto.*;
+import Movie.MovieCommunity.community.repository.PostsRepository;
 import Movie.MovieCommunity.community.service.PostsService;
-import Movie.MovieCommunity.community.dto.CommentDto;
-import Movie.MovieCommunity.community.dto.PostsDto;
-import Movie.MovieCommunity.community.dto.UserDto;
 
 import Movie.MovieCommunity.community.domain.Posts;
 import io.swagger.v3.core.util.Json;
@@ -15,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -42,34 +42,22 @@ import java.util.Map;
 public class PostsIndexController {
 
     private final PostsService postsService;
+    private final PostsRepository postsRepository;
     private final MemberRepository memberRepository;
 
     @Operation(method = "get", summary = "커뮤니티 목록 페이지/ 이전, 이후 기능 /이후 하면 사이즈 개수의 게시물로 변경")
     @GetMapping("/posts")                 /* default page = 0, size = 10  */
-    public ResponseEntity index(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-            Pageable pageable,  UserDto.Response user) {
-          Page<Posts> list = postsService.pageList(pageable);
-//
-//        JSONArray results = new JSONArray();
-//        Map<String, Object> result1 = new HashMap<>();
-//        Map<String, Object> result2 = new HashMap<>();
-//        Map<String, Object> result3 = new HashMap<>();
-//        Map<String, Object> result4 = new HashMap<>();
-//        Map<String, Object> result5 = new HashMap<>();
-//        Map<String, Object> result6 = new HashMap<>();
-//
-//        if (user != null) {
-//            result1.put("user", user);
-//            results.add(result1);
-//        }
-////
-//        results.add(result2.put("posts",list));
-//        results.add(result3.put("previous",pageable.previousOrFirst().getPageNumber()));
-//        results.add(result4.put("next",pageable.next().getPageNumber()));
-//        results.add(result5.put("hasNext",list.hasNext()));
-//        results.add(result6.put("hasPrev", list.hasPrevious()));
+    public ListDto index(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                               Pageable pageable, UserDto.Response user) {
 
-        return ResponseEntity.ok().body(list);
+        Page<Posts> list = postsRepository.findAll(pageable);
+
+        ListDto dto = new ListDto(list,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        if (user != null) {
+            dto.setUser(user);
+        }
+
+        return dto;
     }
     /* 글 작성 */
     @Operation(method = "get", summary = "커뮤니티 게시글 작성 페이지")
@@ -85,74 +73,78 @@ public class PostsIndexController {
     /* 글 상세보기 */
     @Operation(method = "get", summary = "커뮤니티 게시글 1개 상세보기 페이지")
     @GetMapping("/posts/read/{id}")
-    public JSONArray read(@PathVariable Long id, UserDto.Response user, Model model) {
-        PostsDto.Response dto = postsService.findById(id);
+    public PostDetailDto read(@PathVariable Long id, UserDto.Response user, Model model) {
+        Posts posts = postsRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
+
+        PostDetailDto postDetailDto = new PostDetailDto();
+        PostsDto.Response dto=new PostsDto.Response(posts);
+
         List<CommentDto.Response> comments = dto.getComments();
 
 
         /* 댓글 관련 */
         if (comments != null && !comments.isEmpty()) {
-            model.addAttribute("comments", comments);
+            postDetailDto.setComments(comments);
         }
 
         /* 사용자 관련 */
         if (user != null) {
-            model.addAttribute("user", user);
+            postDetailDto.setUser(user);
 
             /* 게시글 작성자 본인인지 확인 */
-            if (dto.getUserId().equals(user.getId())) {
-                model.addAttribute("writer", true);
-            }
-
-            /* 댓글 작성자 본인인지 확인 */
-            if (comments.stream().anyMatch(s -> s.getUserId().equals(user.getId()))) {
-                model.addAttribute("isWriter", true);
-            }
-/*            for (int i = 0; i < comments.size(); i++) {
-                boolean isWriter = comments.get(i).getUserId().equals(user.getId());
-                model.addAttribute("isWriter",isWriter);
-            }*/
+            postDetailDto.setIsPostWriter(dto.getUserId().equals(user.getId()));
         }
 
-        postsService.updateView(id); // views ++
-        model.addAttribute("posts", dto);
-        JSONArray jsonArray = (JSONArray) model;
+        List<Integer> IsCommentWriter = new ArrayList<>();
 
-        return jsonArray;
+        /* 댓글 작성자 본인인지 확인 */
+        for (int i = 0; i < comments.size(); i++) {
+            boolean isWriter = comments.get(i).getUserId().equals(user.getId());
+            if(isWriter==true){
+                IsCommentWriter.add(i);
+            }
+        }
+        postDetailDto.setIsCommentWriter(IsCommentWriter);
+
+        postsService.updateView(id); // views ++
+        postDetailDto.setPost( dto);
+
+        return postDetailDto;
     }
 
     @Operation(method = "get", summary = "커뮤니티 게시글 수정 페이지")
     @GetMapping("/posts/update/{id}")
-    public JSONArray update(@PathVariable Long id,  UserDto.Response user, Model model) {
+    public UpdatePageDto update(@PathVariable Long id,  UserDto.Response user, Model model) {
+        UpdatePageDto updatePageDto = new UpdatePageDto();
         PostsDto.Response dto = postsService.findById(id);
         if (user != null) {
-            model.addAttribute("user", user);
+            updatePageDto.setUser(user);
         }
-        model.addAttribute("posts", dto);
-        JSONArray jsonArray = (JSONArray) model;
+        updatePageDto.setPosts(dto);
 
-        return jsonArray;
+        return updatePageDto;
     }
 
     @GetMapping("/posts/search")
     @Operation(method = "get", summary = "게시글 검색 페이지")
-    public JSONArray search(String keyword, Model model, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+    public SearchPageDto search(String keyword, Model model, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable,  UserDto.Response user) {
+
+        SearchPageDto searchPageDto= new SearchPageDto();
         Page<Posts> searchList = postsService.search(keyword, pageable);
 
         if (user != null) {
-            model.addAttribute("user", user);
+            searchPageDto.setUser(user);
         }
-        model.addAttribute("searchList", searchList);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
-        model.addAttribute("next", pageable.next().getPageNumber());
-        model.addAttribute("hasNext", searchList.hasNext());
-        model.addAttribute("hasPrev", searchList.hasPrevious());
+        searchPageDto.setSearchList(searchList);
+        searchPageDto.setKeyword(keyword);
+        searchPageDto.setPreviousPageNumber(pageable.previousOrFirst().getPageNumber());
+        searchPageDto.setNextPageNumber(pageable.next().getPageNumber());
+        searchPageDto.setHasNextPage(searchList.hasNext());
+        searchPageDto.setHasPreviousPage(searchList.hasPrevious());
 
-        JSONArray jsonArray = (JSONArray) model;
-
-        return jsonArray;
+        return searchPageDto;
     }
 }
 

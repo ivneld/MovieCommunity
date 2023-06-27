@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -31,10 +32,11 @@ public class Posts extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Member user;
+        private Member user;
 
-    @OneToMany(mappedBy = "posts", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id asc") // 댓글 정렬
+    @JsonManagedReference
     private List<Comment> comments;
 
     /* 게시글 수정 */
