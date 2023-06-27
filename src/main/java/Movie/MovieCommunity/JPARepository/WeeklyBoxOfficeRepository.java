@@ -14,6 +14,7 @@ public interface WeeklyBoxOfficeRepository extends JpaRepository<JpaWeeklyBoxOff
     List<JpaWeeklyBoxOffice> findByRankingLessThan(Integer ranking);
     List<JpaWeeklyBoxOffice> findByOpenDtBetween(LocalDate startDt,LocalDate endDt);
 
+    List<JpaWeeklyBoxOffice> findByOpenDtBetweenOrderByRankingAsc(LocalDate startDt, LocalDate endDt);
     List<JpaWeeklyBoxOffice> findByMovieCdOrderByYearWeekTime(String movieCd);
     @Query("select wb from weeklyboxoffice wb where wb.id = (select max(swb.id) from weeklyboxoffice swb)")
     Optional<JpaWeeklyBoxOffice> findLastByWeeklyId();

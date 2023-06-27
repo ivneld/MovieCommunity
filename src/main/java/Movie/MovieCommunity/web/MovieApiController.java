@@ -7,10 +7,7 @@ import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
 import Movie.MovieCommunity.util.CalendarUtil;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieSearchResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
+import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -81,5 +79,27 @@ public class MovieApiController {
     public ResponseEntity<?> search(@RequestParam String movieNm){
         List<MovieSearchResponse> response = movieService.movieSearch(movieNm);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(method = "get", summary = "이번주 영화 랭킹")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "주간 행킹 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
+    })
+    @GetMapping("/weekly")
+    public List<YearRankingResponse> weeklyRankingThisWeek() {
+        LocalDate date = LocalDate.now();
+        LocalDate date1 = LocalDate.of(2023, 5, 1);
+        return movieService.weeklyRanking(date1);
+    }
+
+    @Operation(method = "get", summary = "추천 영화")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+    })
+    @GetMapping("/weekly/propose")
+    public List<ProposeMovieResponse> proposeMovie() {
+        LocalDate date = LocalDate.now();
+        LocalDate date1 = LocalDate.of(2023, 5, 1);
+        return movieService.proposeMovie(date1);
     }
 }
