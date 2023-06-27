@@ -21,20 +21,22 @@ function Nav(props) {
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const { data: searchResults } = useSWR(`http://localhost:8080/movie/search?movieNm=${searchQuery}`, fetcher);
-	
+
 	// 검색목록 엔터 시 (영화이름 끝까지 안쳐도 가장 위에 있는 영화로 검색됨)
 	const handleSearchSubmit = (e) => {
 		e.preventDefault();
 		if (searchQuery && searchResults && searchResults.length > 0) {
-			navigate(`/movie/${searchResults[0].id}`, { state: { detail: searchResults[0].id } });
+			// navigate(`/movie/${searchResults[0].id}`, { state: { detail: searchResults[0].id } });
+			navigate('/movie/search/detail', {state: {search : searchQuery}})
 		}
 		setSearchQuery("");
 	};
 
 	// 검색목록 클릭 시
-	const clickSearchSubmit = (id) => {
+	const clickSearchSubmit = () => {
 		if (searchQuery && searchResults && searchResults.length > 0) {
-			navigate(`/movie/${id}`, { state: { detail: id } });
+			// navigate(`/movie/${id}`, { state: { detail: id } });
+			navigate('/movie/search/detail', {state: {search: searchQuery}})
 		}
 		setSearchQuery("");
 	};
@@ -88,7 +90,7 @@ function Nav(props) {
 							  {searchResults && searchResults.length > 0 && searchQuery && (
 									<ul className="autocomplete-results">
 									{searchResults.map((result) => (
-										<li key={result.id} onClick={() => (clickSearchSubmit(result.id))}>
+										<li key={result.id} onClick={() => (clickSearchSubmit())}>
 											<div style={{display:"flex"}}>
 												<div>
 													<div>{result.movieNm}</div>

@@ -2,6 +2,7 @@ import React, { useCallback, useState, useContext, useRef, useEffect } from 'rea
 import { AuthContext } from '../../context/AuthProvider';
 import useSWR, { mutate } from 'swr';
 import fetcherAccessToken from '../../utils/fetcherAccessToken';
+import axios from 'axios';
 import { ChartContainer } from './styles';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {  Chart as ChartJS, registerables  } from 'chart.js';
@@ -19,12 +20,22 @@ const MyPage = () => {
     const { data : genreData, error2 } = useSWR(`http://localhost:8080/mypage/1/genre`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
+    const { data : commentData, error3 } = useSWR(`http://localhost:8080/mypage/1/comment`, fetcherAccessToken, {
+        dedupingInterval: 100000,
+    });
+    console.log(interestData)
+    console.log(commentData)
     const moveRef1 = useRef(null)
     const moveRef2 = useRef(null)
     const moveRef3 = useRef(null)
     const moveRef4 = useRef(null)
 
-    if (error || error2) {
+    const [comment, setComment] = useState('');
+    const handleChange = (event) => {
+      setComment(event.target.value);
+    };
+
+    if (error || error2 || error3) {
         return <div>Error occurred while fetching data.</div>;
       }
     // genreData가 undefined이거나 배열이 아닌 경우에 대해 오류를 처리하고 예외 상황을 처리
@@ -161,6 +172,47 @@ const MyPage = () => {
           }
     }
 
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      try{
+          const config = {
+              headers:{
+                  Authorization : `Bearer ${accessToken}`
+              }
+          }
+          const req = {
+              name: comment
+          }
+          const response = await axios.put("http://localhost:8080/mypage/1/name", req, config);
+          localStorage.setItem('name', comment)
+          setAuth(comment)
+
+          console.log('프로필 수정이 완료되었습니다.')
+          alert('프로필 수정이 완료되었습니다.')
+      } catch(error){
+          console.error('프로필 수정 실패!:', error)
+      }
+  };
+
+  const handleDelete = async (commentId) => { // 댓글 삭제
+      try{
+          const accessToken = localStorage.getItem('accessToken');
+          const response = await axios.delete('http://localhost:8080/comment', {
+              headers: {
+                  Authorization: `Bearer ${accessToken}`
+              },
+              data: {
+                  commentId: commentId
+              }
+          })
+          mutate('http://localhost:8080/mypage/1/comment'); // 코멘트 가져오기 업데이트
+          console.log('댓글 삭제가 완료되었습니다.');
+          alert('댓글 삭제가 완료되었습니다.')
+      }
+      catch(error){
+          console.error('댓글 삭제 실패!', error);
+      }
+  }
     return(
         <>
         {(auth) ?
@@ -196,7 +248,7 @@ const MyPage = () => {
                             <div>{auth}님이 좋아요 한 영화</div>
                             <div style={{display:"flex", justifyContent:"center"}}>
                                 <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
-                                    {interestData?.contents?.map((obj, idx) => {
+                                    {interestData?.content?.map((obj, idx) => {
                                         return(
                                             <div key={idx}>
                                                 <img src={obj.posterPath} width="266.66px" height="400px" alt="포스터주소" />
@@ -209,13 +261,43 @@ const MyPage = () => {
                         </div>
                         <hr/>
                         <div ref={moveRef3}>
-                            {auth}님이 쓴 글
-                            <div>아직 x</div>
+                            {auth}님이 쓴 코멘트
+                            <div>
+                              {commentData?.content?.map((obj,idx)=>{
+                                  const modifiedDt = new Date(obj.modifiedDt);
+                                  const year = modifiedDt.getFullYear();
+                                  const month = String(modifiedDt.getMonth() + 1).padStart(2, '0');
+                                  const day = String(modifiedDt.getDate()).padStart(2, '0');
+                                  const formattedDt = `${year}.${month}.${day}`;
+                                return(
+                                  <div key={idx}>
+                                    <div style={{display:"flex"}}>
+                                      <div>{obj.movieNm}</div>
+                                      <div>{formattedDt}</div>
+                                      <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer"}}>삭제</div>
+                                    </div>
+                                    <div>
+                                      {obj.content}
+                                    </div>
+                                  </div>
+                                )
+                              })}
+                            </div>
                         </div>
                         <hr/>
                         <div ref={moveRef4}>
                             프로필 수정
-                            <div>아직 x</div>
+                            <form onSubmit={handleSubmit}>
+                              <input
+                              value={comment}
+                              onChange={handleChange}
+                              placeholder={auth}
+                              />
+
+                              <div style={{display:"flex"}}>
+                                  <button type="submit">등록</button>
+                              </div>
+                            </form>
                         </div>
                     </div>
                 </div>

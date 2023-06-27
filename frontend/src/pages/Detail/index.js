@@ -154,10 +154,10 @@ const Detail = () => {
                     <div ref={moveRef} style={{height:'100vh'}}>
                         <Tabs selectedIndex={activeTab} onSelect={handleTabChange}>
                             <TabList>
-                            <Tab>기본정보</Tab>
-                            <Tab>출연/제작</Tab>
-                            <Tab>주간랭킹</Tab>
-                            <Tab>코멘트/리뷰</Tab>
+                                <Tab>기본정보</Tab>
+                                <Tab>출연/제작</Tab>
+                                <Tab>주간랭킹</Tab>
+                                <Tab>코멘트/리뷰</Tab>
                             </TabList>
 
                             <TabPanel>
@@ -370,6 +370,7 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
 }
 
 function Comment(){
+    const { auth, setAuth } = useContext(AuthContext);
     const location = useLocation();
     const detail = location.state.detail;
     const { data : commentData, error } = useSWR(`http://localhost:8080/comment/${detail}`, fetcher, {
@@ -413,7 +414,43 @@ function Comment(){
             console.error('댓글 삭제 실패!', error);
         }
     }
+    console.log('commentData:',commentData)
     console.log('updateCommentId:',updateCommentId)
+
+    const commentLike = async(commentId, likeCount) => { // 댓글 좋아요 
+        if (!auth){
+            alert('로그인이 필요한 기능입니다.')
+            return;
+        }
+        try{
+            const accessToken = localStorage.getItem('accessToken');
+            const config = {
+                headers:{
+                    Authorization : `Bearer ${accessToken}`
+                }
+            }
+            let updatedLikeCount;
+            if (likeCount !== 0) {
+              updatedLikeCount = likeCount - 1;
+            } else if (likeCount === 0) {
+              updatedLikeCount = likeCount + 1;
+            } else {
+              // Handle other cases if needed
+              updatedLikeCount = likeCount;
+            }
+            const req = {
+                    like: updatedLikeCount,
+                    commentId: commentId,
+            }
+            const response = await axios.put("http://localhost:8080/comment/like/update", req, config);
+            mutate(`http://localhost:8080/comment/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`http://localhost:8080/comment/more/${detail}`); // 코멘트 가져오기 업데이트
+            console.log('좋아요 기능 실행')
+        }catch(error){
+            console.log('좋아요 기능 에러!:',error)
+        }
+    }
+    
     return(
         <>
             <div>오래된순, 최신순, 추천순</div>
@@ -428,7 +465,7 @@ function Comment(){
                             <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
                                 <div style={{display:"flex", fontSize:"30px"}}>
                                     <div style={{marginLeft:"20px"}}>{obj.username}</div>
-                                    <div style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                 </div>
                                 <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
                                 <div style={{display:"flex", fontSize:"24px"}}>
@@ -453,7 +490,7 @@ function Comment(){
                             <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
                                 <div style={{display:"flex", fontSize:"30px"}}>
                                     <div style={{marginLeft:"20px"}}>{obj.username}</div>
-                                    <div style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                 </div>
                                 <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
                                 <div style={{display:"flex", fontSize:"24px"}}>

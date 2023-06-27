@@ -1,16 +1,12 @@
 package Movie.MovieCommunity.web;
 
-import Movie.MovieCommunity.JPADomain.CreditCategory;
-import Movie.MovieCommunity.JPADomain.Member;
-import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
-import Movie.MovieCommunity.util.CalendarUtil;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieDetailResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieSearchResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.WeeklyRankingResponse;
-import Movie.MovieCommunity.web.apiDto.movie.response.YearRankingResponse;
+import Movie.MovieCommunity.util.CustomPageImpl;
+import Movie.MovieCommunity.util.CustomPageRequest;
+import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
+import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -75,11 +73,33 @@ public class MovieApiController {
 
     @Operation(method = "get", summary = "영화 검색")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "영화 검색 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = MovieSearchResponse.class))})
+            @ApiResponse(responseCode = "200",description = "영화 검색 성공", useReturnTypeSchema = true)
     })
     @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestParam String movieNm){
+    public ResponseEntity<List<MovieSearchResponse>> search(@RequestParam String movieNm){
         List<MovieSearchResponse> response = movieService.movieSearch(movieNm);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(method = "get", summary = "상세 검색")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "상세 검색 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/search/detail")
+    public ResponseEntity<SearchDetailResponse> detailSearch(@RequestParam String search){
+        SearchDetailResponse response = movieService.detailSearch(search);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(method = "get", summary = "영화 상세 검색")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "영화 상세 검색 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/search/moviedetail")
+    public ResponseEntity<CustomPageImpl<MovieDetailSearchDto>> movieDetailSearch(CustomPageRequest pageRequest, @RequestParam String search){
+        PageRequest of = pageRequest.of("popularity");
+        Pageable pageable = (Pageable) of;
+        CustomPageImpl<MovieDetailSearchDto> response = movieService.movieDetailSearch(search, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

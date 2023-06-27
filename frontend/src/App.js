@@ -43,6 +43,7 @@ function App() {
   const Detail = loadable(() => import('./pages/Detail'));
   const Genre = loadable(() => import('./pages/Genre'));
   const GenreMovies = loadable(() => import('./pages/GenreMovies'));
+  const SearchResult = loadable(() => import('./pages/SearchResult'));
   
   const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
@@ -98,6 +99,7 @@ function App() {
                 <Route path="/movie/:id" element={<Detail />}/>
                 <Route path="/genre" element={<Genre />}/>
                 <Route path="/genre/:id" element={<GenreMovies />}/>
+                <Route path="/movie/search/detail" element={<SearchResult />}/>
             </Routes>
           </HttpHeadersProvider>
         </AuthProvider>
