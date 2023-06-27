@@ -14,6 +14,14 @@ import java.time.format.DateTimeFormatter;
  */
 public class CommentDto {
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class Requestparam {
+        private String comment;
+    }
+
     /** 댓글 Service 요청을 위한 DTO 클래스 */
     @Data
     @AllArgsConstructor

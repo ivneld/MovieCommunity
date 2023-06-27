@@ -27,8 +27,11 @@ public class CommentApiController {
     /* CREATE */
     @Operation(method = "post", summary = "커뮤니티 댓글 생성")
     @PostMapping("/posts/{id}/comments")
-    public ResponseEntity<Long> save(@PathVariable Long id, @RequestBody CommentDto.Request dto,
+    public ResponseEntity<Long> save(@PathVariable Long id, @RequestBody CommentDto.Requestparam requestparam,
                                 UserDto.Response userSessionDto) {
+        CommentDto.Request dto= new CommentDto.Request();
+        dto.setComment(requestparam.getComment());
+
         return ResponseEntity.ok(commentService.save(id, userSessionDto.getNickname(), dto));
     }
 
@@ -42,7 +45,9 @@ public class CommentApiController {
     /* UPDATE */
     @Operation(method = "put", summary = "커뮤니티 댓글 수정")
     @PutMapping({"/posts/{postsId}/comments/{id}"})
-    public ResponseEntity<Long> update(@PathVariable Long postsId, @PathVariable Long id, @RequestBody CommentDto.Request dto) {
+    public ResponseEntity<Long> update(@PathVariable Long postsId, @PathVariable Long id, @RequestBody CommentDto.Requestparam requestparam) {
+        CommentDto.Request dto= new CommentDto.Request();
+        dto.setComment(requestparam.getComment());
         commentService.update(postsId, id, dto);
         return ResponseEntity.ok(id);
     }

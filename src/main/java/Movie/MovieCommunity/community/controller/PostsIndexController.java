@@ -1,6 +1,8 @@
 package Movie.MovieCommunity.community.controller;
 
 
+import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.community.service.PostsService;
 import Movie.MovieCommunity.community.dto.CommentDto;
 import Movie.MovieCommunity.community.dto.PostsDto;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +27,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 화면 연결 Controller
@@ -36,34 +42,44 @@ import java.util.List;
 public class PostsIndexController {
 
     private final PostsService postsService;
+    private final MemberRepository memberRepository;
 
-    @Operation(method = "get", summary = "커뮤니티 목록 페이지 뒤로 하면 10개 게시물 추가")
+    @Operation(method = "get", summary = "커뮤니티 목록 페이지/ 이전, 이후 기능 /이후 하면 사이즈 개수의 게시물로 변경")
     @GetMapping("/posts")                 /* default page = 0, size = 10  */
-    public JSONArray index(Model model, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+    public ResponseEntity index(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
             Pageable pageable,  UserDto.Response user) {
-        Page<Posts> list = postsService.pageList(pageable);
+          Page<Posts> list = postsService.pageList(pageable);
+//
+//        JSONArray results = new JSONArray();
+//        Map<String, Object> result1 = new HashMap<>();
+//        Map<String, Object> result2 = new HashMap<>();
+//        Map<String, Object> result3 = new HashMap<>();
+//        Map<String, Object> result4 = new HashMap<>();
+//        Map<String, Object> result5 = new HashMap<>();
+//        Map<String, Object> result6 = new HashMap<>();
+//
+//        if (user != null) {
+//            result1.put("user", user);
+//            results.add(result1);
+//        }
+////
+//        results.add(result2.put("posts",list));
+//        results.add(result3.put("previous",pageable.previousOrFirst().getPageNumber()));
+//        results.add(result4.put("next",pageable.next().getPageNumber()));
+//        results.add(result5.put("hasNext",list.hasNext()));
+//        results.add(result6.put("hasPrev", list.hasPrevious()));
 
-        if (user != null) {
-            model.addAttribute("user", user);
-        }
-
-        model.addAttribute("posts", list);
-        model.addAttribute("previous", pageable.previousOrFirst().getPageNumber());
-        model.addAttribute("next", pageable.next().getPageNumber());
-        model.addAttribute("hasNext", list.hasNext());
-        model.addAttribute("hasPrev", list.hasPrevious());
-        JSONArray jsonArray = (JSONArray) model;
-
-        return jsonArray;
+        return ResponseEntity.ok().body(list);
     }
     /* 글 작성 */
     @Operation(method = "get", summary = "커뮤니티 게시글 작성 페이지")
     @GetMapping("/posts/write")
-    public String write( UserDto.Response user, Model model) {
-        if (user != null) {
-            model.addAttribute("user", user);
-        }
-        return "posts/posts-write";
+    public UserDto.Response write( UserDto.Response user) {
+        Member member= memberRepository.findById(user.getId()).orElseThrow(() ->
+                new IllegalArgumentException("유저 정보가 없습니다."));
+        UserDto.Response writer= new UserDto.Response(member.getId(), member.getUsername(), member.getNickname());
+
+        return writer;
     }
 
     /* 글 상세보기 */

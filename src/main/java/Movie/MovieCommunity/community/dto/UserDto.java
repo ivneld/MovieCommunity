@@ -62,22 +62,24 @@ public class UserDto {
      * 세션 저장용 Dto 클래스 생성
      * */
     @Getter
+    @AllArgsConstructor
     public static class Response implements Serializable {
 
         private final Long id;
         private final String username;
         private final String nickname;
-        private final String email;
-        private final Authority role;
+//        private final Authority role;
 
 
-        /* Entity -> dto */
+
+        /**
+        // Entity -> dto
         public Response(Member user) {
             this.id = user.getId();
             this.username = user.getUsername();
             this.nickname = user.getNickname();
             this.email = user.getEmail();
             this.role = user.getAuthority();
-        }
+        }*/
     }
 }
