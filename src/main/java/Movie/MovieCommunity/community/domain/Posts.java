@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -31,9 +32,13 @@ public class Posts extends BaseTimeEntity {
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "movie_id")
+    private Movie movie;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-        private Member user;
+    private Member user;
 
     @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id asc") // 댓글 정렬

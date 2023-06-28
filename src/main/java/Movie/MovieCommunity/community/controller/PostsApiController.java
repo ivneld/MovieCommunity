@@ -2,8 +2,11 @@ package Movie.MovieCommunity.community.controller;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPADomain.Movie;
+import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import Movie.MovieCommunity.JPADomain.dto.TvDto;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import Movie.MovieCommunity.community.domain.Posts;
@@ -44,6 +47,7 @@ public class PostsApiController {
     private final PostsRepository postsRepository;
     private final GalleryRepository galleryRepository;
     private final MemberRepository userRepository;
+    private final MovieRepository movieRepository;
 
     /* CREATE */
     @Operation(method = "post", summary = "커뮤니티 게시글 생성")
@@ -52,9 +56,15 @@ public class PostsApiController {
     public ResponseEntity save(@RequestBody PostsDto.DetailRequestParam param, UserDto.Response user) {
         PostsDto.Request dto= new PostsDto.Request();
 
+
+        Movie movie = movieRepository.findById(param.getMovieId()).get();
+
+        dto.setMovie(movie);
+        log.info("movie={}",movie);
         dto.setTitle(param.getTitle());
         dto.setContent(param.getContent());
         dto.setWriter(user.getNickname());
+
         Optional<List<Long>> GalleryId = param.getGalleryId();
         Member member = userRepository.findByNickname(user.getNickname());
         dto.setUser(member);

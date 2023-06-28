@@ -2,6 +2,7 @@ package Movie.MovieCommunity.community.dto;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.community.domain.Posts;
 import lombok.*;
@@ -33,6 +34,7 @@ public class PostsDto {
         private String title;
         private String content;
         Optional<List<Long>> GalleryId;
+        private Long movieId;
     }
 
 
@@ -52,7 +54,9 @@ public class PostsDto {
         private String createdDate, modifiedDate;
         private int view;
         private Member user;
+        private Movie movie;
         private List<GalleryEntity> gallery;
+
 
         /* Dto -> Entity */
         public Posts toEntity() {
@@ -63,6 +67,7 @@ public class PostsDto {
                     .content(content)
                     .view(0)
                     .user(user)
+                    .movie(movie)
                     .galleries(gallery)
                     .build();
 
