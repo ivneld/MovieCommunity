@@ -85,10 +85,17 @@ public class CommentService {
     }
 
 //    movieNm 삭제
-    public List<CommentResponse> commentList(Long movieId) {
+    public List<CommentResponse> commentList(Long movieId, Long memberId) {
+        Optional<Movie> findMovie = movieRepository.findById(movieId);
+        DefaultAssert.isOptionalPresent(findMovie);
+
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(findMember);
+
         List<CommentResponse> result = new ArrayList<>();
         List<Comment> comments = commentRepository.findByMovieId(movieId);
         for (Comment comment : comments) {
+            boolean myLike = getMyLike(memberId, comment);
 
             result.add(CommentResponse.builder()
                     .commentId(comment.getId())
@@ -97,15 +104,24 @@ public class CommentService {
                     .movieId(comment.getMovie().getId())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
+                    .myLike(myLike)
                     .build());
         }
         return result;
     }
 
-    public List<CommentResponse> top8CommentList(Long movieId) {
+    public List<CommentResponse> top8CommentList(Long movieId, Long memberId) {
+        Optional<Movie> findMovie = movieRepository.findById(movieId);
+        DefaultAssert.isOptionalPresent(findMovie);
+
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(findMember);
+
         List<CommentResponse> result = new ArrayList<>();
         List<Comment> comments = commentRepository.findTop8ByMovieIdIsOrderByLikeCountDesc(movieId);
         for (Comment comment : comments) {
+            boolean myLike = getMyLike(memberId, comment);
+
             result.add(CommentResponse.builder()
                     .commentId(comment.getId())
                     .memberId(comment.getMember().getId())
@@ -113,6 +129,7 @@ public class CommentService {
                     .movieId(comment.getMovie().getId())
                     .content(comment.getContent())
                     .likeCount(comment.getLikeCount())
+                    .myLike(myLike)
                     .build());
         }
         return result;
@@ -159,6 +176,15 @@ public class CommentService {
             return true;
         }
         return false;
+    }
+
+    private boolean getMyLike(Long memberId, Comment comment) {
+        boolean myLike = false;
+
+        if (likeCommentRepository.findByCommentIdAndMemberId(comment.getId(), memberId).isPresent()) {
+            myLike = true;
+        }
+        return myLike;
     }
 
 

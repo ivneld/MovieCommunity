@@ -46,8 +46,8 @@ public class CommentController {
     @ApiResponse(responseCode = "200", description = "댓글 조회 성공", content={@Content(mediaType = "application/json")})
     )
     @GetMapping("/{movie_id}")
-    public List<CommentResponse> top8Comments(@PathVariable("movie_id") Long movieId) {
-        return commentService.top8CommentList(movieId);
+    public List<CommentResponse> top8Comments(@PathVariable("movie_id") Long movieId, @CurrentUser UserPrincipal member) {
+        return commentService.top8CommentList(movieId, member.getId());
     }
 
     @Operation(method = "get", summary = "더보기 누른 후 모든 댓글")
@@ -55,8 +55,8 @@ public class CommentController {
     @ApiResponse(responseCode = "200", description = "댓글 조회 성공", content={@Content(mediaType = "application/json")})
     )
     @GetMapping("/more/{movie_id}")
-    public List<CommentResponse> allComments(@PathVariable("movie_id") Long movieId) {
-        return commentService.commentList(movieId);
+    public List<CommentResponse> allComments(@PathVariable("movie_id") Long movieId, @CurrentUser UserPrincipal member) {
+        return commentService.commentList(movieId, member.getId());
     }
 
 //    @Operation(method = "get", summary = "댓글 좋아요 버튼 클릭")
