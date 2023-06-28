@@ -55,8 +55,6 @@ public class PostsApiController {
     @PostMapping("/posts")
     public ResponseEntity save(@RequestBody PostsDto.DetailRequestParam param, UserDto.Response user) {
         PostsDto.Request dto= new PostsDto.Request();
-
-
         Movie movie = movieRepository.findById(param.getMovieId()).get();
 
         dto.setMovie(movie);

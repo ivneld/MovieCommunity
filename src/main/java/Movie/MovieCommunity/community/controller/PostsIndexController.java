@@ -27,10 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 화면 연결 Controller
@@ -44,6 +41,17 @@ public class PostsIndexController {
     private final PostsService postsService;
     private final PostsRepository postsRepository;
     private final MemberRepository memberRepository;
+
+    @Operation(method = "get", summary = "커뮤니티 목록 페이지/ 이전, 이후 기능 /이후 하면 사이즈 개수의 게시물로 변경")
+    @GetMapping("/postByMovie/{movieId}")
+    public List<Posts> read(@PathVariable("movieId") Long movieId) {
+        Optional<List<Posts>> byMovie = postsRepository.findByMovieId(movieId);
+        if(byMovie.isPresent()){
+            return byMovie.get();
+        }
+        return null;
+    }
+
 
     @Operation(method = "get", summary = "커뮤니티 목록 페이지/ 이전, 이후 기능 /이후 하면 사이즈 개수의 게시물로 변경")
     @GetMapping("/posts")                 /* default page = 0, size = 10  */

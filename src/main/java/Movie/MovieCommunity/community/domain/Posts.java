@@ -3,6 +3,7 @@ package Movie.MovieCommunity.community.domain;
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -33,6 +34,7 @@ public class Posts extends BaseTimeEntity {
     private int view;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "movie_id")
     private Movie movie;
 
