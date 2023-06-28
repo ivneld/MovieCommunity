@@ -42,7 +42,7 @@ public class PostsIndexController {
     private final PostsRepository postsRepository;
     private final MemberRepository memberRepository;
 
-    @Operation(method = "get", summary = "커뮤니티 목록 페이지/ 이전, 이후 기능 /이후 하면 사이즈 개수의 게시물로 변경")
+    @Operation(method = "get", summary = "상세페이지 커뮤니티 리뷰 가져오기")
     @GetMapping("/postByMovie/{movieId}")
     public List<Posts> read(@PathVariable("movieId") Long movieId) {
         Optional<List<Posts>> byMovie = postsRepository.findByMovieId(movieId);
