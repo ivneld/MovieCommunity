@@ -14,6 +14,7 @@ import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
+import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import info.movito.themoviedbapi.model.keywords.Keyword;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
