@@ -3,6 +3,7 @@ package Movie.MovieCommunity.community.controller;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.community.dto.*;
 import Movie.MovieCommunity.community.repository.PostsRepository;
 import Movie.MovieCommunity.community.service.PostsService;
@@ -44,12 +45,21 @@ public class PostsIndexController {
 
     @Operation(method = "get", summary = "상세페이지 커뮤니티 리뷰 가져오기")
     @GetMapping("/postByMovie/{movieId}")
-    public List<Posts> read(@PathVariable("movieId") Long movieId) {
+    public List<DetailPageDto> read(@PathVariable("movieId") Long movieId) {
+        List<DetailPageDto> detailPageDtos= new ArrayList<>();
         Optional<List<Posts>> byMovie = postsRepository.findByMovieId(movieId);
         if(byMovie.isPresent()){
-            return byMovie.get();
+            List<Posts> posts = byMovie.get();
+            for (Posts post : posts) {
+                DetailPageDto dto = new DetailPageDto();
+                dto.setNickname(post.getUser().getNickname());
+                dto.setTitle(post.getTitle());
+                dto.setContent(post.getContent());
+                dto.setGallery(post.getGalleries());
+                detailPageDtos.add(dto);
+            }
         }
-        return null;
+        return detailPageDtos;
     }
 
 
