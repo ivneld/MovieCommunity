@@ -19,6 +19,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("select c from comment c where movie_id = :movieId order by like_count desc")
     List<Comment> findAllOrderByLikeCountDesc(Long movieId);
 
+    List<Comment> findByMovieId(Long movieId);
     List<Comment> findTop8ByMovieIdIsOrderByLikeCountDesc(Long movieId);
 
     @Query(value = "select c from comment c where c.member.id = :memberId",

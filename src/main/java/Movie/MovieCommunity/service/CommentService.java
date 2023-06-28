@@ -1,18 +1,17 @@
 package Movie.MovieCommunity.service;
 
 import Movie.MovieCommunity.JPADomain.Comment;
+import Movie.MovieCommunity.JPADomain.LikeComment;
 import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.JPADomain.Member;
 //import Movie.MovieCommunity.JPARepository.BoardRepository;
 import Movie.MovieCommunity.JPARepository.CommentRepository;
+import Movie.MovieCommunity.JPARepository.LikeCommentRepository;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
-import Movie.MovieCommunity.web.apiDto.comment.CommentAPI;
-import Movie.MovieCommunity.web.apiDto.comment.CommentAPIRequest;
-import Movie.MovieCommunity.web.apiDto.comment.CommentDeleteAPIRequest;
-import Movie.MovieCommunity.web.apiDto.comment.CommentUpdateAPIRequest;
+import Movie.MovieCommunity.web.apiDto.comment.*;
 import Movie.MovieCommunity.web.form.CommentForm;
 import Movie.MovieCommunity.web.response.CommentResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
     private final MovieRepository movieRepository;
+    private final LikeCommentRepository likeCommentRepository;
     public CommentForm write(CommentAPIRequest commentAPIRequest, Long memberId){
         Optional<Member> findMember = memberRepository.findById(memberId);
         DefaultAssert.isOptionalPresent(findMember);
@@ -87,7 +87,7 @@ public class CommentService {
 //    movieNm 삭제
     public List<CommentResponse> commentList(Long movieId) {
         List<CommentResponse> result = new ArrayList<>();
-        List<Comment> comments = commentRepository.findAllOrderByLikeCountDesc(movieId);
+        List<Comment> comments = commentRepository.findByMovieId(movieId);
         for (Comment comment : comments) {
 
             result.add(CommentResponse.builder()
@@ -129,12 +129,29 @@ public class CommentService {
         return result;
     }
 
-    public Integer updateLike(Long commentId, Integer count) {
-        Optional<Comment> comment = commentRepository.findById(commentId);
-        DefaultAssert.isOptionalPresent(comment);
+    public Integer updateLike(CommentLikeApiRequest commentLikeApiRequest, Long memberId) {
+        Optional<Comment> findComment = commentRepository.findById(commentLikeApiRequest.getCommentId());
+        DefaultAssert.isOptionalPresent(findComment);
 
-        comment.get().updateLikeCount(count);
-        return count;
+        Optional<Member> findMember = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(findMember);
+
+        Optional<LikeComment> findLikeComment = likeCommentRepository.findByCommentIdAndMemberId(commentLikeApiRequest.getCommentId(), memberId);
+
+        Integer likeCount = findComment.get().getLikeCount();
+        if (findLikeComment.isPresent()) {
+            likeCommentRepository.delete(findLikeComment.get());
+            likeCount--;
+        } else {
+            likeCommentRepository.save(LikeComment.builder()
+                    .member(findMember.get())
+                    .comment(findComment.get())
+                    .build());
+            likeCount++;
+        }
+
+        findComment.get().updateLikeCount(likeCount);
+        return likeCount;
     }
 
     private boolean checkMine(Comment comment, Optional<Member> findMember) {

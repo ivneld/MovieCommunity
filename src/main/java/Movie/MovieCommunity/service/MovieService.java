@@ -14,7 +14,9 @@ import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
+import info.movito.themoviedbapi.model.keywords.Keyword;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,12 +27,10 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -155,23 +155,9 @@ public class MovieService {
         return null;
     }
 
-    /**
-     * @param year -> 주간별로 분할할 년도
-     * @param week -> 원하는 주차
-     * @return -> YearRankingResponse List
-     * (weeklyBoxOffice, movie 에서 존재하는 영화는 다를 수 있다.)
-     */
-    public List<YearRankingResponse> weeklyRanking(int year, int week) {
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
 
-        int startWeek = startDate.get(weekOfYear);
-        int targetWeek = startWeek + week - 1;
-
-        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek);
-        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
-
-        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByOpenDtBetween(firstDayOfWeek, lastDayOfWeek);
+    public List<YearRankingResponse> weeklyRanking(LocalDate date) {
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = getWeeklyMovieByDateOrderByRanking(date);
 
         List<YearRankingResponse> result = new ArrayList<>();
 
@@ -180,6 +166,7 @@ public class MovieService {
                 Movie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
 
                 result.add(YearRankingResponse.builder()
+                        .rank(weeklyBoxOffice.getRanking())
                         .id(movie.getId())
                         .movieNm(movie.getMovieNm())
                         .showTm(movie.getShowTm())
@@ -189,10 +176,72 @@ public class MovieService {
                         .overview(movie.getOverview())
                         .posterPath(movie.getPosterPath())
                         .voteAverage(movie.getVoteAverage())
+                        .interest(movie.getLikeMovies().size())
                         .build());
             }
         }
         return result;
+    }
+
+    /**
+     * date 기준 주간 랭킹 영화들의 keyword 를 제목, 줄거리에 포함하고 있는 영화들을 반환
+     *
+     * key : keyword(String)
+     * value : Movie List
+     * @param date
+     * @return
+     */
+    public List<ProposeMovieResponse> proposeMovie(LocalDate date) {
+        List<JpaWeeklyBoxOffice> weeklyMovieByDate = getWeeklyMovieByDateOrderByRanking(date);
+
+        HashMap<String, List<Movie>> map = new HashMap<>();
+
+        for (JpaWeeklyBoxOffice movie : weeklyMovieByDate) {
+            Optional<Movie> byMovieCd = movieRepository.findByMovieCd(movie.getMovieCd());
+            DefaultAssert.isOptionalPresent(byMovieCd);
+            List<Keyword> keywords = movieDataService.searchKeyWord(byMovieCd.get());
+
+            for (Keyword keyword : keywords) {
+                List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
+                if (!map.containsKey(keyword.getName())) {
+                    map.put(keyword.getName(), movies);
+                }
+            }
+        }
+
+        return mapToProposeMovieResponseList(map);
+    }
+
+    private static List<ProposeMovieResponse> mapToProposeMovieResponseList(HashMap<String, List<Movie>> map) {
+        List<ProposeMovieResponse> result = new ArrayList<>();
+        ArrayList<String> keyList = new ArrayList<>(map.keySet());
+        for (String s : keyList) {
+            if (!map.get(s).isEmpty()) {
+                result.add(ProposeMovieResponse.builder()
+                        .keyword(s)
+                        .movies(map.get(s))
+                        .build());
+            }
+        }
+        return result;
+    }
+
+
+    private List<JpaWeeklyBoxOffice> getWeeklyMovieByDateOrderByRanking(LocalDate date) {
+        int year = date.getYear();
+        int week = date.get(WeekFields.ISO.weekOfYear());
+
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
+
+        int startWeek = startDate.get(weekOfYear);
+        int targetWeek = startWeek + week - 1;
+
+        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek);
+        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
+
+        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByOpenDtBetweenOrderByRankingAsc(firstDayOfWeek, lastDayOfWeek);
+        return weeklyBoxOffices;
     }
 
 

@@ -3,9 +3,13 @@ package Movie.MovieCommunity.web;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
+<<<<<<< HEAD
 import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.util.CustomPageRequest;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
+=======
+import Movie.MovieCommunity.util.CalendarUtil;
+>>>>>>> f876b1fa870fb6b8e1b391f960a294c26eb8ac03
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -81,6 +86,7 @@ public class MovieApiController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+<<<<<<< HEAD
     @Operation(method = "get", summary = "상세 검색")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "상세 검색 성공", useReturnTypeSchema = true)
@@ -101,5 +107,27 @@ public class MovieApiController {
         Pageable pageable = (Pageable) of;
         CustomPageImpl<MovieDetailSearchDto> response = movieService.movieDetailSearch(search, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
+=======
+    @Operation(method = "get", summary = "이번주 영화 랭킹")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "주간 행킹 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
+    })
+    @GetMapping("/weekly")
+    public List<YearRankingResponse> weeklyRankingThisWeek() {
+        LocalDate date = LocalDate.now();
+        LocalDate date1 = LocalDate.of(2023, 5, 1);
+        return movieService.weeklyRanking(date1);
+    }
+
+    @Operation(method = "get", summary = "추천 영화")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+    })
+    @GetMapping("/weekly/propose")
+    public List<ProposeMovieResponse> proposeMovie() {
+        LocalDate date = LocalDate.now();
+        LocalDate date1 = LocalDate.of(2023, 5, 1);
+        return movieService.proposeMovie(date1);
+>>>>>>> f876b1fa870fb6b8e1b391f960a294c26eb8ac03
     }
 }
