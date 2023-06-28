@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
@@ -38,6 +39,10 @@ public class Posts extends BaseTimeEntity {
     @OrderBy("id asc") // 댓글 정렬
     @JsonManagedReference
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OrderBy("id asc")
+    private List<GalleryEntity> galleries;
 
     /* 게시글 수정 */
     public void update(String title, String content) {

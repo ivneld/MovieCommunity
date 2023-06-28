@@ -2,6 +2,7 @@ package Movie.MovieCommunity.awsS3.dto;
 
 
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
+import Movie.MovieCommunity.community.domain.Posts;
 import lombok.*;
 
 @Getter
@@ -31,4 +32,6 @@ public class GalleryDto {
         this.filePath = filePath;
         this.imgFullPath = imgFullPath;
     }
+
+
 }

@@ -5,11 +5,10 @@ package Movie.MovieCommunity.awsS3.controller;
 import Movie.MovieCommunity.awsS3.dto.GalleryDto;
 import Movie.MovieCommunity.awsS3.service.GalleryService;
 import Movie.MovieCommunity.awsS3.service.S3Service;
+import Movie.MovieCommunity.community.domain.Posts;
+import Movie.MovieCommunity.community.repository.PostsRepository;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
-import Movie.MovieCommunity.config.security.token.UserPrincipal;
-import Movie.MovieCommunity.web.apiDto.comment.CommentDeleteAPIRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static Movie.MovieCommunity.awsS3.service.S3Service.CLOUD_FRONT_DOMAIN_NAME;
 
@@ -36,6 +36,7 @@ import static Movie.MovieCommunity.awsS3.service.S3Service.CLOUD_FRONT_DOMAIN_NA
 public class GalleryController {
     private S3Service s3Service;
     private GalleryService galleryService;
+    private final PostsRepository postsRepository;
 
     @Operation(method = "get", summary = "모든 이미지 조회")
     @ApiResponses(value=
@@ -54,6 +55,7 @@ public class GalleryController {
 
         GalleryDto galleryDto = new GalleryDto();
         String imgPath = s3Service.upload(file);
+
         galleryDto.setFilePath(imgPath);
         galleryDto.setImgFullPath(CLOUD_FRONT_DOMAIN_NAME+imgPath);
         galleryService.savePost(galleryDto);

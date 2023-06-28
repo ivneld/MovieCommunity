@@ -2,10 +2,12 @@ package Movie.MovieCommunity.community.dto;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.community.domain.Posts;
 import lombok.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +22,20 @@ public class PostsDto {
     public static class RequestParam{
         private String title;
         private String content;
+
     }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class DetailRequestParam{
+        private String title;
+        private String content;
+        Optional<List<Long>> GalleryId;
+    }
+
+
 
 
     /** 게시글의 등록과 수정을 처리할 요청(Request) 클래스 */
@@ -37,6 +52,7 @@ public class PostsDto {
         private String createdDate, modifiedDate;
         private int view;
         private Member user;
+        private List<GalleryEntity> gallery;
 
         /* Dto -> Entity */
         public Posts toEntity() {
@@ -47,6 +63,7 @@ public class PostsDto {
                     .content(content)
                     .view(0)
                     .user(user)
+                    .galleries(gallery)
                     .build();
 
             return posts;
@@ -68,6 +85,7 @@ public class PostsDto {
         private final int view;
         private final Long userId;
         private final List<CommentDto.Response> comments;
+        private final List<GalleryDto.Response> galleries;
 
         /**
         /* Entity -> Dto*/
@@ -81,6 +99,7 @@ public class PostsDto {
             this.view = posts.getView();
             this.userId = posts.getUser().getId();
             this.comments = posts.getComments().stream().map(CommentDto.Response::new).collect(Collectors.toList());
+            this.galleries = posts.getGalleries().stream().map(GalleryDto.Response::new).collect(Collectors.toList());
         }
     }
 }
