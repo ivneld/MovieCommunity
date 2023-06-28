@@ -15,7 +15,6 @@ public class CommentDto {
     private String content;
     private Long memberId;
     private String nickname;
-
     private LocalDateTime modifiedDt;
 
     private boolean checkModified;
