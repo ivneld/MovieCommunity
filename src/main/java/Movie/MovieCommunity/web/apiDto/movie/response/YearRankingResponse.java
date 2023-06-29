@@ -11,13 +11,12 @@ public class YearRankingResponse {
         private Integer showTm;
         private Integer openDt;
         private String prdtStatNm;
-
         private String watchGradeNm;
         private String overview;
         private String posterPath;
         private float voteAverage;
         private int interest;
-    private boolean myInterest;
+        private boolean myInterest;
         private String topComment;
         private String url;
     @Builder

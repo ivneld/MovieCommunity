@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -100,6 +101,18 @@ public class MovieApiController {
         PageRequest of = pageRequest.of("popularity");
         Pageable pageable = (Pageable) of;
         CustomPageImpl<MovieDetailSearchDto> response = movieService.movieDetailSearch(search, pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Operation(method = "get", summary = "개봉예정 영화 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "개봉예정 영화 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/coming")
+    public ResponseEntity<CustomPageImpl<ComingMovieResponse>> findComingMovie(CustomPageRequest pageRequest){
+        PageRequest of = pageRequest.of(Sort.Direction.ASC, "openDt");
+        Pageable pageable = (Pageable) of;
+        CustomPageImpl<ComingMovieResponse> response = movieService.comingMovie(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

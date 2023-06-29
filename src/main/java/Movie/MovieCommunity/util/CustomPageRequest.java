@@ -32,4 +32,7 @@ public class CustomPageRequest {
     public PageRequest of(String sortingProperty) {
         return PageRequest.of(page - 1, size, direction, sortingProperty);
     }
+    public PageRequest of(Sort.Direction direction, String sortingProperty) {
+        return PageRequest.of(page - 1, size, direction, sortingProperty);
+    }
 }
