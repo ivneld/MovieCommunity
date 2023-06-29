@@ -3,6 +3,7 @@ import { AuthContext } from '../../context/AuthProvider';
 import useSWR, { mutate } from 'swr';
 import fetcherAccessToken from '../../utils/fetcherAccessToken';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import { ChartContainer } from './styles';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {  Chart as ChartJS, registerables  } from 'chart.js';
@@ -11,8 +12,9 @@ ChartJS.register(ChartDataLabels)
 ChartJS.register(...registerables)
 
 const MyPage = () => {
+    const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
-
+  
     const accessToken = localStorage.getItem('accessToken');
     const { data : interestData, error } = useSWR(`http://localhost:8080/mypage/1/movie`, fetcherAccessToken, {
         dedupingInterval: 100000,
@@ -20,11 +22,26 @@ const MyPage = () => {
     const { data : genreData, error2 } = useSWR(`http://localhost:8080/mypage/1/genre`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-    const { data : commentData, error3 } = useSWR(`http://localhost:8080/mypage/1/comment`, fetcherAccessToken, {
+    const [ page, SetPage ] = useState(1);
+    const handlePrevYear = () => {
+      if(page===1){
+        alert('페이지 이동 불가!')
+        return
+      }
+      SetPage(page - 1);
+    };
+    const handleNextYear = () => {
+      if(page===3){
+        alert('페이지 이동 불가!')
+        return
+      }
+      SetPage(page + 1);
+    };
+    const { data : commentData, error3 } = useSWR(`http://localhost:8080/mypage/1/comment?page=${page}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-    console.log(interestData)
-    console.log(commentData)
+
+    console.log('commentdata',commentData)
     const moveRef1 = useRef(null)
     const moveRef2 = useRef(null)
     const moveRef3 = useRef(null)
@@ -188,7 +205,8 @@ const MyPage = () => {
           setAuth(comment)
 
           console.log('프로필 수정이 완료되었습니다.')
-          alert('프로필 수정이 완료되었습니다.')
+          alert('프로필 수정이 완료되었습니다. 다시 로그인 해주세요!')
+          navigate('/logout');
       } catch(error){
           console.error('프로필 수정 실패!:', error)
       }
@@ -212,47 +230,48 @@ const MyPage = () => {
       catch(error){
           console.error('댓글 삭제 실패!', error);
       }
-  }
+    }
+
     return(
         <>
         {(auth) ?
         
             <>
                 <div style={{display:"flex"}}>
-                    <div id='1' style={{ width: '200px', position: 'fixed', zIndex:'1' }}>
-                        <div style={{fontSize:"25px", fontWeight:"bold", marginBottom:"20px"}}>마이페이지</div>
-                        <div onClick={() => (handleScroll(1))} style={{cursor:"pointer"}}>내 취향 분석</div>
-                        <div onClick={() => (handleScroll(2))} style={{cursor:"pointer"}}>좋아요 한 영화</div>
-                        <div onClick={() => (handleScroll(3))} style={{cursor:"pointer"}}>내가 쓴 글</div>
-                        <div onClick={() => (handleScroll(4))} style={{cursor:"pointer"}}>프로필 수정</div>
+                    <div id='1' style={{ width: '250px', position: 'fixed', zIndex:'1' }}>
+                        <div style={{fontSize:"30px", fontWeight:"bold", marginBottom:"20px", display:"flex", justifyContent:"center", marginTop:"50px"}}>마이페이지</div>
+                        <div onClick={() => (handleScroll(1))} style={{cursor:"pointer", fontSize:"20px", display:"flex", justifyContent:"center", marginBottom:"20px"}}>내 취향 분석</div>
+                        <div onClick={() => (handleScroll(2))} style={{cursor:"pointer", fontSize:"20px", display:"flex", justifyContent:"center", marginBottom:"20px"}}>좋아요 한 영화</div>
+                        <div onClick={() => (handleScroll(3))} style={{cursor:"pointer", fontSize:"20px", display:"flex", justifyContent:"center", marginBottom:"20px"}}>내가 쓴 글</div>
+                        <div onClick={() => (handleScroll(4))} style={{cursor:"pointer", fontSize:"20px", display:"flex", justifyContent:"center", marginBottom:"20px"}}>프로필 수정</div>
                     </div>
-                    <div id='2' style={{backgroundColor:"rgb(230,230,230)", overflowY: 'auto', flex: '1', position: 'relative',  marginLeft: '200px' }}>
+                    <div id='2' style={{backgroundColor:"rgb(230,230,230)", overflowY: 'auto', flex: '1', position: 'relative',  marginLeft: '250px' }}>
                         <div ref={moveRef1}>
-                            {auth}님의 취향 분석 결과
-                            <ChartContainer style={{display:"flex", width:"800px"}}>
-                                <Doughnut data={pieData} options={options}/>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{auth}님의 취향 분석 결과</div>
+                            <ChartContainer>
+                                <Doughnut data={pieData} options={options} style={{maxWidth:"450px", width:"450px", maxHeight:"450px", height:"450px"}}/>
                                 <div>
-                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>내 취향 장르 TOP 3</div>
-                                    <div style={{fontSize:"20px", fontWeight:"bold"}}>1 {top1.genreNm}</div>
-                                    <div style={{fontSize:"20px", fontWeight:"bold"}}>2 {top2.genreNm}</div>
-                                    <div style={{fontSize:"20px", fontWeight:"bold"}}>3 {top3.genreNm}</div>
+                                    <div style={{fontSize:"40px", fontWeight:"bold"}}>내 취향 장르 TOP 3</div>
+                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>1 {top1.genreNm}</div>
+                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>2 {top2.genreNm}</div>
+                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>3 {top3.genreNm}</div>
                                 </div>
                             </ChartContainer>
                             <hr/>
-                            <ChartContainer style={{}}>
-                                <Bar data={barData} options={options2} />
+                            <ChartContainer style={{marginRight:"100px"}}>
+                                <Bar data={barData} options={options2} style={{maxWidth:"800px", width:"800px", maxHeight:"340px", height:"340px"}}/>
                             </ChartContainer>
                         </div>
                         <hr/>
                         <div ref={moveRef2}>
-                            <div>{auth}님이 좋아요 한 영화</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px"}}>{auth}님이 좋아요 한 영화</div>
                             <div style={{display:"flex", justifyContent:"center"}}>
                                 <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
                                     {interestData?.content?.map((obj, idx) => {
                                         return(
                                             <div key={idx}>
                                                 <img src={obj.posterPath} width="266.66px" height="400px" alt="포스터주소" />
-                                                <div>{obj.movieNm}</div>
+                                                <div style={{display:"flex", justifyContent:"center", fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</div>
                                             </div>
                                         )
                                     })}
@@ -260,8 +279,9 @@ const MyPage = () => {
                             </div>
                         </div>
                         <hr/>
-                        <div ref={moveRef3}>
-                            {auth}님이 쓴 코멘트
+                        <div ref={moveRef3} style={{marginLeft:"100px"}}>
+                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{auth}님이 쓴 코멘트</span>
+                            <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
                             <div>
                               {commentData?.content?.map((obj,idx)=>{
                                   const modifiedDt = new Date(obj.modifiedDt);
@@ -269,24 +289,33 @@ const MyPage = () => {
                                   const month = String(modifiedDt.getMonth() + 1).padStart(2, '0');
                                   const day = String(modifiedDt.getDate()).padStart(2, '0');
                                   const formattedDt = `${year}.${month}.${day}`;
-                                return(
+                                  return(
                                   <div key={idx}>
                                     <div style={{display:"flex"}}>
-                                      <div>{obj.movieNm}</div>
-                                      <div>{formattedDt}</div>
-                                      <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer"}}>삭제</div>
+                                      <div style={{fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</div>
+                                      <div style={{fontSize:"14px", marginLeft:"15px"}}>{formattedDt}</div>
+                                      <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"100px"}}>삭제하기</div>
                                     </div>
                                     <div>
                                       {obj.content}
                                     </div>
+                                    <hr style={{borderColor:"#000000", marginTop:"3px", marginBottom:"3px"}}/>
                                   </div>
                                 )
                               })}
                             </div>
+                            <div style={{display:"flex", justifyContent:"center"}}>
+                              <button onClick={handlePrevYear}>&lt;</button>
+                              <span>{page}페이지</span>
+                              <button onClick={handleNextYear}>&gt;</button>
+                            </div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{auth}님이 쓴 리뷰</div>
+                            <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
+                            <div>ㅇㅇㅇ</div>
                         </div>
                         <hr/>
-                        <div ref={moveRef4}>
-                            프로필 수정
+                        <div ref={moveRef4} style={{marginLeft:"100px"}}>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginBottom:"20px"}}>프로필 수정</div>
                             <form onSubmit={handleSubmit}>
                               <input
                               value={comment}
@@ -295,7 +324,7 @@ const MyPage = () => {
                               />
 
                               <div style={{display:"flex"}}>
-                                  <button type="submit">등록</button>
+                                  <button type="submit" style={{margin: "20px 0px 20px 140px"}}>완료</button>
                               </div>
                             </form>
                         </div>

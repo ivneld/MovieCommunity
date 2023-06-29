@@ -99,11 +99,11 @@ const Detail = () => {
             // updatedData는 detailData를 복제한 후, myInterest 값을 반전시킴
             const updatedData = { ...detailData, myInterest: !detailData.myInterest };
 
-            if (detailData.myInterest==false) {
+            if (detailData.myInterest===false) {
                 console.log('좋아요 등록!')
                 updatedData.interest += 1 // // OPTIMISTIC UI: 가정된 성공에 따라 UI 먼저 업데이트
             }
-            else if (detailData.myInterest==true) {
+            else if (detailData.myInterest===true) {
                 console.log('좋아요 취소!')
                 updatedData.interest -= 1 // // OPTIMISTIC UI: 가정된 실패에 따라 UI 먼저 업데이트
             }
@@ -153,7 +153,7 @@ const Detail = () => {
 
                     <div ref={moveRef} style={{height:'100vh'}}>
                         <Tabs selectedIndex={activeTab} onSelect={handleTabChange}>
-                            <TabList>
+                            <TabList style={{fontSize:"28px", fontWeight:"bold"}}>
                                 <Tab>기본정보</Tab>
                                 <Tab>출연/제작</Tab>
                                 <Tab>주간랭킹</Tab>
@@ -164,34 +164,33 @@ const Detail = () => {
                                 <div>
                                     <div style={{display:"flex"}}>
                                         <div style={{width:"350px"}}>
-                                            <MovieDiv>개봉일 {detailData.openDt}</MovieDiv>
-                                            <MovieDiv>등급 {detailData.watchGradeNm}</MovieDiv>
-                                            <MovieDiv>국가 {detailData.nationNm}</MovieDiv>
-                                            <MovieDiv>장르 {detailData.genres}</MovieDiv>
-                                            {/* <MovieDiv style={{display:"flex"}}>예매하기 <Button type="submit">주위 극장 찾아보기</Button></MovieDiv> */}
+                                            <MovieDiv>개봉일 <span style={{fontSize:"26px"}}>{detailData.openDt}</span></MovieDiv>
+                                            <MovieDiv>등급 <span style={{fontSize:"26px"}}>{detailData.watchGradeNm}</span></MovieDiv>
+                                            <MovieDiv>국가 <span style={{fontSize:"26px"}}>{detailData.nationNm}</span></MovieDiv>
+                                            <MovieDiv>장르 <span style={{fontSize:"26px"}}>{detailData.genres}</span></MovieDiv>
                                         </div>
                                         <div>
-                                            <MovieDiv>평점 {detailData.voteAverage}</MovieDiv>
-                                            <MovieDiv>러닝타임 {detailData.showTm}분</MovieDiv>
-                                            <MovieDiv>누적관객수 {detailData.audiAcc}명</MovieDiv>
-                                            <MovieDiv>제작사 {detailData.company}</MovieDiv>
+                                            <MovieDiv>평점 <span style={{fontSize:"26px"}}>{detailData.voteAverage}</span></MovieDiv>
+                                            <MovieDiv>러닝타임 <span style={{fontSize:"26px"}}>{detailData.showTm}분</span></MovieDiv>
+                                            <MovieDiv>누적관객수 <span style={{fontSize:"26px"}}>{detailData.audiAcc}명</span></MovieDiv>
+                                            <MovieDiv>제작사 <span style={{fontSize:"26px"}}>{detailData.company}</span></MovieDiv>
                                         </div>
                                     </div>
-                                    <MovieDiv>줄거리 {detailData.overview}</MovieDiv>
+                                    <MovieDiv>줄거리 <span style={{fontSize:"26px"}}>{detailData.overview}</span></MovieDiv>
                                     <MovieDiv>바로보기 {detailData.ott}</MovieDiv>
                                 </div>
                             </TabPanel>
 
-                            <TabPanel>
+                            <TabPanel style={{fontSize:"24px"}}>
                                 <CustomDiv>출연진</CustomDiv>
                                 <Slider {...sliderSettings}>
                                     {detailData.credits.map((crd) => {
                                         if (crd.creditCategory=="ACTOR"){
                                             return(
                                                 <div key={crd.id}>
-                                                    <img src={crd.image} width="100px" height="150px" alt={crd.name} />
-                                                    <p>{crd.name}</p>
-                                                    <p style={{marginTop:"-15px"}}>{crd.cast} 역</p>
+                                                    <img src={crd.image} width="120px" height="177px" alt='x' />
+                                                    <p style={{fontSize:"22px", fontWeight:"bold"}}>{crd.name}</p>
+                                                    <p style={{fontSize:"16px", marginTop:"-15px"}}>{crd.cast} 역</p>
                                                 </div>
                                             )
                                         }
@@ -205,24 +204,24 @@ const Detail = () => {
                                             <div key={crd.id}>
                                                 <img src={crd.image} width="100px" height="150px" alt={crd.name} />
                                                 <p>{crd.name}</p>
-                                                <p style={{marginTop:"-15px"}}>{crd.cast}</p>
+                                                <p style={{fontSize:"16px", marginTop:"-15px"}}>{crd.cast}</p>
                                             </div>
                                         )
                                     }
                                 })}
                             </TabPanel>
 
-                            <TabPanel>
+                            <TabPanel style={{fontSize:"32px"}}>
                                 <CustomDiv>주간랭킹</CustomDiv>
                                 <div>{detailData.weeklyRanks}</div>
                             </TabPanel>
 
                             <TabPanel>
                                 <CustomDiv>한줄 코멘트</CustomDiv>
-                                <div onClick={() => (onClickModal())} style={{cursor:"pointer"}}>✏️코멘트 남기기</div>
+                                <div onClick={() => (onClickModal())} style={{cursor:"pointer", fontSize:"24px", fontWeight:"bold"}}>✏️코멘트 남기기</div>
                                 <Comment/>
                                 <hr/>
-                                <CustomDiv>커뮤니티 리뷰</CustomDiv>
+                                <CustomDiv>리뷰</CustomDiv>
                                 <div>아직 x</div>
                             </TabPanel>
                         </Tabs>
@@ -373,16 +372,16 @@ function Comment(){
     const { auth, setAuth } = useContext(AuthContext);
     const location = useLocation();
     const detail = location.state.detail;
-    const { data : commentData, error } = useSWR(`http://localhost:8080/comment/${detail}`, fetcher, {
+    const { data : commentData, error } = useSWR(`http://localhost:8080/comment/${detail}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
 
     const [isMoreData, setIsMoreData] = useState(false)
 
-    const { data : moreData, error2 } = useSWR(isMoreData ? `http://localhost:8080/comment/more/${detail}` : null, fetcher, { // useSWR를 조건부로 사용
+    const { data : moreData, error2 } = useSWR(isMoreData ? `http://localhost:8080/comment/more/${detail}` : null, fetcherAccessToken, { // useSWR를 조건부로 사용
         dedupingInterval: 100000,
     });
-
+    console.log('zz',moreData)
     const [showMovieDetailModal2,setShowMovieDetailModal2] = useState(false); // 댓글 수정
     const [updateCommentId, setUpdateCommentId] = useState(null)
     const onCloseModal2 = useCallback(() => {
@@ -417,7 +416,7 @@ function Comment(){
     console.log('commentData:',commentData)
     console.log('updateCommentId:',updateCommentId)
 
-    const commentLike = async(commentId, likeCount) => { // 댓글 좋아요 
+    const commentLike = async(commentId, likeCount, myLike) => { // 댓글 좋아요 
         if (!auth){
             alert('로그인이 필요한 기능입니다.')
             return;
@@ -430,13 +429,12 @@ function Comment(){
                 }
             }
             let updatedLikeCount;
-            if (likeCount !== 0) {
+            if (likeCount > 0 && myLike===false) {
+              updatedLikeCount = likeCount + 1;
+            } else if (likeCount > 0 && myLike===true) {
               updatedLikeCount = likeCount - 1;
             } else if (likeCount === 0) {
               updatedLikeCount = likeCount + 1;
-            } else {
-              // Handle other cases if needed
-              updatedLikeCount = likeCount;
             }
             const req = {
                     like: updatedLikeCount,
@@ -453,7 +451,7 @@ function Comment(){
     
     return(
         <>
-            <div>오래된순, 최신순, 추천순</div>
+            <div style={{fontSize:"18px", fontWeight:"bold"}}>오래된순, 최신순, 추천순</div>
 
             {/* 코멘트 8개만 */}
             <div style={{display:"flex", justifyContent:"center"}}>
@@ -463,9 +461,9 @@ function Comment(){
                         if(obj.movieId == detail){
                         return (
                             <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
-                                <div style={{display:"flex", fontSize:"30px"}}>
+                                <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
                                     <div style={{marginLeft:"20px"}}>{obj.username}</div>
-                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                 </div>
                                 <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
                                 <div style={{display:"flex", fontSize:"24px"}}>
@@ -488,9 +486,9 @@ function Comment(){
                         if(obj.movieId == detail){
                         return (
                             <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
-                                <div style={{display:"flex", fontSize:"30px"}}>
+                                <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
                                     <div style={{marginLeft:"20px"}}>{obj.username}</div>
-                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                 </div>
                                 <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
                                 <div style={{display:"flex", fontSize:"24px"}}>
@@ -505,10 +503,10 @@ function Comment(){
                 </div>
             </div>
             {!isMoreData &&
-                <div onClick={() => (setIsMoreData(true))} style={{cursor:"pointer"}}>🔻더보기</div>
+                <div onClick={() => (setIsMoreData(true))} style={{cursor:"pointer", fontSize:"24px"}}>🔻더보기</div>
             }
             {isMoreData &&
-                <div onClick={() => (setIsMoreData(false))} style={{cursor:"pointer"}}>🔺닫기</div>
+                <div onClick={() => (setIsMoreData(false))} style={{cursor:"pointer", fontSize:"24px"}}>🔺닫기</div>
             }
             <UpdateModal
                 show={showMovieDetailModal2}

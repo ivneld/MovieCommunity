@@ -42,7 +42,7 @@ function Nav(props) {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+		<nav className="navbar navbar-expand-md navbar-light sticky-top font-weight-bold" style={{ backgroundColor: 'rgb(145, 205, 220)'}}>
 			<div className="container">
 
 				<div className="navbar-collapse collapse justify-content-between" id="navbar-content">

@@ -1,13 +1,14 @@
 import styled from '@emotion/styled';
 
 export const MovieDiv = styled.div`
-  font-size: 17.5px;
   margin-right: 30px;
   margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 22px;
 `;
 
 export const CustomDiv = styled.div`
-  font-size: 20px;
+  font-size: 28px;
   font-weight: bold;
 `;
 

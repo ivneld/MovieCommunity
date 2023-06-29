@@ -104,7 +104,13 @@ function OpendtApi() {
     const { data : opendtData, error } = useSWR(`http://localhost:8080/movie/year?openDt=${2023}`, fetcher, {
         dedupingInterval: 100000,
     });
-    
+    const year = 2023
+    const month = 5
+    const day = 1
+    const { data : opendtData2, error2 } = useSWR(`http://localhost:8080/movie/weeklytest?year=${year}&month=${month}&day=${day}`, fetcher, {
+        dedupingInterval: 100000,
+    });
+    console.log('opendtData2',opendtData2)
     if (error) console.log('데이터를 불러오는 중에 오류가 발생했습니다.')
     if (!opendtData) console.log('데이터를 불러오는 중입니다...')
     const url = opendtData?.[0]?.url; // ex) https://www.youtube.com/watch?v=6KCJ7T9yrBc
@@ -114,9 +120,7 @@ function OpendtApi() {
     const targetUrl = `https://www.youtube.com/embed/${extractedText}?autoplay=1&controls=0&loop=1&playlist=${extractedText}&mute=1`;
     return (
         <OpendtApiContainer>
-            <div>
-                이번주 인기영화 확인해보세요
-            </div>
+            <div style={{fontSize:"30px", fontWeight:"bold", padding:"20px 0 0 20px", backgroundColor:"black", color:"white"}}>이번주 인기영화 확인해보세요</div>
             <PosterContainer1 style={{backgroundColor:'black', position:'relative'}} zIndex="2" onClick={() => (onClickModal(opendtData[0]))}>
                 <iframe zIndex="1" width="800" height="450" src={targetUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                 <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, color: 'white', textShadow:"4px 2px 4px black",fontWeight: 'bold', fontSize: '100px', padding: '0 20px' }}>1</span>
