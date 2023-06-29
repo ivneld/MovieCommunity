@@ -80,6 +80,22 @@ public class PostsIndexController {
         return MyPagePostsDto;
     }
 
+    @Operation(method = "get", summary = "좋아요 많은순 게시글 가져오기")
+    @GetMapping("/posts/like")                 /* default page = 0, size = 10  */
+    public ListDto indexByLike(@PageableDefault(sort="likeCount",direction = Sort.Direction.DESC)
+                              Pageable pageable) {
+
+        Page<Posts> list = postsRepository.findAll(pageable);
+
+        ListDto dto = new ListDto(list,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        /**
+         if (user != null) {
+         dto.setUser(user);
+         }
+         */
+        return dto;
+    }
+
 
 
 

@@ -16,7 +16,7 @@ import java.net.http.HttpResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/heart")
-@Tag(name="커뮤니티 게시글 좋아요", description = "커뮤니티 게시글 좋아요 API")
+@Tag(name="community heart", description = "커뮤니티 게시글 좋아요 API")
 public class HeartController {
 
     private final HeartService heartService;
