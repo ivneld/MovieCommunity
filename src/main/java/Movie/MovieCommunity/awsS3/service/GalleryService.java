@@ -18,8 +18,10 @@ public class GalleryService {
     private S3Service s3Service;
     private GalleryRepository galleryRepository;
 
-    public void savePost(GalleryDto galleryDto) {
-        galleryRepository.save(galleryDto.toEntity());
+    public Long savePost(GalleryDto galleryDto) {
+        GalleryEntity save = galleryRepository.save(galleryDto.toEntity());
+        Long id = save.getId();
+        return id;
     }
 
     public List<GalleryDto> getList() {

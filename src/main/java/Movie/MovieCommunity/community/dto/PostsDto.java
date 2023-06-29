@@ -23,7 +23,7 @@ public class PostsDto {
     public static class RequestParam{
         private String title;
         private String content;
-
+        private List<Long> galleryIds;
     }
 
     @Data

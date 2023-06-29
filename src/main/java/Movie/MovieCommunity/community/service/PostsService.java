@@ -3,6 +3,8 @@ package Movie.MovieCommunity.community.service;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
+import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import Movie.MovieCommunity.community.dto.PostsDto;
 import Movie.MovieCommunity.community.domain.Posts;
 import Movie.MovieCommunity.community.repository.PostsRepository;
@@ -13,6 +15,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -20,6 +26,7 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final MemberRepository userRepository;
+    private final GalleryRepository galleryRepository;
 
 
 
@@ -41,7 +48,13 @@ public class PostsService {
         Posts posts = postsRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
 
-        posts.update(dto.getTitle(), dto.getContent());
+        List<GalleryEntity> galleryEntities = new ArrayList<>();
+        for (Long galleryId : dto.getGalleryIds()) {
+            GalleryEntity gallery = galleryRepository.findById(galleryId).get();
+            galleryEntities.add(gallery);
+        }
+
+        posts.update(dto.getTitle(), dto.getContent(),galleryEntities);
     }
 
     /* DELETE */
@@ -72,5 +85,7 @@ public class PostsService {
         Page<Posts> postsList = postsRepository.findByTitleContaining(keyword, pageable);
         return postsList;
     }
+
+
 }
 

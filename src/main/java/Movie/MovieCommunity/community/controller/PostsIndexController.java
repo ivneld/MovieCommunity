@@ -3,29 +3,23 @@ package Movie.MovieCommunity.community.controller;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
-import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.community.dto.*;
 import Movie.MovieCommunity.community.repository.PostsRepository;
 import Movie.MovieCommunity.community.service.PostsService;
 
 import Movie.MovieCommunity.community.domain.Posts;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -56,6 +50,8 @@ public class PostsIndexController {
                 dto.setTitle(post.getTitle());
                 dto.setContent(post.getContent());
                 dto.setGallery(post.getGalleries());
+                dto.setLikeCount(10);
+                dto.setCommentCount(post.getComments().size());
                 detailPageDtos.add(dto);
             }
         }
@@ -91,9 +87,10 @@ public class PostsIndexController {
     /* 글 상세보기 */
     @Operation(method = "get", summary = "커뮤니티 게시글 1개 상세보기 페이지")
     @GetMapping("/posts/read/{id}")
-    public PostDetailDto read(@PathVariable Long id, UserDto.Response user, Model model) {
+    public PostDetailDto read(@PathVariable Long id, UserDto.Response user) {
         Posts posts = postsRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
+
 
         PostDetailDto postDetailDto = new PostDetailDto();
         PostsDto.Response dto=new PostsDto.Response(posts);
@@ -146,15 +143,12 @@ public class PostsIndexController {
 
     @GetMapping("/posts/search")
     @Operation(method = "get", summary = "게시글 검색 페이지")
-    public SearchPageDto search(String keyword, Model model, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-            Pageable pageable,  UserDto.Response user) {
+    public SearchPageDto search(String keyword, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+            Pageable pageable) {
 
         SearchPageDto searchPageDto= new SearchPageDto();
         Page<Posts> searchList = postsService.search(keyword, pageable);
 
-        if (user != null) {
-            searchPageDto.setUser(user);
-        }
         searchPageDto.setSearchList(searchList);
         searchPageDto.setKeyword(keyword);
         searchPageDto.setPreviousPageNumber(pageable.previousOrFirst().getPageNumber());

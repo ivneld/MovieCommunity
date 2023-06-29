@@ -19,5 +19,6 @@ public class DetailPageDto {
     private String title;
     private String content;
     private List<GalleryEntity> gallery;
-
+    private int likeCount;
+    private int commentCount;
 }
