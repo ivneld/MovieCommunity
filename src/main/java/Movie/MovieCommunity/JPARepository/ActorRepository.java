@@ -14,6 +14,7 @@ import java.util.Optional;
 public interface ActorRepository extends JpaRepository<Credit, Long> {
     Optional<Credit> findByActorNm(String actorNm);
     List<Credit> findTop4ByActorNmContaining(String actorNm);
+    int countByActorNmContaining(String actorNm);
 
     @Query(value = "select c from Credit c where c.actorNm like %:actorNm%",
             countQuery = "select count(c) from Credit c where c.actorNm like %:actorNm%"

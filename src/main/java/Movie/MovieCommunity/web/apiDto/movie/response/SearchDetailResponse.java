@@ -9,11 +9,16 @@ import java.util.List;
 
 @Data
 public class SearchDetailResponse {
-    List<MovieDetailSearchDto> movies = new ArrayList<>();
-    List<CreditDetailSearchDto> credits;
+    private int movieCnt;
+    private int creditCnt;
+    private List<MovieDetailSearchDto> movies;
+    private List<CreditDetailSearchDto> credits;
 
-    public SearchDetailResponse(List<MovieDetailSearchDto> movies, List<CreditDetailSearchDto> credits) {
+    public SearchDetailResponse(int movieCnt, int creditCnt, List<MovieDetailSearchDto> movies, List<CreditDetailSearchDto> credits) {
+        this.movieCnt = movieCnt;
+        this.creditCnt = creditCnt;
         this.movies = movies;
         this.credits = credits;
     }
+
 }

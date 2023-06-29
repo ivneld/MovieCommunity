@@ -254,6 +254,7 @@ public class MovieService {
     @Transactional(readOnly = true)
     public SearchDetailResponse detailSearch(String search){
         List<Movie> movies = movieRepository.findTop4ByMovieNmContaining(search);
+        int movieCnt = movieRepository.countByMovieNmContaining(search);
         List<MovieDetailSearchDto> movieSearch = movies.stream().map(m -> MovieDetailSearchDto.builder()
                 .id(m.getId())
                 .posterPath(m.getPosterPath())
@@ -264,6 +265,7 @@ public class MovieService {
         ).collect(Collectors.toList());
 
         List<Credit> credits = actorRepository.findTop4ByActorNmContaining(search);
+        int creditCnt = actorRepository.countByActorNmContaining(search);
         List<CreditDetailSearchDto> creditSearch = credits.stream().map(c -> CreditDetailSearchDto.builder()
                 .id(c.getId())
                 .actorNm(c.getActorNm())
@@ -272,7 +274,7 @@ public class MovieService {
                 .build()
         ).collect(Collectors.toList());
 
-        return new SearchDetailResponse(movieSearch, creditSearch);
+        return new SearchDetailResponse(movieCnt, creditCnt, movieSearch, creditSearch);
     }
     @Transactional(readOnly = true)
     public CustomPageImpl<MovieDetailSearchDto> movieDetailSearch(String search, Pageable pageable){

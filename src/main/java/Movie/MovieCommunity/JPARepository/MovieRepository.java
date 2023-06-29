@@ -32,6 +32,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByLikeMovieList(Long memberId);
     List<Movie> findTop5ByMovieNmStartingWith(String movieNm);
     List<Movie> findTop4ByMovieNmContaining(String movieNm);
+    int countByMovieNmContaining(String movieNm);
     @Query(value = "select m from movie m where m.movieNm like %:movieNm%",
             countQuery = "select count(m) from movie m where m.movieNm like %:movieNm%"
     )
