@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +51,7 @@ public class PostsIndexController {
                 dto.setTitle(post.getTitle());
                 dto.setContent(post.getContent());
                 dto.setGallery(post.getGalleries());
-                dto.setLikeCount(10);
+                dto.setLikeCount(post.getLikeCount());
                 dto.setCommentCount(post.getComments().size());
                 detailPageDtos.add(dto);
             }
@@ -59,20 +60,61 @@ public class PostsIndexController {
     }
 
 
-    @Operation(method = "get", summary = "커뮤니티 목록 페이지/ 이전, 이후 기능 /이후 하면 사이즈 개수의 게시물로 변경")
-    @GetMapping("/posts")                 /* default page = 0, size = 10  */
-    public ListDto index(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                               Pageable pageable, UserDto.Response user) {
+    @Operation(method = "get", summary = "마이페이지 리뷰 검색 API")
+    @GetMapping("/postByMember/{nickname}")
+    public List<MyPagePostsDto> read(@PathVariable("nickname") String nickname) {
+
+        List<MyPagePostsDto> MyPagePostsDto= new ArrayList<>();
+        Optional<List<Posts>> byMember = postsRepository.findByWriter(nickname);
+        if(byMember.isPresent()){
+            List<Posts> posts = byMember.get();
+            for (Posts post : posts) {
+                MyPagePostsDto dto = new MyPagePostsDto();
+                dto.setTitle(post.getTitle());
+                dto.setContent(post.getContent());
+                dto.setGallery(post.getGalleries());
+                dto.setModifiedAt(post.getModifiedDate());
+                MyPagePostsDto.add(dto);
+            }
+        }
+        return MyPagePostsDto;
+    }
+
+
+
+
+    @Operation(method = "get", summary = "최신순 게시글 가져오기")
+    @GetMapping("/posts/new")                 /* default page = 0, size = 10  */
+    public ListDto indexByNew(@PageableDefault(sort="id",direction = Sort.Direction.DESC)
+                               Pageable pageable) {
 
         Page<Posts> list = postsRepository.findAll(pageable);
 
         ListDto dto = new ListDto(list,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        /**
         if (user != null) {
             dto.setUser(user);
         }
-
+         */
         return dto;
     }
+
+    @Operation(method = "get", summary = "조회수 많은순 게시글 가져오기")
+    @GetMapping("/posts/view")                 /* default page = 0, size = 10  */
+    public ListDto indexByView(@PageableDefault(sort="view",direction = Sort.Direction.DESC)
+                         Pageable pageable) {
+
+        Page<Posts> list = postsRepository.findAll(pageable);
+
+        ListDto dto = new ListDto(list,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        /**
+         if (user != null) {
+         dto.setUser(user);
+         }
+         */
+        return dto;
+    }
+
     /* 글 작성 */
     @Operation(method = "get", summary = "커뮤니티 게시글 작성 페이지")
     @GetMapping("/posts/write")
@@ -109,6 +151,7 @@ public class PostsIndexController {
 
             /* 게시글 작성자 본인인지 확인 */
             postDetailDto.setIsPostWriter(dto.getUserId().equals(user.getId()));
+            postDetailDto.setIsHeartWriter(dto.getUserId().equals(user.getId()));
         }
 
         List<Integer> IsCommentWriter = new ArrayList<>();
@@ -127,6 +170,7 @@ public class PostsIndexController {
 
         return postDetailDto;
     }
+
 
     @Operation(method = "get", summary = "커뮤니티 게시글 수정 페이지")
     @GetMapping("/posts/update/{id}")

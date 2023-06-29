@@ -7,6 +7,8 @@ import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,6 +20,8 @@ import java.util.Optional;
 @Builder
 @Getter
 @Entity
+@DynamicInsert
+@DynamicUpdate
 public class Posts extends BaseTimeEntity {
 
     @Id
@@ -35,6 +39,9 @@ public class Posts extends BaseTimeEntity {
 
     @Column(columnDefinition = "integer default 0", nullable = false)
     private int view;
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int likeCount;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JsonIgnore
@@ -62,4 +69,5 @@ public class Posts extends BaseTimeEntity {
         this.galleries=galleries;
 
     }
+
 }

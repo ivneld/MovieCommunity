@@ -13,6 +13,7 @@ public class PostDetailDto {
     private List<CommentDto.Response> comments;
     private UserDto.Response user;
     private boolean IsPostWriter;
+    private boolean IsHeartWriter;
     private List<Integer> IsCommentWriter;
     private PostsDto.Response post;
 

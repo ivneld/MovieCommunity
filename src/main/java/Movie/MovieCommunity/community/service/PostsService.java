@@ -25,7 +25,6 @@ import java.util.Optional;
 public class PostsService {
 
     private final PostsRepository postsRepository;
-    private final MemberRepository userRepository;
     private final GalleryRepository galleryRepository;
 
 
@@ -71,7 +70,6 @@ public class PostsService {
     public int updateView(Long id) {
         return postsRepository.updateView(id);
     }
-
 
     /* Paging and Sort */
     @Transactional(readOnly = true)

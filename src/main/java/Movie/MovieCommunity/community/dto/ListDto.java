@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 @Setter
 @NoArgsConstructor
 public class ListDto {
-    private UserDto.Response user;
+//    private UserDto.Response user;
     private Page<Posts> postsList;
     private int PreviousPageNumber;
     private int NextPageNumber;
