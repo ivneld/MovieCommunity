@@ -3,10 +3,13 @@ package Movie.MovieCommunity.web;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
+import Movie.MovieCommunity.util.CalendarUtil;
+import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.util.CustomPageRequest;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
+import Movie.MovieCommunity.web.dto.WeeklyTestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -102,4 +106,48 @@ public class MovieApiController {
         CustomPageImpl<MovieDetailSearchDto> response = movieService.movieDetailSearch(search, pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Operation(method = "get", summary = "이번주 영화 랭킹")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "주간 행킹 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
+    })
+    @GetMapping("/weekly")
+    public List<YearRankingResponse> weeklyRankingThisWeek() {
+        LocalDate date = LocalDate.now();
+//        LocalDate date1 = LocalDate.of(2023, 5, 1);
+        return movieService.weeklyRanking(date);
+    }
+
+    @Operation(method = "get", summary = "이번주 추천 영화")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+    })
+    @GetMapping("/weekly/propose")
+    public List<ProposeMovieResponse> proposeMovie() {
+        LocalDate date = LocalDate.now();
+//        LocalDate date1 = LocalDate.of(2023, 5, 1);
+        return movieService.proposeMovie(date);
+    }
+
+    @Operation(method = "get", summary = "이번주 영화 랭킹 테스트")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "203",description = "주간 행킹 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
+    })
+    @GetMapping("/weeklytest")
+    public List<YearRankingResponse> weeklyRankingThisWeekTest(@RequestBody WeeklyTestDto dto) {
+        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
+        return movieService.weeklyRanking(date);
+    }
+
+    @Operation(method = "get", summary = "추천 영화 테스트")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+    })
+    @GetMapping("/weeklytest/propose")
+    public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
+        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
+        return movieService.proposeMovie(date);
+    }
+
+
 }
