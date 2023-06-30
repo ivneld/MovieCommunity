@@ -3,6 +3,7 @@ package Movie.MovieCommunity.web;
 
 
 import Movie.MovieCommunity.domain.ranking.daily.DailyBoxOffice;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -53,6 +54,7 @@ public class RankingController {
     }
 
     // 전체 영화 API요청
+    @Operation(method = "get", summary = "영화 순위 조회")
     @GetMapping
     public JSONArray requestAPI(Model model) {
         // 변수설정
@@ -177,7 +179,7 @@ public class RankingController {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
             while(iter.hasNext()) {
                 JSONObject boxOffice = (JSONObject) iter.next();
-                dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt((String) boxOffice.get("rank")), Integer.parseInt((String) boxOffice.get("rankInten")), boxOffice.get("openDt"), Long.parseLong((String) boxOffice.get("audiAcc"))));
+                dailyBoxOffices.add(new DailyBoxOffice(String.valueOf(boxOffice.get("movieNm")), Integer.parseInt((String) boxOffice.get("rank")), Integer.parseInt((String) boxOffice.get("rankInten")), boxOffice.get("openDt"), Long.parseLong((String) boxOffice.get("audiAcc")), (String) boxOffice.get("movieCd")));
             }
         } catch (IOException e) {
             e.printStackTrace();
