@@ -129,12 +129,11 @@ public class MovieApiController {
         return movieService.proposeMovie(date);
     }
 
-    @Operation(method = "get", summary = "이번주 영화 랭킹 테스트")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "203",description = "주간 행킹 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
-    })
-    @GetMapping("/weeklytest")
-    public List<YearRankingResponse> weeklyRankingThisWeekTest(@RequestBody WeeklyTestDto dto) {
+    @Operation(method = "post", summary = "이번주 영화 랭킹 테스트")
+    @ApiResponse(responseCode = "200", description = "추천 랭킹 테스트", content = {@Content(mediaType = "application/json")})
+    @PostMapping("/weeklytest")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public List<YearRankingResponse> weeklyRankingThisWeekTest(@Valid @RequestBody WeeklyTestDto dto) {
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
         return movieService.weeklyRanking(date);
     }
@@ -143,7 +142,7 @@ public class MovieApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
-    @GetMapping("/weeklytest/propose")
+    @PostMapping("/weeklytest/propose")
     public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
         return movieService.proposeMovie(date);
