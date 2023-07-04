@@ -3,12 +3,10 @@ package Movie.MovieCommunity.web;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
-import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.util.CustomPageRequest;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
-import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import Movie.MovieCommunity.web.dto.WeeklyTestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -124,10 +122,19 @@ public class MovieApiController {
             @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
     @GetMapping("/weekly/propose")
-    public List<ProposeMovieResponse> proposeMovie() {
+    public List<ProposeMovieResponse> weeklyProposeMovie() {
         LocalDate date = LocalDate.now();
 //        LocalDate date1 = LocalDate.of(2023, 5, 1);
-        return movieService.proposeMovie(date);
+        return movieService.proposeByNowDayMovie(date);
+    }
+
+    @Operation(method = "get", summary = "추천 영화")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+    })
+    @GetMapping("/propose")
+    public List<ProposeMovieResponse> proposeMovie(@CurrentUser UserPrincipal member) {
+        return movieService.proposeMovie(member.getId());
     }
 
     @Operation(method = "post", summary = "이번주 영화 랭킹 테스트")
@@ -135,6 +142,7 @@ public class MovieApiController {
     @PostMapping("/weeklytest")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public List<YearRankingResponse> weeklyRankingThisWeekTest(@Valid @RequestBody WeeklyTestDto dto) {
+
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
         return movieService.weeklyRanking(date);
     }
@@ -146,7 +154,7 @@ public class MovieApiController {
     @PostMapping("/weeklytest/propose")
     public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
-        return movieService.proposeMovie(date);
+        return movieService.proposeByNowDayMovie(date);
     }
 
 

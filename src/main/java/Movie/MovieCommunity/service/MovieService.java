@@ -14,7 +14,6 @@ import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
-import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import info.movito.themoviedbapi.model.keywords.Keyword;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -194,7 +193,7 @@ public class MovieService {
      * @param date
      * @return
      */
-    public List<ProposeMovieResponse> proposeMovie(LocalDate date) {
+    public List<ProposeMovieResponse> proposeByNowDayMovie(LocalDate date) {
         List<JpaWeeklyBoxOffice> weeklyMovieByDate = getWeeklyMovieByDateOrderByRanking(date);
 
         HashMap<String, List<Movie>> map = new HashMap<>();
@@ -213,6 +212,31 @@ public class MovieService {
         }
 
         return mapToProposeMovieResponseList(map);
+    }
+
+    public List<ProposeMovieResponse> proposeMovie(Long memberId) {
+        List<LikeMovie> likeMovies = likeMovieRepository.findByMemberId(memberId);
+
+        if (likeMovies.size() >= 5) {
+            HashMap<String, List<Movie>> map = new HashMap<>();
+
+            for (LikeMovie likeMovie : likeMovies) {
+                Optional<Movie> findMovie = movieRepository.findById(likeMovie.getId());
+                DefaultAssert.isOptionalPresent(findMovie);
+
+                List<Keyword> keywords = movieDataService.searchKeyWord(findMovie.get());
+                for (Keyword keyword : keywords) {
+                    List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
+                    if (!map.containsKey(keyword.getName())) {
+                        map.put(keyword.getName(), movies);
+                    }
+                }
+            }
+            return mapToProposeMovieResponseList(map);
+        }
+        else {
+            return proposeByNowDayMovie(LocalDate.now());
+        }
     }
 
     private static List<ProposeMovieResponse> mapToProposeMovieResponseList(HashMap<String, List<Movie>> map) {
