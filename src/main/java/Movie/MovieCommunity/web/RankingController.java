@@ -4,6 +4,7 @@ package Movie.MovieCommunity.web;
 
 import Movie.MovieCommunity.domain.ranking.daily.DailyBoxOffice;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -29,6 +30,7 @@ import java.util.*;
 @RestController
 @RequestMapping
 @CrossOrigin
+@Tag(name="movie ranking", description = "영화 순위 조회 API")
 public class RankingController {
 
     // 상수 설정
