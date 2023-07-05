@@ -7,10 +7,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 @Slf4j
 public class UserPrincipal implements OAuth2User, UserDetails {
 
@@ -20,6 +18,9 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
+
+    private Member member;
+
 
     public UserPrincipal(Long id, String email, String name, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
@@ -70,6 +71,10 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     @Override

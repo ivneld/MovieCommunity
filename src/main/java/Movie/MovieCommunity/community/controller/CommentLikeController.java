@@ -10,14 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.http.HttpResponse;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/heart")
 @Tag(name="community heart", description = "커뮤니티 게시글 좋아요 API")
-public class HeartController {
+public class CommentLikeController {
 
     private final HeartService heartService;
 

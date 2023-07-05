@@ -2,10 +2,10 @@ package Movie.MovieCommunity.community.service;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
-import Movie.MovieCommunity.community.domain.Heart;
+import Movie.MovieCommunity.community.domain.CommentLike;
 import Movie.MovieCommunity.community.domain.Posts;
 import Movie.MovieCommunity.community.dto.HeartRequestDTO;
-import Movie.MovieCommunity.community.repository.HeartRepository;
+import Movie.MovieCommunity.community.repository.CommentLikeRepository;
 import Movie.MovieCommunity.community.repository.PostsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 public class HeartService {
 
-    private final HeartRepository heartRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final MemberRepository memberRepository;
     private final PostsRepository postsRepository;
 
@@ -31,17 +31,17 @@ public class HeartService {
                 .orElseThrow(() -> new NotFoundException("Could not found board id : " + heartRequestDTO.getPostsId()));
 
         // 이미 좋아요되어있으면 에러 반환
-        if (heartRepository.findByMemberAndPosts(member, posts).isPresent()){
+        if (commentLikeRepository.findByMemberAndPosts(member, posts).isPresent()){
             throw new Exception();
         }
 
 
-        Heart heart = Heart.builder()
+        CommentLike commentLike = CommentLike.builder()
                 .posts(posts)
                 .member(member)
                 .build();
         postsRepository.updateAddCount(posts);
-        heartRepository.save(heart);
+        commentLikeRepository.save(commentLike);
     }
 
     @Transactional
@@ -53,9 +53,9 @@ public class HeartService {
         Posts posts = postsRepository.findById(heartRequestDTO.getPostsId())
                 .orElseThrow(() -> new NotFoundException("Could not found board id : " + heartRequestDTO.getPostsId()));
 
-        Heart heart = heartRepository.findByMemberAndPosts(member, posts)
+        CommentLike commentLike = commentLikeRepository.findByMemberAndPosts(member, posts)
                 .orElseThrow(() -> new NotFoundException("Could not found heart id"));
         postsRepository.updateSubtractCount(posts);
-        heartRepository.delete(heart);
+        commentLikeRepository.delete(commentLike);
     }
 }

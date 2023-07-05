@@ -77,7 +77,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/","/community/**","/heart/**","/posts/**","/api/posts/**","/postByMovie/**","/postByMember/**","/posts/read/**", "/posts/search/**", "/error","/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/movie/**", "/genre/**","/comment/**","/credit/**","/tv/**","/gallery/**")
+                .antMatchers("/","/community/**","/heart/**","/posts/**","/api/subcomment/**","/api/posts/**","/postByMovie/**","/postByMember/**","/posts/read/**", "/posts/search/**", "/error","/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/movie/**", "/genre/**","/comment/**","/credit/**","/tv/**","/gallery/**")
                 .permitAll()
                 .antMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
                 .permitAll()

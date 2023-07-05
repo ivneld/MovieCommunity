@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "heart")
-public class Heart {
+public class CommentLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Heart {
     private Posts posts;
 
     @Builder
-    public Heart(Long id, Member member, Posts posts) {
+    public CommentLike(Long id, Member member, Posts posts) {
         this.id = id;
         this.member = member;
         this.posts = posts;
