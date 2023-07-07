@@ -14,7 +14,6 @@ import Movie.MovieCommunity.web.apiDto.movie.entityDto.CreditDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.SeriesDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
-import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import info.movito.themoviedbapi.model.keywords.Keyword;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -192,7 +193,7 @@ public class MovieService {
      * @param date
      * @return
      */
-    public List<ProposeMovieResponse> proposeMovie(LocalDate date) {
+    public List<ProposeMovieResponse> proposeByNowDayMovie(LocalDate date) {
         List<JpaWeeklyBoxOffice> weeklyMovieByDate = getWeeklyMovieByDateOrderByRanking(date);
 
         HashMap<String, List<Movie>> map = new HashMap<>();
@@ -211,6 +212,31 @@ public class MovieService {
         }
 
         return mapToProposeMovieResponseList(map);
+    }
+
+    public List<ProposeMovieResponse> proposeMovie(Long memberId) {
+        List<LikeMovie> likeMovies = likeMovieRepository.findByMemberId(memberId);
+
+        if (likeMovies.size() >= 5) {
+            HashMap<String, List<Movie>> map = new HashMap<>();
+
+            for (LikeMovie likeMovie : likeMovies) {
+                Optional<Movie> findMovie = movieRepository.findById(likeMovie.getId());
+                DefaultAssert.isOptionalPresent(findMovie);
+
+                List<Keyword> keywords = movieDataService.searchKeyWord(findMovie.get());
+                for (Keyword keyword : keywords) {
+                    List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
+                    if (!map.containsKey(keyword.getName())) {
+                        map.put(keyword.getName(), movies);
+                    }
+                }
+            }
+            return mapToProposeMovieResponseList(map);
+        }
+        else {
+            return proposeByNowDayMovie(LocalDate.now());
+        }
     }
 
     private static List<ProposeMovieResponse> mapToProposeMovieResponseList(HashMap<String, List<Movie>> map) {
@@ -302,6 +328,7 @@ public class MovieService {
     @Transactional(readOnly = true)
     public SearchDetailResponse detailSearch(String search){
         List<Movie> movies = movieRepository.findTop4ByMovieNmContaining(search);
+        int movieCnt = movieRepository.countByMovieNmContaining(search);
         List<MovieDetailSearchDto> movieSearch = movies.stream().map(m -> MovieDetailSearchDto.builder()
                 .id(m.getId())
                 .posterPath(m.getPosterPath())
@@ -312,6 +339,7 @@ public class MovieService {
         ).collect(Collectors.toList());
 
         List<Credit> credits = actorRepository.findTop4ByActorNmContaining(search);
+        int creditCnt = actorRepository.countByActorNmContaining(search);
         List<CreditDetailSearchDto> creditSearch = credits.stream().map(c -> CreditDetailSearchDto.builder()
                 .id(c.getId())
                 .actorNm(c.getActorNm())
@@ -320,7 +348,7 @@ public class MovieService {
                 .build()
         ).collect(Collectors.toList());
 
-        return new SearchDetailResponse(movieSearch, creditSearch);
+        return new SearchDetailResponse(movieCnt, creditCnt, movieSearch, creditSearch);
     }
     @Transactional(readOnly = true)
     public CustomPageImpl<MovieDetailSearchDto> movieDetailSearch(String search, Pageable pageable){
@@ -335,4 +363,30 @@ public class MovieService {
         ).collect(Collectors.toList());
         return new CustomPageImpl<>(movieSearch, pageable, movies.getTotalElements());
     }
+<<<<<<< HEAD
 }
+=======
+
+    @Transactional(readOnly = true)
+    public CustomPageImpl<ComingMovieResponse> comingMovie(Pageable pageable){
+        String openDt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")); //* 현재 날짜 이후 조건 추가
+        Page<Movie> movies = movieRepository.findComingMovieByPrdtStatNmAndOpenDt("개봉예정", Integer.valueOf(openDt), pageable);
+        List<ComingMovieResponse> comingMovies = movies.stream().map(m -> ComingMovieResponse.builder()
+                .id(m.getId())
+                .movieNm(m.getMovieNm())
+                .openDt(m.getOpenDt())
+                .posterPath(m.getPosterPath())
+                .lastDay((int)ChronoUnit.DAYS.between(LocalDate.now(), toLocalDate(m.getOpenDt())))
+                .build()
+        ).collect(Collectors.toList());
+        return new CustomPageImpl<>(comingMovies, pageable, movies.getTotalElements());
+
+    }
+
+    private static LocalDate toLocalDate(int date) {
+        LocalDate yyyyMMdd = LocalDate.parse(String.valueOf(date),
+                DateTimeFormatter.ofPattern("yyyyMMdd"));
+        return yyyyMMdd;
+    }
+}
+>>>>>>> 27da92d1f7e242f7fbbd367528cc258e5304f85f

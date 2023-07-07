@@ -451,7 +451,7 @@ function Comment(){
     
     return(
         <>
-            <div style={{fontSize:"18px", fontWeight:"bold"}}>오래된순, 최신순, 추천순</div>
+            {/* <div style={{fontSize:"18px", fontWeight:"bold"}}>오래된순, 최신순, 추천순</div> */}
 
             {/* 코멘트 8개만 */}
             <div style={{display:"flex", justifyContent:"center"}}>

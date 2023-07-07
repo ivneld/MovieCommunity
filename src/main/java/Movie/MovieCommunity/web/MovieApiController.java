@@ -3,12 +3,10 @@ package Movie.MovieCommunity.web;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.MovieService;
-import Movie.MovieCommunity.util.CalendarUtil;
 import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.util.CustomPageRequest;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.MovieDetailSearchDto;
-import Movie.MovieCommunity.web.apiDto.movie.response.*;
 import Movie.MovieCommunity.web.dto.WeeklyTestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -123,18 +122,27 @@ public class MovieApiController {
             @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
     @GetMapping("/weekly/propose")
-    public List<ProposeMovieResponse> proposeMovie() {
+    public List<ProposeMovieResponse> weeklyProposeMovie() {
         LocalDate date = LocalDate.now();
 //        LocalDate date1 = LocalDate.of(2023, 5, 1);
-        return movieService.proposeMovie(date);
+        return movieService.proposeByNowDayMovie(date);
     }
 
-    @Operation(method = "get", summary = "이번주 영화 랭킹 테스트")
+    @Operation(method = "get", summary = "추천 영화")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "203",description = "주간 행킹 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
+            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
-    @GetMapping("/weeklytest")
-    public List<YearRankingResponse> weeklyRankingThisWeekTest(@RequestBody WeeklyTestDto dto) {
+    @GetMapping("/propose")
+    public List<ProposeMovieResponse> proposeMovie(@CurrentUser UserPrincipal member) {
+        return movieService.proposeMovie(member.getId());
+    }
+
+    @Operation(method = "post", summary = "이번주 영화 랭킹 테스트")
+    @ApiResponse(responseCode = "200", description = "추천 랭킹 테스트", content = {@Content(mediaType = "application/json")})
+    @PostMapping("/weeklytest")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public List<YearRankingResponse> weeklyRankingThisWeekTest(@Valid @RequestBody WeeklyTestDto dto) {
+
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
         return movieService.weeklyRanking(date);
     }
@@ -143,11 +151,27 @@ public class MovieApiController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
-    @GetMapping("/weeklytest/propose")
+    @PostMapping("/weeklytest/propose")
     public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
-        return movieService.proposeMovie(date);
+        return movieService.proposeByNowDayMovie(date);
     }
 
 
+<<<<<<< HEAD
 }
+=======
+
+    @Operation(method = "get", summary = "개봉예정 영화 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "개봉예정 영화 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/coming")
+    public ResponseEntity<CustomPageImpl<ComingMovieResponse>> findComingMovie(CustomPageRequest pageRequest){
+        PageRequest of = pageRequest.of(Sort.Direction.ASC, "openDt");
+        Pageable pageable = (Pageable) of;
+        CustomPageImpl<ComingMovieResponse> response = movieService.comingMovie(pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+}
+>>>>>>> 27da92d1f7e242f7fbbd367528cc258e5304f85f

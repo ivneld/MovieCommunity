@@ -110,6 +110,7 @@ function OpendtApi() {
     const { data : opendtData2, error2 } = useSWR(`http://localhost:8080/movie/weeklytest?year=${year}&month=${month}&day=${day}`, fetcher, {
         dedupingInterval: 100000,
     });
+    console.log('opendtData',opendtData)
     console.log('opendtData2',opendtData2)
     if (error) console.log('데이터를 불러오는 중에 오류가 발생했습니다.')
     if (!opendtData) console.log('데이터를 불러오는 중입니다...')
