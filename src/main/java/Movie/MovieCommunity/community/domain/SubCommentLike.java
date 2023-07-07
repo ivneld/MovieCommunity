@@ -1,36 +1,32 @@
 package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name = "heart")
-public class Heart {
-
+public class SubCommentLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "heart_id")
     private Long id;
 
+    @JoinColumn(name = "member_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
     private Member member;
 
+    @JoinColumn(name = "sub_comment_id", nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
-    private Posts posts;
+    private SubComment subComment;
 
-    @Builder
-    public Heart(Long id, Member member, Posts posts) {
-        this.id = id;
-        this.member = member;
-        this.posts = posts;
+    public boolean validateMember(Member member) {
+        return !this.member.equals(member);
     }
 }

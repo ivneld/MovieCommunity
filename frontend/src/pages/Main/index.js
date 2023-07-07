@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { LinkContainer, MovieSpan, CategorySpan, PosterContainer1, PosterContainer2, OpendtApiContainer, TimeStamp } from './styles';
 import useSWR from 'swr';
 import fetcher from '../../utils/fetcher';
+import fetcherAccessToken from '../../utils/fetcherAccessToken';
 import MovieDetailModal from '../../components/MovieDetailModal';
 import { useSearchParams } from 'react-router-dom';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './index.css';
+import axios from 'axios';
 
 const Main = () => {
     const [postingBoardMovieId, setPostingBoardMovieId] = useState('');
@@ -101,13 +103,32 @@ function OpendtApi() {
         setShowMovieDetailModal(true);
         setModalData(e);
     }, []);
-    const { data : opendtData, error } = useSWR(`http://localhost:8080/movie/year?openDt=${2023}`, fetcher, {
+    
+    const onClickTest = async () => {
+        const req = {
+            year: 2023,
+            month: 6,
+            day: 1,
+        }
+        await axios.post('http://localhost:8080/movie/weeklytest', req)
+            .then((response) => {
+                console.log(response.data);
+                if (response.status == 200){
+                    console.log('성공')
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+    const { data : opendtData, error } = useSWR(`http://localhost:8080/movie/weekly`, fetcher, {
         dedupingInterval: 100000,
     });
     const year = 2023
     const month = 5
     const day = 1
-    const { data : opendtData2, error2 } = useSWR(`http://localhost:8080/movie/weeklytest?year=${year}&month=${month}&day=${day}`, fetcher, {
+    const { data : opendtData2, error2 } = useSWR(`http://localhost:8080/movie/propose`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
     console.log('opendtData',opendtData)
@@ -115,7 +136,12 @@ function OpendtApi() {
     if (error) console.log('데이터를 불러오는 중에 오류가 발생했습니다.')
     if (!opendtData) console.log('데이터를 불러오는 중입니다...')
     const url = opendtData?.[0]?.url; // ex) https://www.youtube.com/watch?v=6KCJ7T9yrBc
-    if (url === undefined) return <div>url이 undefined임</div>
+    if (url === undefined) return (
+    <>
+        <div>url이 undefined임</div>
+        <button onClick={onClickTest}>주간랭킹테스트</button>
+    </>
+    )
     const criteriaIndex = url.indexOf('=') + 1;
     const extractedText = url.substring(criteriaIndex); // 6KCJ7T9yrBc
     const targetUrl = `https://www.youtube.com/embed/${extractedText}?autoplay=1&controls=0&loop=1&playlist=${extractedText}&mute=1`;

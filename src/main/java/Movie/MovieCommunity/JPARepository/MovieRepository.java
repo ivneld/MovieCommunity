@@ -40,12 +40,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
             countQuery = "select count(m) from movie m where m.movieNm like %:movieNm%"
     )
     Page<Movie> findPageByMovieNmContaining(@Param("movieNm")String movieNm, Pageable pageable);
-<<<<<<< HEAD
-}
-=======
 
     @Query(value = "select m from movie m where m.prdtStatNm = :prdtStatNm and m.openDt > :openDt",
     countQuery = "select count(m) from movie m where m.prdtStatNm = :prdtStatNm and m.openDt > :openDt")
     Page<Movie> findComingMovieByPrdtStatNmAndOpenDt(@Param("prdtStatNm")String prdtStatNm, @Param("openDt")Integer openDt, Pageable pageable);
 }
->>>>>>> 27da92d1f7e242f7fbbd367528cc258e5304f85f
+

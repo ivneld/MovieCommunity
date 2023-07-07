@@ -125,8 +125,8 @@ const MyPage = () => {
                     size: 20, // genreNm의 글자 크기
                 },
                 formatter: function (value, context) {
-                    const genreNm = genreData[context.dataIndex].genreNm;
-                    const cnt = genreData[context.dataIndex].cnt;
+                    const genreNm = genreData[context.dataIndex]?.genreNm;
+                    const cnt = genreData[context.dataIndex]?.cnt;
                     return `${genreNm}\n${(cnt/totalCnt*100).toFixed(0)}%`;
                 }
                 

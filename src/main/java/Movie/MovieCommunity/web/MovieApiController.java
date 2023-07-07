@@ -157,11 +157,6 @@ public class MovieApiController {
         return movieService.proposeByNowDayMovie(date);
     }
 
-
-<<<<<<< HEAD
-}
-=======
-
     @Operation(method = "get", summary = "개봉예정 영화 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "개봉예정 영화 조회 성공", useReturnTypeSchema = true)
@@ -174,4 +169,3 @@ public class MovieApiController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
->>>>>>> 27da92d1f7e242f7fbbd367528cc258e5304f85f

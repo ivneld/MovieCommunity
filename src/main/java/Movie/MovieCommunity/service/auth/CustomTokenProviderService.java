@@ -4,14 +4,17 @@ import java.security.Key;
 import java.util.Date;
 
 
+import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPADomain.mapping.TokenMapping;
 import Movie.MovieCommunity.advice.payload.ErrorCode;
 import Movie.MovieCommunity.config.OAuth2Config;
 import Movie.MovieCommunity.advice.error.ExpiredTokenException;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -167,4 +170,13 @@ public class CustomTokenProviderService {
         }
         return false;
     }
+
+    public Member getMemberFromAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || AnonymousAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
+            return null;
+        }
+        return ((UserPrincipal) authentication.getPrincipal()).getMember();
+    }
+
 }

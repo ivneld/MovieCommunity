@@ -21,10 +21,15 @@ public class MovieDataServiceTest {
     public void test () {
         LocalDate now = LocalDate.now();
 <<<<<<< HEAD
+<<<<<<< HEAD
         //movieService.proposeMovie(now);
 =======
         movieService.proposeByNowDayMovie(now);
 >>>>>>> 27da92d1f7e242f7fbbd367528cc258e5304f85f
+=======
+        movieService.proposeByNowDayMovie(now);
+        //movieService.proposeMovie(now);
+>>>>>>> d006a11885fde9cf4afa21177cc234ab4bb04dc1
     }
 //    @Test
 //    public void weeklyRankingTest() {

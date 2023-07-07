@@ -363,9 +363,6 @@ public class MovieService {
         ).collect(Collectors.toList());
         return new CustomPageImpl<>(movieSearch, pageable, movies.getTotalElements());
     }
-<<<<<<< HEAD
-}
-=======
 
     @Transactional(readOnly = true)
     public CustomPageImpl<ComingMovieResponse> comingMovie(Pageable pageable){
@@ -389,4 +386,3 @@ public class MovieService {
         return yyyyMMdd;
     }
 }
->>>>>>> 27da92d1f7e242f7fbbd367528cc258e5304f85f
