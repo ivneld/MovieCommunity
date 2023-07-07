@@ -10,7 +10,9 @@ import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /*
 movieCd	문자열	영화코드를 출력합니다.
@@ -149,7 +151,7 @@ public class Movie {
 //    private String companyNm;//	문자열	참여 영화사명을 출력합니다.
 //    private String companyNmEn;//	문자열	참여 영화사명(영문)을 출력합니다.
 //    private String companyPartNm;//	문자열	참여 영화사 분야명을 출력합니다.
-    private int topScore;
+    private Integer topScore;
     //    staffs	문자열	스텝을 나타냅니다.
 //    peopleNm	문자열	스텝명을 출력합니다.
 //    peopleNmEn	문자열	스텝명(영문)을 출력합니다.
@@ -178,6 +180,15 @@ public class Movie {
     private List<LikeMovie> likeMovies = new ArrayList<>();
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
+
+
+
+    private String releaseDate;
+
+
+    @OneToMany(mappedBy = "movie")
+
+
     public void updateData(MovieDto movieDto) {
         this.nationNm = movieDto.getNationNm();
         this.directorNm = movieDto.getDirectorNm();
@@ -210,9 +221,9 @@ public class Movie {
     @Column()
     private String backdropPath;
     private String posterPath;
-    private float popularity;
-    private float voteAverage;
-    private int voteCount;
+    private Float popularity;
+    private Float voteAverage;
+    private Integer voteCount;
     private Integer collectionId;
     private String seriesName;
     private String collectionBackdropPath;

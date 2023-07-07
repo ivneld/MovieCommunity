@@ -21,6 +21,7 @@ public class MovieDataServiceTest {
     public void test () {
         LocalDate now = LocalDate.now();
         movieService.proposeByNowDayMovie(now);
+        //movieService.proposeMovie(now);
     }
 //    @Test
 //    public void weeklyRankingTest() {
