@@ -21,6 +21,8 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
+    private Member member;
+
     public UserPrincipal(Long id, String email, String name, String password, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
@@ -58,6 +60,10 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         userPrincipal.setAttributes(attributes);
         log.info("userPrincipal = " + userPrincipal);
         return userPrincipal;
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     public void setAttributes(Map<String, Object> attributes) {
