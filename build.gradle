@@ -69,6 +69,8 @@ dependencies {
 
 //	compile group: 'com.github.holgerbrandl', name: 'themoviedbapi', version:'1.12'
 	implementation group: 'com.github.holgerbrandl', name: 'themoviedbapi', version: '1.12'
+
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 }
 
 tasks.named('test') {
