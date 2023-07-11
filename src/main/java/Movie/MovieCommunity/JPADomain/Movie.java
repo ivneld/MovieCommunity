@@ -183,7 +183,7 @@ public class Movie {
 
 
 
-    private String releaseDate;
+//    private String releaseDate;
 
 
     @OneToMany(mappedBy = "movie")

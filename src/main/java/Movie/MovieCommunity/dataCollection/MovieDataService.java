@@ -88,7 +88,7 @@ public class MovieDataService {
     public void Testing() throws Exception {
         System.out.println("key = " + key[0]);
         // 2018로 넘겨줄시 2018~2023 현재까지 조회(조회 순서는 최신 순)
-        movieDataCollection("2023");
+//        movieDataCollection("2023");
 
         // ! 주간 랭킹 데이터 있을경우만 startDate를 넣고 실행, 없으면 직접 넣기
 //        JpaWeeklyBoxOffice jpaWeeklyBoxOffice = weeklyBoxOfficeRepository.findLastByWeeklyId().orElseThrow(() -> new EntityNotFoundException("엔티티가 없습니다."));
@@ -98,7 +98,7 @@ public class MovieDataService {
 //        int day = Integer.parseInt(getDate.substring(6, 8));
 //        String startDate = LocalDate.of(year, month, day).plusWeeks(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        yearWeeklyBoxOfficeData(startDate);
-        yearWeeklyBoxOfficeData("20230601");
+//        yearWeeklyBoxOfficeData("20230601");
         ///////////////////////////////////////////
 
 //        countEtc();         // 실행 전 메서드 주석 참고!
