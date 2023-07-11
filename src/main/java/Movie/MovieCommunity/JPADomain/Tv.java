@@ -1,5 +1,9 @@
 package Movie.MovieCommunity.JPADomain;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 84e9f5fe60ac96a6fccd7556886de3e6e2489a12
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
