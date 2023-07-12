@@ -200,13 +200,15 @@ public class MovieService {
 
         for (JpaWeeklyBoxOffice movie : weeklyMovieByDate) {
             Optional<Movie> byMovieCd = movieRepository.findByMovieCd(movie.getMovieCd());
-            DefaultAssert.isOptionalPresent(byMovieCd);
-            List<Keyword> keywords = movieDataService.searchKeyWord(byMovieCd.get());
+//            DefaultAssert.isOptionalPresent(byMovieCd);
+            if (byMovieCd.isPresent()) {
+                List<Keyword> keywords = movieDataService.searchKeyWord(byMovieCd.get());
 
-            for (Keyword keyword : keywords) {
-                List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
-                if (!map.containsKey(keyword.getName())) {
-                    map.put(keyword.getName(), movies);
+                for (Keyword keyword : keywords) {
+                    List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
+                    if (!map.containsKey(keyword.getName())) {  // 키워드 중복 제거
+                        map.put(keyword.getName(), movies);
+                    }
                 }
             }
         }

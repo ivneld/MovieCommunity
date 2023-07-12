@@ -147,7 +147,7 @@ public class MovieApiController {
         return movieService.weeklyRanking(date);
     }
 
-    @Operation(method = "get", summary = "추천 영화 테스트")
+    @Operation(method = "post", summary = "추천 영화 테스트")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
