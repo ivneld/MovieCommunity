@@ -30,13 +30,10 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const Board = loadable(() => import('./pages/Board'));
   const Main = loadable(() => import('./pages/Main'));
   const Login = loadable(() => import('./pages/Login'));
   const Logout = loadable(() => import('./pages/Logout'));
   const SignUp = loadable(() => import('./pages/SignUp'));
-  const BoardDetail = loadable(() => import('./pages/BoardDetail'));
-  const PostingBoard = loadable(() => import('./pages/PostingBoard'));
   const MyPage = loadable(() => import('./pages/MyPage'));
   const Ranking = loadable(() => import('./pages/Ranking'));
   const UpcomingMovies = loadable(() => import('./pages/UpcomingMovies'));
@@ -45,6 +42,8 @@ function App() {
   const GenreMovies = loadable(() => import('./pages/GenreMovies'));
   const SearchResult = loadable(() => import('./pages/SearchResult'));
   
+  const Ott = loadable(() => import('./pages/Ott'));
+
   const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
       .then(response => {
@@ -85,10 +84,6 @@ function App() {
             <Nav/>
             <Routes>
                 <Route path="/" element={<Main/>}/>
-                {/* <Route path="/boards" element={<Board/>}/>
-                <Route path="/boards/:id/comment" element={<BoardDetail/>}/>
-                <Route path="/boards/create/:movieid" element={<PostingBoard/>}/> */}
-                {/* <Route path="/movienm/:title" element={<Main/>}/> */}
                 <Route path="/auth/login" element={<Login authenticated={authenticated}/>}/>
                 <Route path="/auth/signup" element={<SignUp authenticated={authenticated}/>}/>
                 {/* <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler/>}/> */}
@@ -100,6 +95,7 @@ function App() {
                 <Route path="/genre" element={<Genre />}/>
                 <Route path="/genre/:id" element={<GenreMovies />}/>
                 <Route path="/movie/search/detail" element={<SearchResult />}/>
+                <Route path="/ott" element={<Ott />}/>
             </Routes>
           </HttpHeadersProvider>
         </AuthProvider>
@@ -115,11 +111,11 @@ function RefreshToken() {
   const { auth, setAuth } = useContext(AuthContext) || {};
   const { headers, setHeaders } = useContext(HttpHeadersContext) || {};
   const navigate = useNavigate();
-  
+  const apiUrl = process.env.REACT_APP_API_URL;
   const handleRefreshToken = async () => {
 	  const refreshToken = localStorage.getItem("refreshToken");
 	  try {
-		  const response = await axios.post("http://localhost:8080/auth/refresh", {refreshToken: refreshToken});
+		  const response = await axios.post(`${apiUrl}/auth/refresh`, {refreshToken: refreshToken});
       const { accessToken } = response.data;
       console.log("토큰이 갱신되었습니다");
       localStorage.setItem("accessToken", accessToken);
@@ -151,7 +147,7 @@ function RefreshToken() {
         const currentTime = Math.floor(Date.now() / 1000);
         const timeRemaining = decodedToken.exp - currentTime;
         if (timeRemaining > 0){
-          console.log('토큰 만료까지 남은시간:', timeRemaining, '초');
+          // console.log('토큰 만료까지 남은시간:', timeRemaining, '초');
         }
         if (timeRemaining <= 0) {
           clearInterval(interval)

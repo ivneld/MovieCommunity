@@ -16,12 +16,13 @@ import axios from "axios";
 import Modal2 from '../../components/Modal2';
 
 const Detail = () => {
-//    const { id } = useParams();
+    const apiUrl = process.env.REACT_APP_API_URL;
+   const { id } = useParams();
     const { auth, setAuth } = useContext(AuthContext);
     const location = useLocation();
-    const detail = location.state.detail;
-    const { data : detailData, error } = useSWR(`http://localhost:8080/movie/${detail}`, fetcherAccessToken, { // 좋아요 때문에 fetcher 말고 이거 써야함
-        dedupingInterval: 100000,
+    const detail = location?.state?.detail;
+    const { data : detailData, error } = useSWR(detail ? `${apiUrl}/movie/${detail}` : `${apiUrl}/movie/${id}`, fetcherAccessToken, { // 좋아요 때문에 fetcher 말고 이거 써야함
+        dedupingInterval: 100000, // 모달에서 들어가는 방법 말고, 주소창에 직접 입력하여 들어가는 방법 총 2가지가 존재하므로 후자의 상황을 대비해서 useParams로 숫자를 받아왔음
     });
     if (error) console.log('데이터를 불러오는 중에 오류가 발생했습니다.')
     if (!detailData) console.log('데이터를 불러오는 중입니다...')
@@ -107,18 +108,18 @@ const Detail = () => {
                 console.log('좋아요 취소!')
                 updatedData.interest -= 1 // // OPTIMISTIC UI: 가정된 실패에 따라 UI 먼저 업데이트
             }
-            mutate(`http://localhost:8080/movie/${detail}`, updatedData, false); // SWR 캐시 갱신하지 않음
+            mutate(`${apiUrl}/movie/${detail}`, updatedData, false); // SWR 캐시 갱신하지 않음
 
 
-            const response = await axios.post(`http://localhost:8080/movie/${detail}/interest`, req, config);
+            const response = await axios.post(`${apiUrl}/movie/${detail}/interest`, req, config);
             
             if (response.status === 200) {
                 console.log('좋아요 성공!');
-                mutate(`http://localhost:8080/movie/${detail}`); // 서버 응답에 따라 SWR 캐시 갱신하여 UI 업데이트
+                mutate(detail ? `${apiUrl}/movie/${detail}` : `${apiUrl}/movie/${id}`); // 서버 응답에 따라 SWR 캐시 갱신하여 UI 업데이트
               }
         } catch(error){
             console.error('좋아요 실패! :',error)
-            mutate(`http://localhost:8080/movie/${detail}`); // 에러 발생 시, SWR 캐시 갱신하여 UI 업데이트
+            mutate(detail ? `${apiUrl}/movie/${detail}` : `${apiUrl}/movie/${id}`); // 서버 응답에 따라 SWR 캐시 갱신하여 UI 업데이트
         }
     }
     // optimistic UI 관련 설명
@@ -241,7 +242,7 @@ const Detail = () => {
 const CommentModal = ({show, onCloseModal, data}) => {
     const { auth, setAuth } = useContext(AuthContext);
     const [comment, setComment] = useState('');
-
+    const apiUrl = process.env.REACT_APP_API_URL;
     const handleChange = (event) => {
       setComment(event.target.value);
     };
@@ -264,10 +265,10 @@ const CommentModal = ({show, onCloseModal, data}) => {
                     movieId: data,
                     content: comment,
             }
-            const response = await axios.post("http://localhost:8080/comment/new", req, config);
+            const response = await axios.post(`${apiUrl}/comment/new`, req, config);
             onCloseModal()
-            mutate(`http://localhost:8080/comment/${data}`); // 코멘트 가져오기 업데이트
-            mutate(`http://localhost:8080/comment/more/${data}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/${data}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/more/${data}`); // 코멘트 가져오기 업데이트
             console.log('댓글 등록이 완료되었습니다.')
             alert('댓글 등록이 완료되었습니다.')
             setComment('');
@@ -306,7 +307,7 @@ const CommentModal = ({show, onCloseModal, data}) => {
 const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
     const { auth, setAuth } = useContext(AuthContext);
     const [comment, setComment] = useState('');
-
+    const apiUrl = process.env.REACT_APP_API_URL;
     const handleChange = (event) => {
       setComment(event.target.value);
     };
@@ -329,10 +330,10 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
                     content: comment,
                     commentId: commentId,
             }
-            const response = await axios.put("http://localhost:8080/comment", req, config);
+            const response = await axios.put(`${apiUrl}/comment`, req, config);
             onCloseModal()
-            mutate(`http://localhost:8080/comment/${detail}`); // 코멘트 가져오기 업데이트
-            mutate(`http://localhost:8080/comment/more/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/more/${detail}`); // 코멘트 가져오기 업데이트
             console.log('댓글 수정이 완료되었습니다.')
             alert('댓글 수정이 완료되었습니다.')
             setComment('');
@@ -347,7 +348,7 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
         <>
             <Modal2 show={show} onCloseModal={onCloseModal}>
                 <Form onSubmit={handleSubmit}>
-      
+                
                         <div style={{marginBottom:"20px"}}>
                             <span style={{fontSize:"27.5px", fontWeight:"bold"}}>코멘트 수정하기</span>
                         </div>
@@ -361,7 +362,6 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
                         <div style={{display:"flex"}}>
                             <button type="submit">등록</button>
                         </div>
-          
                 </Form>
             </Modal2>
         </>
@@ -369,18 +369,21 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
 }
 
 function Comment(){
+    const id = useParams()
     const { auth, setAuth } = useContext(AuthContext);
     const location = useLocation();
     const detail = location.state.detail;
-    const { data : commentData, error } = useSWR(`http://localhost:8080/comment/${detail}`, fetcherAccessToken, {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const { data : commentData, error } = useSWR(detail ? `${apiUrl}/comment/${detail}` : `${apiUrl}/comment/${id}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-
     const [isMoreData, setIsMoreData] = useState(false)
 
-    const { data : moreData, error2 } = useSWR(isMoreData ? `http://localhost:8080/comment/more/${detail}` : null, fetcherAccessToken, { // useSWR를 조건부로 사용
+    let detailOrId = detail ? detail : id;
+    const { data: moreData, error2 } = useSWR(isMoreData ? `${apiUrl}/comment/more/${detailOrId}` : null, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
+
     console.log('zz',moreData)
     const [showMovieDetailModal2,setShowMovieDetailModal2] = useState(false); // 댓글 수정
     const [updateCommentId, setUpdateCommentId] = useState(null)
@@ -396,7 +399,7 @@ function Comment(){
     const handleDelete = async (commentId) => { // 댓글 삭제
         try{
             const accessToken = localStorage.getItem('accessToken');
-            const response = await axios.delete('http://localhost:8080/comment', {
+            const response = await axios.delete(`${apiUrl}/comment`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },
@@ -404,8 +407,8 @@ function Comment(){
                     commentId: commentId
                 }
             })
-            mutate(`http://localhost:8080/comment/${detail}`); // 코멘트 가져오기 업데이트
-            mutate(`http://localhost:8080/comment/more/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/more/${detail}`); // 코멘트 가져오기 업데이트
             console.log('댓글 삭제가 완료되었습니다.');
             alert('댓글 삭제가 완료되었습니다.')
         }
@@ -440,9 +443,9 @@ function Comment(){
                     like: updatedLikeCount,
                     commentId: commentId,
             }
-            const response = await axios.put("http://localhost:8080/comment/like/update", req, config);
-            mutate(`http://localhost:8080/comment/${detail}`); // 코멘트 가져오기 업데이트
-            mutate(`http://localhost:8080/comment/more/${detail}`); // 코멘트 가져오기 업데이트
+            const response = await axios.put(`${apiUrl}/comment/like/update`, req, config);
+            mutate(`${apiUrl}/comment/${detail}`); // 코멘트 가져오기 업데이트
+            mutate(`${apiUrl}/comment/more/${detail}`); // 코멘트 가져오기 업데이트
             console.log('좋아요 기능 실행')
         }catch(error){
             console.log('좋아요 기능 에러!:',error)

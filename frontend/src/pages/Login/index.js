@@ -61,7 +61,7 @@ function SocialLogin() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const navigate = useNavigate();
-
+    const apiUrl = process.env.REACT_APP_API_URL;
 	const changeEmail = (event) => {
 	  setEmail(event.target.value);
 	}
@@ -77,7 +77,7 @@ function SocialLogin() {
 	  }
   
 	  try {
-		const response = await axios.post("http://localhost:8080/auth/signin", req);
+		const response = await axios.post(`${apiUrl}/auth/signin`, req);
 		const { accessToken, refreshToken } = response.data;
   
 		console.log("성공적으로 로그인 되었습니다 🔐");

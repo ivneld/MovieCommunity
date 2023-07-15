@@ -7,7 +7,8 @@ import autosize from 'autosize';
 import React, { useCallback, useEffect, useRef } from 'react';
 
 const SearchMovie = ({chat, onChangeChat}) => {
-    const { data : boardData } = useSWR('http://localhost:8080/boards', fetcher, {
+  const apiUrl = process.env.REACT_APP_API_URL;
+    const { data : boardData } = useSWR(`${apiUrl}/boards`, fetcher, {
         dedupingInterval: 100000,
     });
     const textareaRef = useRef<HTMLTextAreaElement>(null);

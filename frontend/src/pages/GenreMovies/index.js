@@ -9,6 +9,7 @@ const GenreMovies = () => {
     const genreId = location.state.genreId;
     const genreNm = location.state.genreNm;
     const count = location.state.count;
+    const apiUrl = process.env.REACT_APP_API_URL;
     let x;
     switch (count) {
       case 1:
@@ -27,10 +28,10 @@ const GenreMovies = () => {
         x = 25;
         break;
     }
-    const { data : genreMoviesData, error } = useSWR(`http://localhost:8080/genre/${genreId}`, fetcher, {
+    const { data : genreMoviesData, error } = useSWR(`${apiUrl}/genre/${genreId}`, fetcher, {
         dedupingInterval: 100000,
     });
-
+    console.log('aa',genreMoviesData)
     return (
         <>
             {genreMoviesData && (<>

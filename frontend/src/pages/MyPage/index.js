@@ -4,6 +4,8 @@ import useSWR, { mutate } from 'swr';
 import fetcherAccessToken from '../../utils/fetcherAccessToken';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+
 import { ChartContainer } from './styles';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {  Chart as ChartJS, registerables  } from 'chart.js';
@@ -14,12 +16,14 @@ ChartJS.register(...registerables)
 const MyPage = () => {
     const navigate = useNavigate();
     const { auth, setAuth } = useContext(AuthContext);
-  
+    const apiUrl = process.env.REACT_APP_API_URL;
     const accessToken = localStorage.getItem('accessToken');
-    const { data : interestData, error } = useSWR(`http://localhost:8080/mypage/1/movie`, fetcherAccessToken, {
+    const decodedToken = jwt_decode(accessToken);
+    const memberId = decodedToken.sub
+    const { data : interestData, error } = useSWR(`${apiUrl}/mypage/${memberId}/movie`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-    const { data : genreData, error2 } = useSWR(`http://localhost:8080/mypage/1/genre`, fetcherAccessToken, {
+    const { data : genreData, error2 } = useSWR(`${apiUrl}/mypage/${memberId}/genre`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
     const [ page, SetPage ] = useState(1);
@@ -37,7 +41,7 @@ const MyPage = () => {
       }
       SetPage(page + 1);
     };
-    const { data : commentData, error3 } = useSWR(`http://localhost:8080/mypage/1/comment?page=${page}`, fetcherAccessToken, {
+    const { data : commentData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/comment?page=${page}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
 
@@ -200,7 +204,7 @@ const MyPage = () => {
           const req = {
               name: comment
           }
-          const response = await axios.put("http://localhost:8080/mypage/1/name", req, config);
+          const response = await axios.put(`${apiUrl}/mypage/1/name`, req, config);
           localStorage.setItem('name', comment)
           setAuth(comment)
 
@@ -215,7 +219,7 @@ const MyPage = () => {
   const handleDelete = async (commentId) => { // 댓글 삭제
       try{
           const accessToken = localStorage.getItem('accessToken');
-          const response = await axios.delete('http://localhost:8080/comment', {
+          const response = await axios.delete(`${apiUrl}/comment`, {
               headers: {
                   Authorization: `Bearer ${accessToken}`
               },
@@ -223,7 +227,7 @@ const MyPage = () => {
                   commentId: commentId
               }
           })
-          mutate('http://localhost:8080/mypage/1/comment'); // 코멘트 가져오기 업데이트
+          mutate('${apiUrl}/mypage/1/comment'); // 코멘트 가져오기 업데이트
           console.log('댓글 삭제가 완료되었습니다.');
           alert('댓글 삭제가 완료되었습니다.')
       }
@@ -252,9 +256,9 @@ const MyPage = () => {
                                 <Doughnut data={pieData} options={options} style={{maxWidth:"450px", width:"450px", maxHeight:"450px", height:"450px"}}/>
                                 <div>
                                     <div style={{fontSize:"40px", fontWeight:"bold"}}>내 취향 장르 TOP 3</div>
-                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>1 {top1.genreNm}</div>
-                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>2 {top2.genreNm}</div>
-                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>3 {top3.genreNm}</div>
+                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>1 {top1?.genreNm}</div>
+                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>2 {top2?.genreNm}</div>
+                                    <div style={{fontSize:"30px", fontWeight:"bold"}}>3 {top3?.genreNm}</div>
                                 </div>
                             </ChartContainer>
                             <hr/>

@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) => {
     const navigate = useNavigate();
-    console.log('z',modalData)
+
     const onSubmit = useCallback(
         (e) => {
           e.preventDefault();

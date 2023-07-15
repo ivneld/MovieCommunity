@@ -89,7 +89,7 @@ function Signup(props) {
     const [checkpassword, setCheckpassword] = useState("");
     const [email, setEmail] = useState("");
     const [isDuplicate, setIsDuplicate] = useState(true);
-
+    const apiUrl = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
 
     const changeName = (event) => {
@@ -113,7 +113,7 @@ function Signup(props) {
     const checkIdDuplicate = async () => {
           const req = {'email': email}
           const config = {"Content-Type": 'application/json'};
-      await axios.post("http://localhost:8080/auth/checkIdDuplicate", req, config) //user
+      await axios.post(`${apiUrl}/auth/checkIdDuplicate`, req, config) //user
         .then((resp) => {
           console.log("[SignUp.js] checkIdDuplicate() success :D");
           console.log(resp.data);
@@ -168,7 +168,7 @@ function Signup(props) {
       }
       const config = {"Content-Type": 'application/json'};
       
-      await axios.post("http://localhost:8080/auth/signup", req, config) // user/signup
+      await axios.post(`${apiUrl}/auth/signup`, req, config) // user/signup
         .then((resp) => {
           console.log("[SignUp.js] signup() success :D");
           console.log(resp.data);

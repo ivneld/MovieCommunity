@@ -53,10 +53,7 @@ dependencies {
 	compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
 
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 84e9f5fe60ac96a6fccd7556886de3e6e2489a12
 	//querydsl 추가
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"

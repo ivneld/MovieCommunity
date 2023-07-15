@@ -11,7 +11,7 @@ const Ranking = () => {
 
     const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
     const [modalData, setModalData] = useState(null);
-    
+    const apiUrl = process.env.REACT_APP_API_URL;
     const handlePrevYear = () => {
       setCurrentYear(currentYear - 1);
     };
@@ -26,7 +26,7 @@ const Ranking = () => {
         setShowMovieDetailModal(true);
         setModalData(e);
     }, []);
-    const { data : opendtData, error } = useSWR(`http://localhost:8080/movie/year?openDt=${currentYear}`, fetcher, {
+    const { data : opendtData, error } = useSWR(`${apiUrl}/movie/year?openDt=${currentYear}`, fetcher, {
         dedupingInterval: 100000,
     });
     

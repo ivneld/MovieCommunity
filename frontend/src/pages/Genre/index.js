@@ -4,10 +4,11 @@ import useSWR from 'swr';
 import { Link } from 'react-router-dom';
 
 const Genre = () => {
-    const { data : genreData, error } = useSWR(`http://localhost:8080/genre`, fetcher, {
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const { data : genreData, error } = useSWR(`${apiUrl}/genre`, fetcher, {
         dedupingInterval: 100000,
     });
-    console.log(genreData)
+    console.log('aa',genreData)
     const [sortedGenreData, setSortedGenreData] = useState([]);
 
     useEffect(() => {

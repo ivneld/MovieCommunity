@@ -3,11 +3,12 @@ import { useLocation } from 'react-router-dom';
 import fetcher from "../../utils/fetcher";
 import useSWR from 'swr';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-
+import { Link } from 'react-router-dom';
 function SearchResult() {
     const location = useLocation();
     const search = location.state.search;
-    const { data: searchResults } = useSWR(`http://localhost:8080/movie/search/detail?search=${search}`, fetcher);
+    const apiUrl = process.env.REACT_APP_API_URL;
+    const { data: searchResults } = useSWR(`${apiUrl}/movie/search/detail?search=${search}`, fetcher);
     console.log(searchResults?.movies)
 
     const [activeTab, setActiveTab] = useState(0);
@@ -31,7 +32,9 @@ function SearchResult() {
                         {searchResults?.movies?.map((obj, idx)=>{
                             return(
                                 <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
-                                    <img src={obj.posterPath} width="266.66px" height="400px" alt={obj.movieNm} />
+                                    <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}}>
+                                        <img src={obj.posterPath} width="266.66px" height="400px" alt={obj.movieNm} />
+                                    </Link>
                                     <div style={{marginLeft:"20px"}}>
                                         <span style={{fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</span>
                                         <div>{obj.openDt}, {obj.nationNm}</div>
@@ -66,7 +69,9 @@ function SearchResult() {
                     {searchResults?.movies?.map((obj, idx)=>{
                         return(
                             <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
-                            <img src={obj.posterPath} width="266.66px" height="400px" alt={obj.movieNm} />
+                            <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}}>
+                                <img src={obj.posterPath} width="266.66px" height="400px" alt={obj.movieNm} />
+                            </Link>
                             <div style={{marginLeft:"20px"}}>
                                 <span style={{fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</span>
                                 <div>{obj.openDt}, {obj.nationNm}</div>

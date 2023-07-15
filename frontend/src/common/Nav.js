@@ -10,7 +10,7 @@ import "./nav.css"
 function Nav(props) {
 	const navigate = useNavigate();
 	const { auth, setAuth } = useContext(AuthContext);
-	
+	const apiUrl = process.env.REACT_APP_API_URL;
 	const handleLogout = () => {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
@@ -20,7 +20,7 @@ function Nav(props) {
 	  };
 
 	const [searchQuery, setSearchQuery] = useState("");
-	const { data: searchResults } = useSWR(`http://localhost:8080/movie/search?movieNm=${searchQuery}`, fetcher);
+	const { data: searchResults } = useSWR(`${apiUrl}/movie/search?movieNm=${searchQuery}`, fetcher);
 
 	// 검색목록 엔터 시 (영화이름 끝까지 안쳐도 가장 위에 있는 영화로 검색됨)
 	const handleSearchSubmit = (e) => {
@@ -70,7 +70,7 @@ function Nav(props) {
 
 						{/* 게시판  */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/boards"><i className="fas"></i>OTT</Link>
+							<Link className="nav-link" to="/ott"><i className="fas"></i>OTT</Link>
 						</li>
 						
 						{/* 마이페이지  */}
