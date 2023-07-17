@@ -8,6 +8,8 @@ import Movie.MovieCommunity.community.repository.PostsRepository;
 import Movie.MovieCommunity.community.service.PostsService;
 
 import Movie.MovieCommunity.community.domain.Posts;
+import Movie.MovieCommunity.config.security.token.CurrentUser;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -61,9 +63,10 @@ public class PostsIndexController {
 
 
     @Operation(method = "get", summary = "마이페이지 리뷰 검색 API")
-    @GetMapping("/postByMember/{nickname}")
-    public List<MyPagePostsDto> read(@PathVariable("nickname") String nickname) {
+    @GetMapping("/postByMember/nickname")
+    public List<MyPagePostsDto> read(@CurrentUser UserPrincipal member) {
 
+        String nickname = member.getUsername();
         List<MyPagePostsDto> MyPagePostsDto= new ArrayList<>();
         Optional<List<Posts>> byMember = postsRepository.findByWriter(nickname);
         if(byMember.isPresent()){
@@ -134,20 +137,21 @@ public class PostsIndexController {
     /* 글 작성 */
     @Operation(method = "get", summary = "커뮤니티 게시글 작성 페이지")
     @GetMapping("/posts/write")
-    public UserDto.Response write( UserDto.Response user) {
-        Member member= memberRepository.findById(user.getId()).orElseThrow(() ->
+    public UserDto.Response write( @CurrentUser UserPrincipal member) {
+
+        Member user= memberRepository.findById(member.getId()).orElseThrow(() ->
                 new IllegalArgumentException("유저 정보가 없습니다."));
-        UserDto.Response writer= new UserDto.Response(member.getId(), member.getUsername(), member.getNickname());
+        UserDto.Response writer= new UserDto.Response(user.getId(), user.getUsername());
 
         return writer;
     }
 
     /* 글 상세보기 */
     @Operation(method = "get", summary = "커뮤니티 게시글 1개 상세보기 페이지")
-    @GetMapping("/posts/read/{id}")
-    public PostDetailDto read(@PathVariable Long id, UserDto.Response user) {
-        Posts posts = postsRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
+    @GetMapping("/posts/read/{postId}")
+    public PostDetailDto read(@PathVariable Long postId,@CurrentUser UserPrincipal member) {
+        Posts posts = postsRepository.findById(postId).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + postId));
 
 
         PostDetailDto postDetailDto = new PostDetailDto();
@@ -162,7 +166,9 @@ public class PostsIndexController {
         }
 
         /* 사용자 관련 */
-        if (user != null) {
+        if (member.getId() != null) {
+
+            UserDto.Response user = new UserDto.Response(member.getId(),member.getUsername());
             postDetailDto.setUser(user);
 
             /* 게시글 작성자 본인인지 확인 */
@@ -170,18 +176,20 @@ public class PostsIndexController {
             postDetailDto.setIsHeartWriter(dto.getUserId().equals(user.getId()));
         }
 
-        List<Integer> IsCommentWriter = new ArrayList<>();
 
-        /* 댓글 작성자 본인인지 확인 */
-        for (int i = 0; i < comments.size(); i++) {
-            boolean isWriter = comments.get(i).getUserId().equals(user.getId());
-            if(isWriter==true){
-                IsCommentWriter.add(i);
+        if (member.getId() != null) {
+            List<Integer> IsCommentWriter = new ArrayList<>();
+            /* 댓글 작성자 본인인지 확인 */
+            for (int i = 0; i < comments.size(); i++) {
+                boolean isWriter = comments.get(i).getUserId().equals(member.getId());
+                if (isWriter == true) {
+                    IsCommentWriter.add(i);
+                }
             }
+            postDetailDto.setIsCommentWriter(IsCommentWriter);
         }
-        postDetailDto.setIsCommentWriter(IsCommentWriter);
 
-        postsService.updateView(id); // views ++
+        postsService.updateView(postId); // views ++
         postDetailDto.setPost( dto);
 
         return postDetailDto;
@@ -189,11 +197,13 @@ public class PostsIndexController {
 
 
     @Operation(method = "get", summary = "커뮤니티 게시글 수정 페이지")
-    @GetMapping("/posts/update/{id}")
-    public UpdatePageDto update(@PathVariable Long id,  UserDto.Response user, Model model) {
+    @GetMapping("/posts/update/{postId}")
+    public UpdatePageDto update(@PathVariable Long postId,  @CurrentUser UserPrincipal member, Model model) {
+
         UpdatePageDto updatePageDto = new UpdatePageDto();
-        PostsDto.Response dto = postsService.findById(id);
-        if (user != null) {
+        PostsDto.Response dto = postsService.findById(postId);
+        if (member.getId() != null) {
+            UserDto.Response user = new UserDto.Response(member.getId(), member.getUsername());
             updatePageDto.setUser(user);
         }
         updatePageDto.setPosts(dto);
