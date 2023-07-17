@@ -35,7 +35,7 @@ public class InitOttDB {
 
     private final InitService initService;
 
-//    @PostConstruct
+    //    @PostConstruct
     public void init() throws Exception {
 
         initService.providerInit();

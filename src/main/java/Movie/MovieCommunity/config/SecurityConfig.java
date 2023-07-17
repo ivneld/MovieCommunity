@@ -83,6 +83,8 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers("/login/**","/auth/**", "/oauth2/**")
                 .permitAll()
+                .antMatchers("/community/**","/heart/**","/posts/**","/api/subcomment/**","/api/auth/**","/api/posts/**","/postByMovie/**","/postByMember/**","/posts/read/**", "/posts/search/**","/tv/**","/gallery/**")
+                .permitAll()
                 .antMatchers("/blog/**")
                 .permitAll()
                 .anyRequest()

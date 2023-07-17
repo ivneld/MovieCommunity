@@ -7,6 +7,7 @@ import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import Movie.MovieCommunity.JPADomain.dto.TvDto;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
+import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import Movie.MovieCommunity.community.domain.Posts;
@@ -16,6 +17,8 @@ import Movie.MovieCommunity.community.service.PostsService;
 import Movie.MovieCommunity.community.dto.PostsDto;
 import Movie.MovieCommunity.community.dto.UserDto;
 
+import Movie.MovieCommunity.config.security.token.CurrentUser;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -53,7 +56,9 @@ public class PostsApiController {
     @Operation(method = "post", summary = "커뮤니티 게시글 생성")
     @Transactional
     @PostMapping("/posts")
-    public ResponseEntity save(@RequestBody PostsDto.DetailRequestParam param, UserDto.Response user) {
+    public ResponseEntity save(@RequestBody PostsDto.DetailRequestParam param,  @CurrentUser UserPrincipal member) {
+
+        UserDto.Response user = new UserDto.Response(member.getId(), member.getUsername());
         PostsDto.Request dto= new PostsDto.Request();
         Movie movie = movieRepository.findById(param.getMovieId()).get();
 
@@ -61,11 +66,12 @@ public class PostsApiController {
         log.info("movie={}",movie);
         dto.setTitle(param.getTitle());
         dto.setContent(param.getContent());
-        dto.setWriter(user.getNickname());
+        dto.setWriter(user.getUsername());
 
         Optional<List<Long>> GalleryId = param.getGalleryId();
-        Member member = userRepository.findByNickname(user.getNickname());
-        dto.setUser(member);
+        Member member1 = member.getMember();
+//        Member member1 = userRepository.findByNickname(user.getUsername());
+        dto.setUser(member1);
         Posts posts = dto.toEntity();
         postsRepository.save(posts);
 
@@ -87,27 +93,27 @@ public class PostsApiController {
 
     /* READ */
     @Operation(method = "get", summary = "커뮤니티 게시글 조회")
-    @GetMapping("/posts/{id}")
-    public ResponseEntity read(@PathVariable Long id) {
-        Posts posts = postsRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
+    @GetMapping("/posts/{postId}")
+    public ResponseEntity read(@PathVariable Long postId) {
+        Posts posts = postsRepository.findById(postId).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + postId));
         PostsDto.Response response=new PostsDto.Response(posts);
         return ResponseEntity.ok(response);
     }
 
     /* UPDATE */
     @Operation(method = "put", summary = "커뮤니티 게시글 수정")
-    @PutMapping("/posts/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody PostsDto.RequestParam dto) {
-        postsService.update(id, dto);
-        return ResponseEntity.ok(id);
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity update(@PathVariable Long postId, @RequestBody PostsDto.RequestParam dto) {
+        postsService.update(postId, dto);
+        return ResponseEntity.ok(postId);
     }
 
     /* DELETE */
     @Operation(method = "delete", summary = "커뮤니티 게시글 삭제")
-    @DeleteMapping("/posts/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
-        postsService.delete(id);
-        return ResponseEntity.ok(id);
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity delete(@PathVariable Long postId) {
+        postsService.delete(postId);
+        return ResponseEntity.ok(postId);
     }
 }

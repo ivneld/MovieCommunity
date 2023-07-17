@@ -1,5 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

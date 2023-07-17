@@ -5,6 +5,7 @@ buildscript {
 }
 plugins {
 	id 'java'
+	id 'war'
 	id 'org.springframework.boot' version '2.7.7'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 	//querydsl 추가
@@ -36,6 +37,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
@@ -49,6 +51,7 @@ dependencies {
 	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
 	implementation 'com.amazonaws:aws-java-sdk-s3'
 	compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
+
 
 
 	//querydsl 추가
