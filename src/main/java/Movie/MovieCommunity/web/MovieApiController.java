@@ -44,9 +44,9 @@ public class MovieApiController {
     public ResponseEntity<?> yearRanking(@Valid @RequestParam int openDt, @CurrentUser UserPrincipal member){
         List<YearRankingResponse> yearRankingResponses = null;
         if (member != null){
-             yearRankingResponses = movieService.yearRanking(openDt, member.getId());
+            yearRankingResponses = movieService.yearRanking(openDt, member.getId());
         }else{
-             yearRankingResponses = movieService.yearRanking(openDt, null);
+            yearRankingResponses = movieService.yearRanking(openDt, null);
         }
         return new ResponseEntity(yearRankingResponses, HttpStatus.OK);
     }
@@ -156,8 +156,6 @@ public class MovieApiController {
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
         return movieService.proposeByNowDayMovie(date);
     }
-
-
 
     @Operation(method = "get", summary = "개봉예정 영화 조회")
     @ApiResponses(value = {

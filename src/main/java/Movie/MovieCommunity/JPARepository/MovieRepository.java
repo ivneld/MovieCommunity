@@ -16,7 +16,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query(value = "select * from movie m where m.open_dt between :startDt and :endDt order by m.popularity desc limit 10", nativeQuery = true)
     List<Movie> findYearRankingByOpenDt(@Param("startDt") int startDt, @Param("endDt") int endDt);
 
-//    @Query("select m from movie m join fetch m.comments c join fetch m.like_movie lm")
+    //    @Query("select m from movie m join fetch m.comments c join fetch m.like_movie lm")
 //    List<JpaMovie> findQueryYearRankingByOpenDt();
     @Query("select m from movie m")
     List<Movie> findList();
@@ -45,3 +45,4 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     countQuery = "select count(m) from movie m where m.prdtStatNm = :prdtStatNm and m.openDt > :openDt")
     Page<Movie> findComingMovieByPrdtStatNmAndOpenDt(@Param("prdtStatNm")String prdtStatNm, @Param("openDt")Integer openDt, Pageable pageable);
 }
+
