@@ -5,6 +5,8 @@ import Movie.MovieCommunity.community.service.CommunityCommentService;
 import Movie.MovieCommunity.community.dto.CommentDto;
 import Movie.MovieCommunity.community.dto.UserDto;
 
+import Movie.MovieCommunity.config.security.token.CurrentUser;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +30,19 @@ public class CommentApiController {
     @Operation(method = "post", summary = "커뮤니티 댓글 생성")
     @PostMapping("/posts/{id}/comments")
     public ResponseEntity<Long> save(@PathVariable Long id, @RequestBody CommentDto.Requestparam requestparam,
-                                UserDto.Response userSessionDto) {
+                                     @CurrentUser UserPrincipal member) {
+        UserDto.Response userSessionDto = new UserDto.Response(member.getId(), member.getUsername());
         CommentDto.Request dto= new CommentDto.Request();
         dto.setComment(requestparam.getComment());
 
-        return ResponseEntity.ok(commentService.save(id, userSessionDto.getNickname(), dto));
+        return ResponseEntity.ok(commentService.save(id, userSessionDto.getUsername(), dto));
     }
 
     /* READ */
     @Operation(method = "get", summary = "커뮤니티 댓글 조회")
-    @GetMapping("/posts/{id}/comments")
-    public List<CommentDto.Response> read(@PathVariable Long id) {
-        return commentService.findAll(id);
+    @GetMapping("/posts/{postId}/comments")
+    public List<CommentDto.Response> read(@PathVariable Long postId) {
+        return commentService.findAll(postId);
     }
 
     /* UPDATE */
