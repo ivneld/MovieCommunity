@@ -29,7 +29,7 @@ export default function useAuth({ middleware, redirectIfAuthenticated } = {}) {
     await csrf();
 
     axios
-      .post("/auth/login", props)
+      .post("/auth/signin", props)
       .then(() => mutate() && navigate("/"))
       .catch((error) => {
         if (![401, 422].includes(error.response.status)) throw error;

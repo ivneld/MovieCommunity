@@ -1,13 +1,48 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
+import { InputArea, Form } from "./styles";
+import fetcher from "../utils/fetcher";
+import useSWR from 'swr';
+import "./nav.css"
 
-function Nav() {
-
+function Nav(props) {
+	const navigate = useNavigate();
 	const { auth, setAuth } = useContext(AuthContext);
+	const apiUrl = process.env.REACT_APP_API_URL;
+	const handleLogout = () => {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+		localStorage.removeItem("name")
+		setAuth(null)
+		console.log('로그아웃!')
+	  };
+
+	const [searchQuery, setSearchQuery] = useState("");
+	const { data: searchResults } = useSWR(`${apiUrl}/movie/search?movieNm=${searchQuery}`, fetcher);
+
+	// 검색목록 엔터 시 (영화이름 끝까지 안쳐도 가장 위에 있는 영화로 검색됨)
+	const handleSearchSubmit = (e) => {
+		e.preventDefault();
+		if (searchQuery && searchResults && searchResults.length > 0) {
+			// navigate(`/movie/${searchResults[0].id}`, { state: { detail: searchResults[0].id } });
+			navigate('/movie/search/detail', {state: {search : searchQuery}})
+		}
+		setSearchQuery("");
+	};
+
+	// 검색목록 클릭 시
+	const clickSearchSubmit = () => {
+		if (searchQuery && searchResults && searchResults.length > 0) {
+			// navigate(`/movie/${id}`, { state: { detail: id } });
+			navigate('/movie/search/detail', {state: {search: searchQuery}})
+		}
+		setSearchQuery("");
+	};
 
 	return (
-		<nav className="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+		<nav className="navbar navbar-expand-md navbar-light sticky-top font-weight-bold" style={{ backgroundColor: 'rgb(145, 205, 220)'}}>
 			<div className="container">
 
 				<div className="navbar-collapse collapse justify-content-between" id="navbar-content">
@@ -15,26 +50,27 @@ function Nav() {
 
 						{/* 메인 화면 */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/"><i className="fas fa-home"></i> Home</Link>
+							<Link className="nav-link" to="/"><i className="fas fa-home"></i> SPRING movies</Link>
 						</li>
 
-						{/* 장르별 */}
-						<li className="nav-item dropdown">
+						{/* 랭킹  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/ranking"><i className="fas"></i>랭킹</Link>
+						</li>
+						
+						{/* 상영예정작  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/upcomingmovies"><i className="fas"></i>상영예정작</Link>
+						</li>
 
-							<div className="nav-link dropdown-toggle" id="navbarDropdown"
-								role="button" data-toggle="dropdown" aria-haspopup="true"
-								aria-expanded="false">장르별</div>
-
-							<div className="dropdown-menu" aria-labelledby="navbarDropdown">
-								<Link className="dropdown-item" to="/bbslist">로맨스</Link>
-								<Link className="dropdown-item" to="/bbswrite">액션</Link>
-								<Link className="dropdown-item" to="/bbswrite">틀만 구현한거임</Link>
-							</div>
+						{/* 장르별  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/genre"><i className="fas"></i>장르별</Link>
 						</li>
 
 						{/* 게시판  */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/boards"><i className="fas"></i>게시판</Link>
+							<Link className="nav-link" to="/ott"><i className="fas"></i>OTT</Link>
 						</li>
 						
 						{/* 마이페이지  */}
@@ -42,10 +78,37 @@ function Nav() {
 							<Link className="nav-link" to="/mypage"><i className="fas"></i>마이페이지</Link>
 						</li>
 					</ul>
+
+					<ul>
+						{/* <Form onSubmit={handleSubmit}> */}
+						<Form className="search-container" onSubmit={handleSearchSubmit}>
+							<InputArea
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								placeholder="원하는 영화를 발견해보세요"
+							/>
+							  {searchResults && searchResults.length > 0 && searchQuery && (
+									<ul className="autocomplete-results">
+									{searchResults.map((result) => (
+										<li key={result.id} onClick={() => (clickSearchSubmit())}>
+											<div style={{display:"flex"}}>
+												<div>
+													<div>{result.movieNm}</div>
+													<div>{result.openDt}</div>
+												</div>
+												<img src={result.posterPath} style={{marginLeft:"auto", marginRight:"10px"}} height="50px" alt='포스터주소'/>
+											</div>
+										</li>
+									))}
+									</ul>
+								)}
+						</Form>
+					</ul>
+
 					<ul className="navbar-nav ml-auto">
 
 						{							
-							(auth) ?
+							(auth || props.authenticated) ?
 								<>
 									{/* 회원 정보 */}
 									<li className="nav-item">
@@ -54,7 +117,7 @@ function Nav() {
 
 									{/* 로그아웃 */}
 									<li className="nav-item">
-										<Link className="nav-link" to="/logout"><i className="fas fa-sign-out-alt"></i> 로그아웃</Link>
+										<Link className="nav-link" to="/logout" onClick={handleLogout}><i className="fas fa-sign-out-alt"></i> 로그아웃</Link>
 									</li>
 
 								</>
