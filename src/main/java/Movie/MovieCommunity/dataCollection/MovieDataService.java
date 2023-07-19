@@ -98,7 +98,7 @@ public class MovieDataService {
 //        int day = Integer.parseInt(getDate.substring(6, 8));
 //        String startDate = LocalDate.of(year, month, day).plusWeeks(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        yearWeeklyBoxOfficeData(startDate);
-//        yearWeeklyBoxOfficeData("20230601");
+//        yearWeeklyBoxOfficeData("20230101");
         ///////////////////////////////////////////
 
 //        countEtc();         // 실행 전 메서드 주석 참고!
@@ -353,9 +353,6 @@ public class MovieDataService {
         keyNames.add("auditNo");
         keyNames.add("watchGradeNm");
         JSONArrayExtracted(movieInfo,"audits", keyNames, null, savedMovie);
-
-
-
 
         tmdbSearch(savedMovie.getMovieNm(), movie);
         TmdbResponseDto tmdbResponseDto = tmdbResponseDtoThreadLocal.get();
@@ -754,6 +751,7 @@ Vimeo: https://vimeo.com/
 //            System.out.println("posterPath = " + posterPath);
 
             float popularity = movieDb.getPopularity();
+
 //            System.out.println("popularity = " + popularity);
             float voteAverage = movieDb.getVoteAverage();
 //            System.out.println("voteAverage = " + voteAverage);
