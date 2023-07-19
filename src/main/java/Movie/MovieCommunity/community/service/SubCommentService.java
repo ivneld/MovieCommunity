@@ -2,6 +2,7 @@ package Movie.MovieCommunity.community.service;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.community.domain.Comment;
 import Movie.MovieCommunity.community.domain.SubComment;
 import Movie.MovieCommunity.community.domain.SubCommentLike;
@@ -36,6 +37,8 @@ public class SubCommentService {
 
     private final CommunityCommentService commentService;
 
+    private final MemberRepository memberRepository;
+
     //대댓글 등록하기
     @Transactional
     public ResponseDto<?> createReComment(SubCommentRequestDto requestDto, @CurrentUser UserPrincipal member) {
@@ -57,7 +60,7 @@ public class SubCommentService {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 코멘트 id 입니다.");
         }
 
-        Member member1 = member.getMember();
+        Member member1 = memberRepository.findById(member.getId()).get();
 
         SubComment subComment = SubComment.builder()
                 .member(member1)
@@ -127,7 +130,7 @@ public class SubCommentService {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글 id 입니다.");
         }
 
-        Member member1 = member.getMember();
+
         if (!(subComment.getMember().getId() .equals(member.getId()))) {
             return ResponseDto.fail("BAD_REQUEST", "작성자만 수정할 수 있습니다.");
         }
@@ -181,6 +184,8 @@ public class SubCommentService {
         return optionalSubComment.orElse(null);
     }
 
+
+    /**
     @Transactional
     public Member validateMember(HttpServletRequest request){
         if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
@@ -188,4 +193,5 @@ public class SubCommentService {
         }
         return tokenProvider.getMemberFromAuthentication();
     }
+    */
 }

@@ -171,6 +171,7 @@ public class CustomTokenProviderService {
         return false;
     }
 
+    /**
     public Member getMemberFromAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || AnonymousAuthenticationToken.class.isAssignableFrom(authentication.getClass())) {
@@ -178,5 +179,5 @@ public class CustomTokenProviderService {
         }
         return ((UserPrincipal) authentication.getPrincipal()).getMember();
     }
-
+    */
 }

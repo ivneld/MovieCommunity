@@ -69,8 +69,8 @@ public class PostsApiController {
         dto.setWriter(user.getUsername());
 
         Optional<List<Long>> GalleryId = param.getGalleryId();
-        Member member1 = member.getMember();
-//        Member member1 = userRepository.findByNickname(user.getUsername());
+
+        Member member1 = userRepository.findById(member.getId()).get();
         dto.setUser(member1);
         Posts posts = dto.toEntity();
         postsRepository.save(posts);
@@ -97,6 +97,7 @@ public class PostsApiController {
     public ResponseEntity read(@PathVariable Long postId) {
         Posts posts = postsRepository.findById(postId).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + postId));
+
         PostsDto.Response response=new PostsDto.Response(posts);
         return ResponseEntity.ok(response);
     }
