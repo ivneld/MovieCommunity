@@ -108,7 +108,7 @@ public class HeartService {
             return ResponseDto.fail("ALREADY_DONE", "이미 좋아요를 하셨습니다.");
         }
 
-        Member member1 = member.getMember();
+        Member member1 = memberRepository.findById(member.getId()).get();
         CommentLike commentLike = CommentLike.builder()
                 .member(member1)
                 .comment(comment)
@@ -177,7 +177,7 @@ public class HeartService {
         if(null!=checkLike) {
             return ResponseDto.fail("ALREADY_DONE", "이미 좋아요를 하셨습니다.");
         }
-        Member member1 = member.getMember();
+        Member member1 = memberRepository.findById(member.getId()).get();
         SubCommentLike subCommentLike = SubCommentLike.builder()
                 .member(member1)
                 .subComment(subComment)
@@ -230,6 +230,7 @@ public class HeartService {
         return optionalLike.orElse(null);
     }
 
+    /**
     @org.springframework.transaction.annotation.Transactional
     public Member validateMember(HttpServletRequest request) {
         if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
@@ -237,6 +238,6 @@ public class HeartService {
         }
         return tokenProvider.getMemberFromAuthentication();
     }
-
+     */
 
 }
