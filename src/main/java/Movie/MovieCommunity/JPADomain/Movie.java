@@ -210,8 +210,8 @@ public class Movie {
     @Column()
     private String backdropPath;
     private String posterPath;
-    private float popularity;
-    private float voteAverage;
+    private Float popularity;
+    private Float voteAverage;
     private Integer voteCount;
     private Integer collectionId;
     private String seriesName;
