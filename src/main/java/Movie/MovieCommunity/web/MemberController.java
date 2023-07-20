@@ -61,6 +61,7 @@ public class MemberController {
         if(memberId != member.getId()){
             throw new RuntimeException("권한이 없습니다.");
         }
+
         List<LikeGenreDto> response = memberService.findLikeMovieGenre(memberId);
         return new ResponseEntity(response, HttpStatus.OK);
     }

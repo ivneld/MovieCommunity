@@ -1,6 +1,5 @@
 package Movie.MovieCommunity.web;
 
-import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.CommentService;
