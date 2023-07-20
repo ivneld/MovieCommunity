@@ -24,6 +24,7 @@ public class PostsDto {
         private String title;
         private String content;
         private List<Long> galleryIds;
+        private Long movieId;
     }
 
     @Data
@@ -88,6 +89,8 @@ public class PostsDto {
         private final String content;
         private final String createdDate, modifiedDate;
         private final int view;
+        private final int likeCount;
+        private final Long movieId;
         private final Long userId;
         private final List<CommentDto.Response> comments;
         private final List<GalleryDto.Response> galleries;
@@ -102,6 +105,8 @@ public class PostsDto {
             this.createdDate = posts.getCreatedDate();
             this.modifiedDate = posts.getModifiedDate();
             this.view = posts.getView();
+            this.likeCount = posts.getLikeCount();
+            this.movieId = posts.getMovie().getId();
             this.userId = posts.getUser().getId();
             this.comments = posts.getComments().stream().map(CommentDto.Response::new).collect(Collectors.toList());
             this.galleries = posts.getGalleries().stream().map(GalleryDto.Response::new).collect(Collectors.toList());
