@@ -50,6 +50,7 @@ public class Posts extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private Member user;
 
     @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -59,6 +60,7 @@ public class Posts extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
+    @JsonManagedReference
     private List<GalleryEntity> galleries;
 
     /* 게시글 수정 */
