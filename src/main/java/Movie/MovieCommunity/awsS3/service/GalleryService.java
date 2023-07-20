@@ -40,7 +40,7 @@ public class GalleryService {
                 .id(galleryEntity.getId())
                 .title(galleryEntity.getTitle())
                 .filePath(galleryEntity.getFilePath())
-                .imgFullPath("https://" + s3Service.CLOUD_FRONT_DOMAIN_NAME + "/" + galleryEntity.getFilePath())
+                .imgFullPath("https://" + galleryEntity.getFilePath())
                 .build();
     }
 
