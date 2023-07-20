@@ -2,7 +2,9 @@ package Movie.MovieCommunity.community.service;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import Movie.MovieCommunity.community.dto.PostsDto;
@@ -26,7 +28,7 @@ public class PostsService {
 
     private final PostsRepository postsRepository;
     private final GalleryRepository galleryRepository;
-
+    private final MovieRepository movieRepository;
 
 
     /* READ 게시글 리스트 조회 readOnly 속성으로 조회속도 개선 */
@@ -52,8 +54,8 @@ public class PostsService {
             GalleryEntity gallery = galleryRepository.findById(galleryId).get();
             galleryEntities.add(gallery);
         }
-
-        posts.update(dto.getTitle(), dto.getContent(),galleryEntities);
+        Movie movie = movieRepository.findById(dto.getMovieId()).get();
+        posts.update(dto.getTitle(), movie, dto.getContent(),galleryEntities);
     }
 
     /* DELETE */

@@ -7,6 +7,7 @@ import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -50,6 +51,7 @@ public class Posts extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private Member user;
 
     @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -59,15 +61,15 @@ public class Posts extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "posts", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @OrderBy("id asc")
+    @JsonManagedReference
     private List<GalleryEntity> galleries;
 
     /* 게시글 수정 */
-    public void update(String title, String content,List<GalleryEntity> galleries) {
-
+    public void update(String title, Movie movie, String content,List<GalleryEntity> galleries) {
+        this.movie = movie;
         this.title = title;
         this.content = content;
         this.galleries=galleries;
-
     }
 
 }

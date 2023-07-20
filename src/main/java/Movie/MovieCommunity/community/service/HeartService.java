@@ -10,6 +10,8 @@ import Movie.MovieCommunity.community.repository.PostsLikeRepository;
 import Movie.MovieCommunity.community.repository.PostsRepository;
 import Movie.MovieCommunity.community.repository.SubCommentLikeRepository;
 import Movie.MovieCommunity.community.response.ResponseDto;
+import Movie.MovieCommunity.config.security.token.CurrentUser;
+import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.auth.CustomTokenProviderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,23 +79,26 @@ public class HeartService {
      * */
 
     @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> doCommentLike(LikeRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
+    public ResponseDto<?> doCommentLike(LikeRequestDto requestDto,  @CurrentUser UserPrincipal member) {
+        if (null ==member.getId()) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
-
+        /**
         if (null == request.getHeader("Authorization")) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
 
         Member member = validateMember(request);
+
+
         if (null == member) {
             return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
         }
+         */
 
-        Comment comment = commentService.isPresentComment(requestDto.getId());
+        Comment comment = commentService.isPresentComment(requestDto.getCommentId());
         if (null == comment) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 id 입니다.");
         }
@@ -102,8 +107,10 @@ public class HeartService {
         if(null!=checkLike) {
             return ResponseDto.fail("ALREADY_DONE", "이미 좋아요를 하셨습니다.");
         }
+
+        Member member1 = memberRepository.findById(member.getId()).get();
         CommentLike commentLike = CommentLike.builder()
-                .member(member)
+                .member(member1)
                 .comment(comment)
                 .build();
 
@@ -112,12 +119,13 @@ public class HeartService {
     }
 
     @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> cancelCommentLike(Long id, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
+    public ResponseDto<?> cancelCommentLike(Long id,  @CurrentUser UserPrincipal member) {
+        if (null == member.getId()) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
 
+        /**
         if (null == request.getHeader("Authorization")) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
@@ -127,13 +135,13 @@ public class HeartService {
         if (null == member) {
             return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
         }
-
+        */
         CommentLike commentLike = isPresentCommentLike(id);
         if (null == commentLike) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 좋아요 id 입니다.");
         }
 
-        if (commentLike.validateMember(member)) {       // 이 내용을 수행하기 전에 이미 사용자 검증... 프론트 단에서 좋아요 취소 버튼 활성화
+        if (!(commentLike.getMember().getId().equals(member.getId()))) {       // 이 내용을 수행하기 전에 이미 사용자 검증... 프론트 단에서 좋아요 취소 버튼 활성화
             return ResponseDto.fail("BAD_REQUEST", "작성자만 취소할 수 있습니다.");
         }
 
@@ -143,12 +151,12 @@ public class HeartService {
 
 
     @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> subCommentLike(LikeRequestDto requestDto, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
+    public ResponseDto<?> subCommentLike(LikeRequestDto requestDto,@CurrentUser UserPrincipal member) {
+        if (null == member.getId()) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
-
+        /**
         if (null == request.getHeader("Authorization")) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
@@ -158,8 +166,9 @@ public class HeartService {
         if (null == member) {
             return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
         }
+         */
 
-        SubComment subComment = subCommentService.isPresentSubComment(requestDto.getId());
+        SubComment subComment = subCommentService.isPresentSubComment(requestDto.getCommentId());
         if (null == subComment) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 id 입니다.");
         }
@@ -168,9 +177,9 @@ public class HeartService {
         if(null!=checkLike) {
             return ResponseDto.fail("ALREADY_DONE", "이미 좋아요를 하셨습니다.");
         }
-
+        Member member1 = memberRepository.findById(member.getId()).get();
         SubCommentLike subCommentLike = SubCommentLike.builder()
-                .member(member)
+                .member(member1)
                 .subComment(subComment)
                 .build();
         subCommentLikeRepository.save(subCommentLike);
@@ -178,12 +187,12 @@ public class HeartService {
     }
 
     @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> cancelSubCommentLike(Long id, HttpServletRequest request) {
-        if (null == request.getHeader("Refresh-Token")) {
+    public ResponseDto<?> cancelSubCommentLike(Long id, @CurrentUser UserPrincipal member) {
+        if (null == member.getId()) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
-
+        /**
         if (null == request.getHeader("Authorization")) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
@@ -194,12 +203,13 @@ public class HeartService {
             return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
         }
 
+         */
         SubCommentLike subCommentLike = isPresentSubCommentLike(id);
         if (null == subCommentLike) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 좋아요 id 입니다.");
         }
 
-        if (subCommentLike.validateMember(member)) {       // 이 내용을 수행하기 전에 이미 사용자 검증... 프론트 단에서 좋아요 취소 버튼 활성화
+        if (!(subCommentLike.getMember().getId().equals(member.getId()))) {       // 이 내용을 수행하기 전에 이미 사용자 검증... 프론트 단에서 좋아요 취소 버튼 활성화
             return ResponseDto.fail("BAD_REQUEST", "작성자만 취소할 수 있습니다.");
         }
 
@@ -220,6 +230,7 @@ public class HeartService {
         return optionalLike.orElse(null);
     }
 
+    /**
     @org.springframework.transaction.annotation.Transactional
     public Member validateMember(HttpServletRequest request) {
         if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
@@ -227,6 +238,6 @@ public class HeartService {
         }
         return tokenProvider.getMemberFromAuthentication();
     }
-
+     */
 
 }

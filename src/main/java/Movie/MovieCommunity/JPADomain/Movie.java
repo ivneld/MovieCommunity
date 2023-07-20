@@ -149,7 +149,7 @@ public class Movie {
 //    private String companyNm;//	문자열	참여 영화사명을 출력합니다.
 //    private String companyNmEn;//	문자열	참여 영화사명(영문)을 출력합니다.
 //    private String companyPartNm;//	문자열	참여 영화사 분야명을 출력합니다.
-    private int topScore;
+    private Integer topScore;
     //    staffs	문자열	스텝을 나타냅니다.
 //    peopleNm	문자열	스텝명을 출력합니다.
 //    peopleNmEn	문자열	스텝명(영문)을 출력합니다.
@@ -204,15 +204,15 @@ public class Movie {
     /**
      * tmdb entity
      */
-    private int tmId;
+    private Integer tmId;
     @Lob
     private String overview;
     @Column()
     private String backdropPath;
     private String posterPath;
-    private float popularity;
-    private float voteAverage;
-    private int voteCount;
+    private Float popularity;
+    private Float voteAverage;
+    private Integer voteCount;
     private Integer collectionId;
     private String seriesName;
     private String collectionBackdropPath;

@@ -68,9 +68,6 @@ public class UserPrincipal implements OAuth2User, UserDetails {
         return userPrincipal;
     }
 
-    public Member getMember() {
-        return member;
-    }
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
