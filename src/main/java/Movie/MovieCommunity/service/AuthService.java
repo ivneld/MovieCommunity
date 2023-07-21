@@ -111,6 +111,7 @@ public class AuthService {
                 .email(signUpRequest.getEmail())
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .provider(Provider.local)
+                .nickname(signUpRequest.getNickName())
                 .authority(Authority.USER)
                 .build();
         memberRepository.save(member);

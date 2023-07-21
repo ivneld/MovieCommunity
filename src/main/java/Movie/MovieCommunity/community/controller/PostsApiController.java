@@ -7,7 +7,6 @@ import Movie.MovieCommunity.JPADomain.dto.MovieDto;
 import Movie.MovieCommunity.JPADomain.dto.TvDto;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
-import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
 import Movie.MovieCommunity.community.domain.Posts;
