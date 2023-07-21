@@ -2,6 +2,7 @@ package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,12 +36,13 @@ public class Comment {
     private String modifiedDate;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonIgnore
     @JoinColumn(name = "posts_id")
     private Posts posts;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private Member user; // 작성자
 
     /* 댓글 수정 */
