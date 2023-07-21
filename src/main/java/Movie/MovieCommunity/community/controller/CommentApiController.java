@@ -10,6 +10,7 @@ import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @RestController
+@Slf4j
 @Tag(name="community comment", description = "커뮤니티 댓글 API")
 public class CommentApiController {
 
@@ -31,11 +33,12 @@ public class CommentApiController {
     @PostMapping("/posts/{id}/comments")
     public ResponseEntity<Long> save(@PathVariable Long id, @RequestBody CommentDto.Requestparam requestparam,
                                      @CurrentUser UserPrincipal member) {
-        UserDto.Response userSessionDto = new UserDto.Response(member.getId(), member.getUsername());
+        log.info("nickname={}",member.getNickName());
+        UserDto.Response userSessionDto = new UserDto.Response(member.getId(), member.getNickName());
         CommentDto.Request dto= new CommentDto.Request();
         dto.setComment(requestparam.getComment());
-
-        return ResponseEntity.ok(commentService.save(id, userSessionDto.getUsername(), dto));
+        log.info("comment={}",dto.getComment());
+        return ResponseEntity.ok(commentService.save(id, userSessionDto.getNickname(), dto));
     }
 
     /* READ */

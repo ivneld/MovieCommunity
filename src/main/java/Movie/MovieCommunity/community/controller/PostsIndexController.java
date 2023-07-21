@@ -66,7 +66,7 @@ public class PostsIndexController {
     @GetMapping("/postByMember/nickname")
     public List<MyPagePostsDto> read(@CurrentUser UserPrincipal member) {
 
-        String nickname = member.getUsername();
+        String nickname = member.getNickName();
         List<MyPagePostsDto> MyPagePostsDto= new ArrayList<>();
         Optional<List<Posts>> byMember = postsRepository.findByWriter(nickname);
         if(byMember.isPresent()){
@@ -168,7 +168,7 @@ public class PostsIndexController {
         /* 사용자 관련 */
         if (member.getId() != null) {
 
-            UserDto.Response user = new UserDto.Response(member.getId(),member.getUsername());
+            UserDto.Response user = new UserDto.Response(member.getId(),member.getNickName());
             postDetailDto.setUser(user);
 
             /* 게시글 작성자 본인인지 확인 */

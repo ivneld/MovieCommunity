@@ -58,7 +58,7 @@ public class PostsApiController {
     @PostMapping("/posts")
     public ResponseEntity save(@RequestBody PostsDto.DetailRequestParam param,  @CurrentUser UserPrincipal member) {
 
-        UserDto.Response user = new UserDto.Response(member.getId(), member.getUsername());
+        UserDto.Response user = new UserDto.Response(member.getId(), member.getNickName());
         PostsDto.Request dto= new PostsDto.Request();
         Movie movie = movieRepository.findById(param.getMovieId()).get();
 
@@ -66,7 +66,7 @@ public class PostsApiController {
         log.info("movie={}",movie);
         dto.setTitle(param.getTitle());
         dto.setContent(param.getContent());
-        dto.setWriter(user.getUsername());
+        dto.setWriter(user.getNickname());
 
         Optional<List<Long>> GalleryId = param.getGalleryId();
 
