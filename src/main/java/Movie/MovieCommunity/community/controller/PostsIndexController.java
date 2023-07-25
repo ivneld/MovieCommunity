@@ -2,9 +2,16 @@ package Movie.MovieCommunity.community.controller;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
+import Movie.MovieCommunity.JPARepository.CommentRepository;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
+import Movie.MovieCommunity.community.domain.Comment;
+import Movie.MovieCommunity.community.domain.SubComment;
 import Movie.MovieCommunity.community.dto.*;
+import Movie.MovieCommunity.community.repository.CommunityCommentRepository;
 import Movie.MovieCommunity.community.repository.PostsRepository;
+import Movie.MovieCommunity.community.repository.SubCommentRepository;
+import Movie.MovieCommunity.community.response.SubCommentResponseDto;
+import Movie.MovieCommunity.community.service.HeartService;
 import Movie.MovieCommunity.community.service.PostsService;
 
 import Movie.MovieCommunity.community.domain.Posts;
@@ -14,6 +21,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.module.FindException;
 import java.util.*;
 
 /**
@@ -39,6 +49,9 @@ public class PostsIndexController {
     private final PostsService postsService;
     private final PostsRepository postsRepository;
     private final MemberRepository memberRepository;
+    private final CommunityCommentRepository commentRepository;
+    private final SubCommentRepository subCommentRepository;
+    private final HeartService heartService;
 
     @Operation(method = "get", summary = "상세페이지 커뮤니티 리뷰 가져오기")
     @GetMapping("/postByMovie/{movieId}")
@@ -126,11 +139,7 @@ public class PostsIndexController {
         Page<Posts> list = postsRepository.findAll(pageable);
 
         ListDto dto = new ListDto(list,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
-        /**
-         if (user != null) {
-         dto.setUser(user);
-         }
-         */
+
         return dto;
     }
 
@@ -153,44 +162,76 @@ public class PostsIndexController {
         Posts posts = postsRepository.findById(postId).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + postId));
 
-
         PostDetailDto postDetailDto = new PostDetailDto();
         PostsDto.Response dto=new PostsDto.Response(posts);
 
         List<CommentDto.Response> comments = dto.getComments();
 
+        if(member != null) {
+            List<JSONArray> IsSubCommentWriter = new ArrayList<>();
+            List<JSONArray> IsSubCommentHeartWriter = new ArrayList<>();
+            List<Comment> comments1 = posts.getComments();
+            for(Integer i = 0; i< comments1.size();i++){
+                List<SubComment> subComments = comments1.get(i).getSubComments();
+                for (Integer j = 0; j < subComments.size(); j++) {
+                    boolean isSubCommentWriter = subComments.get(j).getMember().getId().equals(member.getId());
+                    if (isSubCommentWriter == true) {
+                        JSONArray map = new JSONArray();
+                        map.add(i);
+                        map.add(j);
+                        IsSubCommentWriter.add(map);
+                    }
+                    boolean isHeartCommentWriter = heartService.subCommentLikeCheck(subComments.get(j).getId(), member.getId());
+                    if(isHeartCommentWriter==true){
+                        JSONArray map = new JSONArray();
+                        map.add(i);
+                        map.add(j);
+                        IsSubCommentHeartWriter.add(map);
+                    }
+                }
+            }
 
-        /* 댓글 관련 */
-        if (comments != null && !comments.isEmpty()) {
-            postDetailDto.setComments(comments);
+            postDetailDto.setIsSubCommentWriter(IsSubCommentWriter);
+            postDetailDto.setIsSubCommentHeartWriter(IsSubCommentHeartWriter);
         }
-
+        if(member == null){
+            postDetailDto.setIsPostWriter(null);
+            postDetailDto.setIsHeartWriter(null);
+        }
         /* 사용자 관련 */
-        if (member.getId() != null) {
+        if (member != null) {
 
             UserDto.Response user = new UserDto.Response(member.getId(),member.getNickName());
             postDetailDto.setUser(user);
-
             /* 게시글 작성자 본인인지 확인 */
-            postDetailDto.setIsPostWriter(dto.getUserId().equals(user.getId()));
-            postDetailDto.setIsHeartWriter(dto.getUserId().equals(user.getId()));
+            postDetailDto.setIsPostWriter(dto.getUserId().equals(member.getId()));
+            postDetailDto.setIsHeartWriter(heartService.check(postId, member.getId()));
         }
 
 
-        if (member.getId() != null) {
+        if (member != null) {
             List<Integer> IsCommentWriter = new ArrayList<>();
+            List<Integer> IsCommentHeartWriter = new ArrayList<>();
             /* 댓글 작성자 본인인지 확인 */
             for (int i = 0; i < comments.size(); i++) {
                 boolean isWriter = comments.get(i).getUserId().equals(member.getId());
                 if (isWriter == true) {
                     IsCommentWriter.add(i);
                 }
+                boolean isHeartCommentWriter = heartService.commentCheck(comments.get(i).getId(), member.getId());
+                if(isHeartCommentWriter==true){
+                    IsCommentHeartWriter.add(i);
+                }
             }
+
             postDetailDto.setIsCommentWriter(IsCommentWriter);
+            postDetailDto.setIsCommentHeartWriter(IsCommentHeartWriter);
         }
 
+
+
         postsService.updateView(postId); // views ++
-        postDetailDto.setPost( dto);
+        postDetailDto.setPost(dto);
 
         return postDetailDto;
     }
@@ -198,10 +239,15 @@ public class PostsIndexController {
 
     @Operation(method = "get", summary = "커뮤니티 게시글 수정 페이지")
     @GetMapping("/posts/update/{postId}")
-    public UpdatePageDto update(@PathVariable Long postId,  @CurrentUser UserPrincipal member, Model model) {
-
+    public UpdatePageDto update(@PathVariable Long postId,  @CurrentUser UserPrincipal member) {
+        if (member==null){
+            throw new FindException("로그인이 필요합니다.");
+        }
         UpdatePageDto updatePageDto = new UpdatePageDto();
         PostsDto.Response dto = postsService.findById(postId);
+        if(dto.getUserId()!=member.getId()){
+            throw new IllegalArgumentException("작성자만 수정할 수 있습니다.");
+        }
         if (member.getId() != null) {
             UserDto.Response user = new UserDto.Response(member.getId(), member.getUsername());
             updatePageDto.setUser(user);

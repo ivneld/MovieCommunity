@@ -4,10 +4,13 @@ package Movie.MovieCommunity.community.dto;
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.community.domain.Comment;
 import Movie.MovieCommunity.community.domain.Posts;
+import Movie.MovieCommunity.community.response.SubCommentResponseDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * request, response DTO 클래스를 하나로 묶어 InnerStaticClass로 한 번에 관리
@@ -56,6 +59,7 @@ public class CommentDto {
      */
     @RequiredArgsConstructor
     @Getter
+    @Data
     public static class Response {
         private Long id;
         private String comment;
@@ -64,6 +68,8 @@ public class CommentDto {
         private String nickname;
         private Long userId;
         private Long postsId;
+        private int likeCount;
+        private List<SubCommentResponseDto.Response> subComments;
         /* Entity -> Dto*/
         public Response(Comment comment) {
             this.id = comment.getId();
@@ -73,6 +79,8 @@ public class CommentDto {
             this.nickname = comment.getUser().getNickname();
             this.userId = comment.getUser().getId();
             this.postsId = comment.getPosts().getId();
+            this.likeCount = comment.getLikeCount();
+            this.subComments = comment.getSubComments().stream().map(SubCommentResponseDto.Response::new).collect(Collectors.toList());
         }
     }
 }

@@ -1,4 +1,4 @@
-package Movie.MovieCommunity.community.dto;
+package Movie.MovieCommunity.community.dto.HeartRequestDto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

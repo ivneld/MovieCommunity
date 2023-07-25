@@ -32,13 +32,13 @@ public class CommentApiController {
     @Operation(method = "post", summary = "커뮤니티 댓글 생성")
     @PostMapping("/posts/{id}/comments")
     public ResponseEntity<Long> save(@PathVariable Long id, @RequestBody CommentDto.Requestparam requestparam,
-                                     @CurrentUser UserPrincipal member) {
-        log.info("nickname={}",member.getNickName());
-        UserDto.Response userSessionDto = new UserDto.Response(member.getId(), member.getNickName());
+                                     @CurrentUser UserPrincipal member) throws Exception {
+        if (member==null){
+            throw new Exception("로그인이 필요합니다.");
+        }
         CommentDto.Request dto= new CommentDto.Request();
         dto.setComment(requestparam.getComment());
-        log.info("comment={}",dto.getComment());
-        return ResponseEntity.ok(commentService.save(id, userSessionDto.getNickname(), dto));
+        return ResponseEntity.ok(commentService.save(id, member.getId(), dto));
     }
 
     /* READ */
