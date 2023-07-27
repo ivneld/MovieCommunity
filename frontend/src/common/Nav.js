@@ -4,18 +4,39 @@ import { Link, useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { InputArea, Form } from "./styles";
 import fetcher from "../utils/fetcher";
+import fetcherAccessToken from "../utils/fetcherAccessToken";
 import useSWR from 'swr';
 import "./nav.css"
 
 function Nav(props) {
 	const navigate = useNavigate();
-	const { auth, setAuth } = useContext(AuthContext);
+	// const { auth, setAuth } = useContext(AuthContext);
 	const apiUrl = process.env.REACT_APP_API_URL;
+
+	const accessToken = localStorage.getItem('accessToken');
+	console.log("accessToken",accessToken)
+	let memberId = null;
+	if (accessToken) {
+		try {
+			const decodedToken = jwt_decode(accessToken);
+			memberId = decodedToken?.sub;
+		  } catch (error) {
+			console.error('Invalid Token:', error);
+		  }
+	}
+	const { data: currentUserData, error } = useSWR(
+	  memberId ? `${apiUrl}/mypage/${memberId}/profile` : null,
+	  fetcherAccessToken
+	);
+
+	// const { data: currentUserData,error} = useSWR(`${apiUrl}/auth/`, fetcherAccessToken)
+	console.log('currentUserData',currentUserData)
+
 	const handleLogout = () => {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
 		localStorage.removeItem("name")
-		setAuth(null)
+		// setAuth(null)
 		console.log('로그아웃!')
 	  };
 
@@ -68,9 +89,14 @@ function Nav(props) {
 							<Link className="nav-link" to="/genre"><i className="fas"></i>장르별</Link>
 						</li>
 
-						{/* 게시판  */}
+						{/* OTT  */}
 						<li className="nav-item">
 							<Link className="nav-link" to="/ott"><i className="fas"></i>OTT</Link>
+						</li>
+	
+						{/* 커뮤니티  */}
+						<li className="nav-item">
+							<Link className="nav-link" to="/community"><i className="fas"></i>커뮤니티</Link>
 						</li>
 						
 						{/* 마이페이지  */}
@@ -108,11 +134,11 @@ function Nav(props) {
 					<ul className="navbar-nav ml-auto">
 
 						{							
-							(auth || props.authenticated) ?
+							(currentUserData || props.authenticated) ?
 								<>
 									{/* 회원 정보 */}
 									<li className="nav-item">
-										<span className="nav-link"> {auth} 님 반갑습니다 <i className="fab fa-ello"></i> &nbsp; </span>
+										<span className="nav-link"> {currentUserData?.information?.nickname} 님 반갑습니다 <i className="fab fa-ello"></i> &nbsp; </span>
 									</li>
 
 									{/* 로그아웃 */}

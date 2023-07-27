@@ -370,10 +370,12 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
 
 function Comment(){
     const id = useParams()
-    const { auth, setAuth } = useContext(AuthContext);
+    
+    // const { auth, setAuth } = useContext(AuthContext);
     const location = useLocation();
     const detail = location.state.detail;
     const apiUrl = process.env.REACT_APP_API_URL;
+    const { data: currentUserData, error4 } = useSWR(`${apiUrl}/auth/`, fetcherAccessToken);
     const { data : commentData, error } = useSWR(detail ? `${apiUrl}/comment/${detail}` : `${apiUrl}/comment/${id}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
@@ -420,7 +422,7 @@ function Comment(){
     console.log('updateCommentId:',updateCommentId)
 
     const commentLike = async(commentId, likeCount, myLike) => { // 댓글 좋아요 
-        if (!auth){
+        if (!currentUserData){
             alert('로그인이 필요한 기능입니다.')
             return;
         }

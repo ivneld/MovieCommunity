@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LinkContainer, MovieSpan, CategorySpan, PosterContainer1, PosterContainer2, OpendtApiContainer, TimeStamp } from './styles';
 import useSWR from 'swr';
@@ -103,28 +103,28 @@ function OpendtApi() {
         setShowMovieDetailModal(true);
         setModalData(e);
     }, []);
-    
-    const [postData, setPostData] = useState(null); // 초기값을 null로 설정
 
     const time = {
         year: 2023,
-        month: 5,
+        month: 7,
         day: 1
       };
-      setInterval(() => {
-        axios.post(`${apiUrl}/movie/weeklytest`, time)
-          .then(response => {
-            const resData = response.data;
-            setPostData(resData);
-            console.log('Response:', response.data);
-          })
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      }, 10000); // 10 seconds
-    if (!postData){
-        <div>postData 로딩 실패</div>
-    }
+
+    const [postData, setPostData] = useState(null)
+    useEffect(()=>{
+        const fetchData = async () => {
+            try{
+                const response = await axios.post(`${apiUrl}/movie/weeklytest`, time)
+                console.log('response:', response.data)
+                setPostData(response.data)
+            } catch(error){
+                console.log('error',error)
+                setPostData(null)
+            }
+        }
+        fetchData();
+    },[])
+
 
     // if (!opendtData) console.log('데이터를 불러오는 중입니다...')
     // const url = opendtData?.[0]?.url; // ex) https://www.youtube.com/watch?v=6KCJ7T9yrBc

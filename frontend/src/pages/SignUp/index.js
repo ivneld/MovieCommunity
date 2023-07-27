@@ -85,6 +85,7 @@ function Signup(props) {
   
   function SignupForm() {
     const [name, setName] = useState(""); //name
+    const [nickname, setNickname] = useState(""); //name
     const [password, setPassword] = useState("");
     const [checkpassword, setCheckpassword] = useState("");
     const [email, setEmail] = useState("");
@@ -94,6 +95,10 @@ function Signup(props) {
 
     const changeName = (event) => {
       setName(event.target.value);
+    }
+
+    const changeNickname = (event) => {
+      setNickname(event.target.value);
     }
 
     const changePassword = (event) => {
@@ -150,6 +155,10 @@ function Signup(props) {
         alert("이름을 입력해주세요");
         return;
       }
+      else if (!nickname){
+        alert("닉네임을 입력해주세요");
+        return;
+      }
       else if (!password || !checkpassword){
         alert("비밀번호를 입력해주세요")
         return;
@@ -162,6 +171,7 @@ function Signup(props) {
       const req = {
         // id: id,
         'name': name,
+        'nickName': nickname,
         'email': email,
         'password': password,
         // checkpassword: checkpassword,
@@ -193,6 +203,9 @@ function Signup(props) {
       <div>
         <div className="form-item">
           <input type="text" name="name" value={name} onChange={changeName} className="form-control" placeholder="이름" required/>
+        </div>
+        <div className="form-item">
+          <input type="text" name="nickname" value={nickname} onChange={changeNickname} className="form-control" placeholder="닉네임" required/>
         </div>
         <div className="form-item">
           <input type="email" name="email" value={email} onChange={changeEmail} className="form-control" placeholder="이메일" required/>

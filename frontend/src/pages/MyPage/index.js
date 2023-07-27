@@ -15,11 +15,14 @@ ChartJS.register(...registerables)
 
 const MyPage = () => {
     const navigate = useNavigate();
-    const { auth, setAuth } = useContext(AuthContext);
+    // const { auth, setAuth } = useContext(AuthContext);
     const apiUrl = process.env.REACT_APP_API_URL;
     const accessToken = localStorage.getItem('accessToken');
     const decodedToken = jwt_decode(accessToken);
     const memberId = decodedToken.sub
+    console.log('memberId',memberId)
+    const { data: currentUserData, error4 } = useSWR(`${apiUrl}/auth/`, fetcherAccessToken);
+    console.log('currentUserData',currentUserData)
     const { data : interestData, error } = useSWR(`${apiUrl}/mypage/${memberId}/movie`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
@@ -44,7 +47,9 @@ const MyPage = () => {
     const { data : commentData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/comment?page=${page}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-
+    
+    console.log('interestData',interestData)
+    console.log('genreData',genreData)
     console.log('commentdata',commentData)
     const moveRef1 = useRef(null)
     const moveRef2 = useRef(null)
@@ -202,11 +207,11 @@ const MyPage = () => {
               }
           }
           const req = {
-              name: comment
+              nickName: comment
           }
-          const response = await axios.put(`${apiUrl}/mypage/1/name`, req, config);
+          const response = await axios.put(`${apiUrl}/mypage/${memberId}/name`, req, config);
           localStorage.setItem('name', comment)
-          setAuth(comment)
+          // setAuth(comment)
 
           console.log('프로필 수정이 완료되었습니다.')
           alert('프로필 수정이 완료되었습니다. 다시 로그인 해주세요!')
@@ -227,7 +232,7 @@ const MyPage = () => {
                   commentId: commentId
               }
           })
-          mutate('${apiUrl}/mypage/1/comment'); // 코멘트 가져오기 업데이트
+          mutate(`${apiUrl}/mypage/${memberId}/comment`); // 코멘트 가져오기 업데이트
           console.log('댓글 삭제가 완료되었습니다.');
           alert('댓글 삭제가 완료되었습니다.')
       }
@@ -238,7 +243,7 @@ const MyPage = () => {
 
     return(
         <>
-        {(auth) ?
+        {({currentUserData}) ?
         
             <>
                 <div style={{display:"flex"}}>
@@ -251,7 +256,7 @@ const MyPage = () => {
                     </div>
                     <div id='2' style={{backgroundColor:"rgb(230,230,230)", overflowY: 'auto', flex: '1', position: 'relative',  marginLeft: '250px' }}>
                         <div ref={moveRef1}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{auth}님의 취향 분석 결과</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{currentUserData?.information?.nickname}님의 취향 분석 결과</div>
                             <ChartContainer>
                                 <Doughnut data={pieData} options={options} style={{maxWidth:"450px", width:"450px", maxHeight:"450px", height:"450px"}}/>
                                 <div>
@@ -268,7 +273,7 @@ const MyPage = () => {
                         </div>
                         <hr/>
                         <div ref={moveRef2}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px"}}>{auth}님이 좋아요 한 영화</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px"}}>{currentUserData?.information?.nickname}님이 좋아요 한 영화</div>
                             <div style={{display:"flex", justifyContent:"center"}}>
                                 <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
                                     {interestData?.content?.map((obj, idx) => {
@@ -284,7 +289,7 @@ const MyPage = () => {
                         </div>
                         <hr/>
                         <div ref={moveRef3} style={{marginLeft:"100px"}}>
-                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{auth}님이 쓴 코멘트</span>
+                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.information?.nickname}님이 쓴 코멘트</span>
                             <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
                             <div>
                               {commentData?.content?.map((obj,idx)=>{
@@ -313,7 +318,7 @@ const MyPage = () => {
                               <span>{page}페이지</span>
                               <button onClick={handleNextYear}>&gt;</button>
                             </div>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{auth}님이 쓴 리뷰</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{currentUserData?.information?.nickname}님이 쓴 리뷰</div>
                             <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
                             <div>ㅇㅇㅇ</div>
                         </div>
@@ -324,7 +329,7 @@ const MyPage = () => {
                               <input
                               value={comment}
                               onChange={handleChange}
-                              placeholder={auth}
+                              placeholder={currentUserData?.information?.nickname}
                               />
 
                               <div style={{display:"flex"}}>

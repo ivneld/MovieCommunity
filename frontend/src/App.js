@@ -41,8 +41,10 @@ function App() {
   const Genre = loadable(() => import('./pages/Genre'));
   const GenreMovies = loadable(() => import('./pages/GenreMovies'));
   const SearchResult = loadable(() => import('./pages/SearchResult'));
-  
   const Ott = loadable(() => import('./pages/Ott'));
+  const Community = loadable(() => import('./pages/Community'));
+  const CommunityPost = loadable(() => import('./pages/CommunityPost'));
+  const CommunityDetail = loadable(() => import('./pages/CommunityDetail'));
 
   const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
@@ -96,6 +98,9 @@ function App() {
                 <Route path="/genre/:id" element={<GenreMovies />}/>
                 <Route path="/movie/search/detail" element={<SearchResult />}/>
                 <Route path="/ott" element={<Ott />}/>
+                <Route path="/community" element={<Community />}/>
+                <Route path="/communitypost" element={<CommunityPost />}/>
+                <Route path="/communitydetail" element={<CommunityDetail />}/>
             </Routes>
           </HttpHeadersProvider>
         </AuthProvider>
@@ -135,6 +140,7 @@ function RefreshToken() {
 
 	useEffect(() => {
 	  const accessToken = localStorage.getItem("accessToken");
+    console.log('accessToken',accessToken)
 	  if (accessToken) { // Check if the access token is expired
       let decodedToken;
       try {
