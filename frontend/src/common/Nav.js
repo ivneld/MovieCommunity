@@ -32,6 +32,7 @@ function Nav(props) {
 	// const { data: currentUserData,error} = useSWR(`${apiUrl}/auth/`, fetcherAccessToken)
 	console.log('currentUserData',currentUserData)
 
+
 	const handleLogout = () => {
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("refreshToken");
@@ -138,7 +139,7 @@ function Nav(props) {
 								<>
 									{/* 회원 정보 */}
 									<li className="nav-item">
-										<span className="nav-link"> {currentUserData?.information?.nickname} 님 반갑습니다 <i className="fab fa-ello"></i> &nbsp; </span>
+										<span className="nav-link"> {currentUserData?.nickName} 님 반갑습니다 <i className="fab fa-ello"></i> &nbsp; </span>
 									</li>
 
 									{/* 로그아웃 */}

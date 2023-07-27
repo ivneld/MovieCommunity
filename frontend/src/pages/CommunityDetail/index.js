@@ -77,7 +77,7 @@ const CommunityDetail = () => {
                 />
                 <div>{comment.length}/100</div>
                 <div style={{display:"flex"}}>
-                    <div>{currentUserData?.information?.nickname}</div>
+                    <div>{currentUserData?.nickName}</div>
                     <div style={{marginLeft:'auto'}} onClick={handleSubmit}>댓글남기기</div>
                 </div>
                 <hr/>

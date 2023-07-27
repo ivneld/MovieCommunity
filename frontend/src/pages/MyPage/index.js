@@ -256,7 +256,7 @@ const MyPage = () => {
                     </div>
                     <div id='2' style={{backgroundColor:"rgb(230,230,230)", overflowY: 'auto', flex: '1', position: 'relative',  marginLeft: '250px' }}>
                         <div ref={moveRef1}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{currentUserData?.information?.nickname}님의 취향 분석 결과</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{currentUserData?.nickName}님의 취향 분석 결과</div>
                             <ChartContainer>
                                 <Doughnut data={pieData} options={options} style={{maxWidth:"450px", width:"450px", maxHeight:"450px", height:"450px"}}/>
                                 <div>
@@ -273,7 +273,7 @@ const MyPage = () => {
                         </div>
                         <hr/>
                         <div ref={moveRef2}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px"}}>{currentUserData?.information?.nickname}님이 좋아요 한 영화</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px"}}>{currentUserData?.nickName}님이 좋아요 한 영화</div>
                             <div style={{display:"flex", justifyContent:"center"}}>
                                 <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
                                     {interestData?.content?.map((obj, idx) => {
@@ -289,7 +289,7 @@ const MyPage = () => {
                         </div>
                         <hr/>
                         <div ref={moveRef3} style={{marginLeft:"100px"}}>
-                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.information?.nickname}님이 쓴 코멘트</span>
+                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.nickName}님이 쓴 코멘트</span>
                             <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
                             <div>
                               {commentData?.content?.map((obj,idx)=>{
@@ -318,7 +318,7 @@ const MyPage = () => {
                               <span>{page}페이지</span>
                               <button onClick={handleNextYear}>&gt;</button>
                             </div>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{currentUserData?.information?.nickname}님이 쓴 리뷰</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{currentUserData?.nickName}님이 쓴 리뷰</div>
                             <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
                             <div>ㅇㅇㅇ</div>
                         </div>
@@ -329,7 +329,7 @@ const MyPage = () => {
                               <input
                               value={comment}
                               onChange={handleChange}
-                              placeholder={currentUserData?.information?.nickname}
+                              placeholder={currentUserData?.nickName}
                               />
 
                               <div style={{display:"flex"}}>
