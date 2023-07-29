@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useContext, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useSWR, { mutate } from 'swr';
 import { InputArea, InputTextArea, Button } from "./styles";
 import fetcher from '../../utils/fetcher';
@@ -9,7 +9,9 @@ import { AuthContext } from "../../context/AuthProvider";
 import axios from "axios";
 import Modal2 from '../../components/Modal2';
 
-const CommunityPost = () => {
+const CommunityUpdate = () => {
+    const location = useLocation();
+    const postId = location.state.postId;
     const apiUrl = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
     const [showMovieDetailModal,setShowMovieDetailModal] = useState(false); // 댓글 생성
@@ -49,28 +51,24 @@ const CommunityPost = () => {
         }
     }
 
-    const handleSubmit = async (e)=>{
+    const handlePostUpdate = async () => { // 게시글 수정
         try{
-            const accessToken = localStorage.getItem('accessToken');
-            const config = {
-                headers:{
-                    Authorization : `Bearer ${accessToken}`
-                }
-            }
             const req = {
-                    title: title,
-                    content: content,
-                    movieId: movieId,
-                    galleryId: galleryId ? [galleryId] : [] // galleryId가 null이면 빈 배열로 설정
+                title: title,
+                content: content,
+                galleryIds: galleryId ? [galleryId] : [], // galleryId가 null이면 빈 배열로 설정
+                movieId: movieId
             }
-            const response = await axios.post(`${apiUrl}/api/posts`, req, config);
-            console.log('게시글 생성 완료', response.data)
+            const response = await axios.put(`${apiUrl}/api/posts/${postId}`, req)
+
+            console.log('게시글 수정이 완료되었습니다.');
+            alert('게시글 수정이 완료되었습니다.');
             navigate(`${apiUrl}/community`)
-        } catch (error){
-            console.log('게시글 생성 실패', error)
+        }
+        catch(error){
+            console.error('게시글 수정 실패!', error);
         }
     }
-
     return(
         <>
             {!movieId &&
@@ -99,12 +97,12 @@ const CommunityPost = () => {
             <input type="file" onChange={handleFile}/>
 
      
-            <Button onClick={handleSubmit}>완료</Button>
+            <Button onClick={handlePostUpdate}>완료</Button>
         </>
     )
 };
 
-export default CommunityPost;
+export default CommunityUpdate;
 
 const CommunityPostModal = ({show, onCloseModal, data}) => {
     const apiUrl = process.env.REACT_APP_API_URL;

@@ -45,6 +45,7 @@ function App() {
   const Community = loadable(() => import('./pages/Community'));
   const CommunityPost = loadable(() => import('./pages/CommunityPost'));
   const CommunityDetail = loadable(() => import('./pages/CommunityDetail'));
+  const CommunityUpdate = loadable(() => import('./pages/CommunityUpdate'));
 
   const loadCurrentlyLoggedInUser = () => {
     getCurrentUser()
@@ -101,6 +102,7 @@ function App() {
                 <Route path="/community" element={<Community />}/>
                 <Route path="/communitypost" element={<CommunityPost />}/>
                 <Route path="/communitydetail" element={<CommunityDetail />}/>
+                <Route path="/communityupdate" element={<CommunityUpdate />}/>
             </Routes>
           </HttpHeadersProvider>
         </AuthProvider>

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import useSWR, { mutate } from 'swr';
 import fetcher from '../../utils/fetcher';
 import fetcherAccessToken from '../../utils/fetcherAccessToken';
@@ -22,6 +22,11 @@ const CommunityDetail = () => {
     const { data: currentUserData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/profile`, fetcherAccessToken); // 현재 유저 데이터
     console.log('currentUserData',currentUserData)
 
+    const movieId = detailData?.post?.movieId
+    const { data: movieDetailData, error4 } = useSWR(`${apiUrl}/movie/${movieId}`, fetcherAccessToken); // 영화 상세 (포스터 이미지 때문에)
+    // console.log('movieDetailData',movieDetailData)
+    const posterPath = movieDetailData?.posterPath
+
     const [comment, setComment] = useState('') // 댓글
     const [replyComment, setReplyComment] = useState('') // 대댓글
 
@@ -33,9 +38,9 @@ const CommunityDetail = () => {
     
     const [replyingCommentId, setReplyingCommentId] = useState(null); // 대댓글 시 댓글 id 선택
 
+    // ****************************** 게시글 관련 함수 ******************************
     const handlePostLike = async (e)=>{ // 게시글 좋아요
         try{
-            const accessToken = localStorage.getItem('accessToken');
             const config = {
                 headers:{
                     Authorization : `Bearer ${accessToken}`
@@ -47,6 +52,17 @@ const CommunityDetail = () => {
             console.log('게시글 좋아요 실패', error)
         }
     }
+    
+    const handlePostDelete = async (postId) => { // 게시글 삭제
+        try{
+            const response = await axios.delete(`${apiUrl}/api/posts/${postId}`)
+            console.log('게시글 삭제가 완료되었습니다.');
+            alert('게시글 삭제가 완료되었습니다.')
+        }
+        catch(error){
+            console.error('게시글 삭제 실패!', error);
+        }
+    }
 
     // ****************************** 댓글 관련 함수 ******************************
     const handleSubmit = async (e)=>{ // 댓글 생성
@@ -55,7 +71,6 @@ const CommunityDetail = () => {
             return
         }
         try{
-            const accessToken = localStorage.getItem('accessToken');
             const config = {
                 headers:{
                     Authorization : `Bearer ${accessToken}`
@@ -75,7 +90,6 @@ const CommunityDetail = () => {
 
     const handleCommentLike = async (commentId) => { // 댓글 좋아요
         try{
-            const accessToken = localStorage.getItem('accessToken');
             const config = {
                 headers:{
                     Authorization : `Bearer ${accessToken}`
@@ -89,8 +103,11 @@ const CommunityDetail = () => {
     }
 
     const handleCommentUpdate = async (id) => { // 댓글 수정
+        if(updatingComment===''){
+            alert('댓글 내용을 입력해주세요')
+            return
+        }
         const postsId = postId 
-        const accessToken = localStorage.getItem('accessToken');
         try{
             const config = {
                 headers:{
@@ -116,7 +133,6 @@ const CommunityDetail = () => {
     const handleCommentDelete = async (id) => { // 댓글 삭제
         const postsId = postId 
         try{
-            const accessToken = localStorage.getItem('accessToken');
             const response = await axios.delete(`${apiUrl}/api/posts/${postsId}/comments/${id}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
@@ -133,8 +149,11 @@ const CommunityDetail = () => {
 
     // ****************************** 대댓글 관련 함수 ******************************
     const handleCommentReply = async (commentId) => { // 대댓글 생성
+        if(replyComment===''){
+            alert('대댓글 내용을 입력해주세요')
+            return
+        }
         try{
-            const accessToken = localStorage.getItem('accessToken');
             const req = {
                 commentId: commentId,
                 subComment: replyComment
@@ -170,6 +189,10 @@ const CommunityDetail = () => {
     }
 
     const handleReplyCommentUpdate = async (commentId, subCommentId) => { // 대댓글 수정
+        if(updatingReplyComment===''){
+            alert('대댓글 내용을 입력해주세요')
+            return
+        }
         try{
             const config = {
                 headers:{
@@ -217,12 +240,24 @@ const CommunityDetail = () => {
                     <div>{detailData.post?.writer}</div>
                     <div>{detailData.post?.createdDate}</div>
                 </div>
-                <img src={`https://`+detailData.post?.galleries[0]?.filePath} width="266.66px" height="400px" alt="포스터주소"/>
+                <img src={posterPath} width="266.66px" height="400px" alt="포스터주소"/><br/>
+                <img src={`https://`+detailData.post?.galleries[0]?.filePath} width="266.66px" height="400px" alt="이미지주소"/>
                
                 <div>{detailData.post?.content}</div>
                 <div style={{display:"flex"}}>
-                    <div onClick={handlePostLike}>좋아요 {detailData.post?.likeCount}</div>
-                    <div>댓글 {detailData.post?.comments?.length}</div>
+                    <div style={{display:"flex"}}>
+                        <div onClick={handlePostLike}>좋아요 {detailData.post?.likeCount}</div>
+                        <div>댓글 {detailData.post?.comments?.length}</div>
+                    </div>
+                    {detailData.isPostWriter && (
+                    <div style={{display:"flex", marginLeft:"auto"}}>
+                        <Link to="/communityupdate" state={{postId : detailData.post?.id}} style={{cursor:"pointer"}}>
+                            <div>수정</div>
+                        </Link>
+                        <div style={{cursor:"pointer"}} onClick={()=>(handlePostDelete(detailData.post?.id))}>삭제</div>
+                    </div>
+                    )
+                    }
                 </div>
                 <InputArea
                     value={comment}

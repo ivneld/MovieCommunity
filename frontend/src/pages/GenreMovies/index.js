@@ -11,7 +11,7 @@ const GenreMovies = () => {
     const count = location.state.count;
     const apiUrl = process.env.REACT_APP_API_URL;
     let x;
-    switch (count) {
+    switch (count) { // 장르별 영화 개수에 따라 UI 다르게
       case 1:
         x = 100;
         break;

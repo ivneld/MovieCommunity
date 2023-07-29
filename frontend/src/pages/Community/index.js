@@ -1,66 +1,32 @@
 import React, { useCallback, useState, useContext, useRef } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
 import useSWR, { mutate } from 'swr';
-import { MovieDiv, InterestSpan, CustomDiv, TextArea, Form } from "./styles";
 import fetcher from '../../utils/fetcher';
-import fetcherAccessToken from '../../utils/fetcherAccessToken';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
-// import CommentModal from '../../components/CommentModal';
-import { AuthContext } from "../../context/AuthProvider";
-import axios from "axios";
-import Modal2 from '../../components/Modal2';
 import { Link } from 'react-router-dom';
 
 const Community = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
-    const { data: postData, error } = useSWR(`${apiUrl}/api/posts/4`, fetcher);
-    console.log(postData)
-    const { data: newPostData, error2 } = useSWR(`${apiUrl}/posts/new`, fetcher);
-    console.log(newPostData)
-    const accessToken = localStorage.getItem('accessToken');
-    console.log('accessToken',accessToken)
 
-    const handlePostDelete = async (postId) => { // 게시글 삭제
-            const accessToken = localStorage.getItem('accessToken');
-        try{
-            const response = await axios.delete(`${apiUrl}/api/posts/${postId}`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`
-                },
-            })
-
-            console.log('게시글 삭제가 완료되었습니다.');
-            alert('게시글 삭제가 완료되었습니다.')
-        }
-        catch(error){
-            console.error('게시글 삭제 실패!', error);
-        }
-    }
+    const { data: postNewestData, error1 } = useSWR(`${apiUrl}/posts/new`, fetcher); // 게시글 최신순
+    console.log("postNewestData",postNewestData)
+    const { data: postViewOrderData, error2 } = useSWR(`${apiUrl}/posts/view`, fetcher); // 게시글 조회순
+    console.log("postViewOrderData",postViewOrderData)
+    const { data: postLikeOrderData, error3 } = useSWR(`${apiUrl}/posts/like`, fetcher); // 게시글 좋아요순
+    console.log("postLikeOrderData",postLikeOrderData)
 
     return(
         <>
             <Link to="/communitypost" style={{cursor:"pointer", fontSize:"24px", fontWeight:"bold"}}>
                 ✏️글쓰기
             </Link>
-            {
-                newPostData && 
+            {postNewestData && 
                 <>
                     <div style={{fontSize:"40px", fontWeight:"bold"}}>최근 작성된 리뷰</div>
                     <div style={{display:"flex"}}>
-                        {newPostData?.postsList?.content?.map((obj,index)=>{
-                        console.log('경로',obj.galleries?.[0]?.filePath)
+                        {postNewestData?.postsList?.content?.map((obj,idx)=>{
                             return(
-                                <div key={index}>
+                                <div key={idx}>
                                     <div style={{display:"flex"}}>
                                         <div>{obj.view} views</div>
-                                        <div style={{display:"flex", marginLeft:"auto"}}>
-                                            <div style={{cursor:"pointer"}}>수정</div>
-                                            <div style={{cursor:"pointer"}} onClick={()=>(handlePostDelete(obj.id))}>삭제</div>
-                                        </div>
                                     </div>
                                     <Link to="/communitydetail" state={{postId : obj.id}}>
                                         <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
@@ -78,6 +44,60 @@ const Community = () => {
                         })}
                     </div>
                 </>
+            }
+            {postViewOrderData &&
+            <>
+                <div style={{fontSize:"40px", fontWeight:"bold"}}>조회순</div>
+                <div style={{display:"flex"}}>
+                {postViewOrderData?.postsList?.content?.map((obj,idx)=>{
+                            return(
+                                <div key={idx}>
+                                    <div style={{display:"flex"}}>
+                                        <div>{obj.view} views</div>
+                                    </div>
+                                    <Link to="/communitydetail" state={{postId : obj.id}}>
+                                        <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                            <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/>
+                                            <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
+                                                <div>제목 : {obj.title}</div>
+                                                <div>내용 : {obj.content}</div>
+                                                <div>좋아요 {obj.likeCount}</div>
+                                                <div>댓글 {obj.comments.length}</div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )
+                        })}
+                </div>
+            </>
+            }
+            {postLikeOrderData &&
+            <>
+                <div style={{fontSize:"40px", fontWeight:"bold"}}>좋아요순</div>
+                <div style={{display:"flex"}}>
+                {postLikeOrderData?.postsList?.content?.map((obj,idx)=>{
+                            return(
+                                <div key={idx}>
+                                    <div style={{display:"flex"}}>
+                                        <div>{obj.view} views</div>
+                                    </div>
+                                    <Link to="/communitydetail" state={{postId : obj.id}}>
+                                        <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                            <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/>
+                                            <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
+                                                <div>제목 : {obj.title}</div>
+                                                <div>내용 : {obj.content}</div>
+                                                <div>좋아요 {obj.likeCount}</div>
+                                                <div>댓글 {obj.comments.length}</div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            )
+                        })}
+                </div>
+            </>
             }
         </>
     )
