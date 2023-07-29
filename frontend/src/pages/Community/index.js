@@ -23,6 +23,24 @@ const Community = () => {
     console.log(newPostData)
     const accessToken = localStorage.getItem('accessToken');
     console.log('accessToken',accessToken)
+
+    const handlePostDelete = async (postId) => { // 게시글 삭제
+            const accessToken = localStorage.getItem('accessToken');
+        try{
+            const response = await axios.delete(`${apiUrl}/api/posts/${postId}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                },
+            })
+
+            console.log('게시글 삭제가 완료되었습니다.');
+            alert('게시글 삭제가 완료되었습니다.')
+        }
+        catch(error){
+            console.error('게시글 삭제 실패!', error);
+        }
+    }
+
     return(
         <>
             <Link to="/communitypost" style={{cursor:"pointer", fontSize:"24px", fontWeight:"bold"}}>
@@ -37,9 +55,15 @@ const Community = () => {
                         console.log('경로',obj.galleries?.[0]?.filePath)
                             return(
                                 <div key={index}>
-                                    <div>{obj.view} views</div>
+                                    <div style={{display:"flex"}}>
+                                        <div>{obj.view} views</div>
+                                        <div style={{display:"flex", marginLeft:"auto"}}>
+                                            <div style={{cursor:"pointer"}}>수정</div>
+                                            <div style={{cursor:"pointer"}} onClick={()=>(handlePostDelete(obj.id))}>삭제</div>
+                                        </div>
+                                    </div>
                                     <Link to="/communitydetail" state={{postId : obj.id}}>
-                                        <div style={{ position: 'relative', background:"purple", width:"266.66px", height:"400px" }}>
+                                        <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
                                             <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                                 <div>제목 : {obj.title}</div>

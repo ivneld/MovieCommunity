@@ -6,3 +6,13 @@ export const InputArea = styled.input`
   max-height: 30px;
 `;
 
+export const CommentInfo = styled.div`
+  border: 1px solid black;
+  padding: 5px 10px;
+`
+
+export const UpdateDelete = styled.div`
+  border: 1px solid black;
+  padding: 5px 10px;
+  cursor: pointer;
+`
