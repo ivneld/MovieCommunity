@@ -1,9 +1,7 @@
 package Movie.MovieCommunity.community.service;
 
 
-import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPADomain.Movie;
-import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
@@ -21,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static java.lang.System.in;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,7 +53,14 @@ public class PostsService {
         List<GalleryEntity> galleries = posts.getGalleries();
         if (galleries != null){
             for (GalleryEntity gallery : galleries) {
-                galleryService.delete(gallery.getId());
+                if(dto.getGalleryIds().isPresent()) {
+                    if (!dto.getGalleryIds().get().contains(gallery.getId())) {
+                        galleryService.delete(gallery.getId());
+                    }
+                }
+                else{
+                    galleryService.delete(gallery.getId());
+                }
             }
         }
         if(dto.getGalleryIds().isPresent()) {
