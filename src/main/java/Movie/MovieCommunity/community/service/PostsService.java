@@ -7,6 +7,7 @@ import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
+import Movie.MovieCommunity.awsS3.service.GalleryService;
 import Movie.MovieCommunity.community.dto.PostsDto;
 import Movie.MovieCommunity.community.domain.Posts;
 import Movie.MovieCommunity.community.repository.PostsRepository;
@@ -29,6 +30,7 @@ public class PostsService {
     private final PostsRepository postsRepository;
     private final GalleryRepository galleryRepository;
     private final MovieRepository movieRepository;
+    private final GalleryService galleryService;
 
 
     /* READ 게시글 리스트 조회 readOnly 속성으로 조회속도 개선 */
@@ -48,14 +50,24 @@ public class PostsService {
     public void update(Long id, PostsDto.RequestParam dto) {
         Posts posts = postsRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id=" + id));
+        List<GalleryEntity> galleries = posts.getGalleries();
+        if (galleries != null){
+            for (GalleryEntity gallery : galleries) {
+                galleryService.delete(gallery.getId());
+            }
+        }
+        if(dto.getGalleryIds().isPresent()) {
+            List<Long> ids = dto.getGalleryIds().get();
+            List<GalleryEntity> galleryList = new ArrayList<>();
 
-        List<GalleryEntity> galleryEntities = new ArrayList<>();
-        for (Long galleryId : dto.getGalleryIds()) {
-            GalleryEntity gallery = galleryRepository.findById(galleryId).get();
-            galleryEntities.add(gallery);
+            for (Long gId: ids) {
+                GalleryEntity gallery = galleryRepository.findById(gId).get();
+                galleryRepository.updatePosts(gId,posts);
+                galleryList.add(gallery);
+            }
         }
         Movie movie = movieRepository.findById(dto.getMovieId()).get();
-        posts.update(dto.getTitle(), movie, dto.getContent(),galleryEntities);
+        posts.update(dto.getTitle(), movie, dto.getContent());
     }
 
     /* DELETE */

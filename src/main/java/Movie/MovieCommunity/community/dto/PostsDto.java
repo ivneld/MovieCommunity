@@ -26,7 +26,7 @@ public class PostsDto {
     public static class RequestParam{
         private String title;
         private String content;
-        private List<Long> galleryIds;
+        Optional<List<Long>> galleryIds;
         private Long movieId;
     }
 
