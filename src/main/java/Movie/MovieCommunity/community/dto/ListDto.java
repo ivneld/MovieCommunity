@@ -6,23 +6,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 @Data
 @Setter
 @NoArgsConstructor
 public class ListDto {
 //    private UserDto.Response user;
-    private Page<Posts> postsList;
+    private List<PostsDto.Total> postsList;
     private int PreviousPageNumber;
     private int NextPageNumber;
     private boolean hasPreviousPage;
     private boolean hasNextPage;
+    private int totalPostsCount;
 
 
-    public ListDto( Page<Posts> postsList, int previousPageNumber, int nextPageNumber, boolean hasPreviousPage, boolean hasNextPage) {
+    public ListDto( List<PostsDto.Total> postsList, int totalPostsCount, int previousPageNumber, int nextPageNumber, boolean hasPreviousPage, boolean hasNextPage) {
         this.postsList = postsList;
         PreviousPageNumber = previousPageNumber;
         NextPageNumber = nextPageNumber;
         this.hasPreviousPage = hasPreviousPage;
         this.hasNextPage = hasNextPage;
+        this.totalPostsCount = totalPostsCount;
     }
 }
