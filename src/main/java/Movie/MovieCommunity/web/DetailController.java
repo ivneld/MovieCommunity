@@ -24,7 +24,7 @@ import java.util.*;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping("/api")
 public class DetailController {
 
     // 상수 설정

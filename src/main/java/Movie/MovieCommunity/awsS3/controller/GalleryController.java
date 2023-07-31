@@ -33,6 +33,7 @@ import static Movie.MovieCommunity.awsS3.service.S3Service.CLOUD_FRONT_DOMAIN_NA
 @RestController
 @AllArgsConstructor
 @Tag(name="gallery", description = "커뮤니티 이미지 저장 api")
+@RequestMapping("/api")
 public class GalleryController {
     private S3Service s3Service;
     private GalleryService galleryService;

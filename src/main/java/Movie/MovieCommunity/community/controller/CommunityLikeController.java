@@ -17,7 +17,7 @@ import org.webjars.NotFoundException;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/heart")
+@RequestMapping("/api/heart")
 @Tag(name="community heart", description = "커뮤니티 게시글 좋아요 API")
 public class CommunityLikeController {
 

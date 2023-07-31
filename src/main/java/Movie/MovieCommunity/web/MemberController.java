@@ -36,7 +36,7 @@ import java.util.List;
 @Tag(name="member", description="사용자 api")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/mypage")
+@RequestMapping("/api/mypage")
 public class MemberController {
     private final MemberService memberService;
     @Operation(method = "get", summary = "관심 영화 조회")

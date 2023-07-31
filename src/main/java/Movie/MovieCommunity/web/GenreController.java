@@ -17,7 +17,7 @@ import java.util.List;
 
 @Tag(name = "genre", description = "영화 장르 api")
 @RestController
-@RequestMapping("/genre")
+@RequestMapping("/api/genre")
 @RequiredArgsConstructor
 public class GenreController {
 //

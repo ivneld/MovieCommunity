@@ -31,7 +31,7 @@ import java.util.List;
  * genre : genre_id, genre_nm
  */
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/api/comment")
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin("http://localhost:3000")

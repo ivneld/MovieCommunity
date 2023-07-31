@@ -43,6 +43,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api")
 @Tag(name="community page", description = "커뮤니티 페이지 API")
 public class PostsIndexController {
 
