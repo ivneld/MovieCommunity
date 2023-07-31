@@ -63,7 +63,7 @@ const CommunityPost = () => {
                     movieId: movieId,
                     galleryId: galleryId ? [galleryId] : [] // galleryId가 null이면 빈 배열로 설정
             }
-            const response = await axios.post(`${apiUrl}/api/posts`, req, config);
+            const response = await axios.post(`${apiUrl}/posts`, req, config);
             console.log('게시글 생성 완료', response.data)
             navigate(`${apiUrl}/community`)
         } catch (error){

@@ -17,7 +17,7 @@ const CommunityDetail = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     const { data: detailData, error } = useSWR(`${apiUrl}/posts/read/${postId}`, fetcherAccessToken); // 현재 게시글 상세 데이터
     console.log('detailData',detailData)
-    const { data: commentData, error2 } = useSWR(`${apiUrl}/api/posts/${postId}/comments`, fetcher); // 현재 게시글 댓글/대댓글
+    const { data: commentData, error2 } = useSWR(`${apiUrl}/posts/${postId}/comments`, fetcher); // 현재 게시글 댓글/대댓글
     console.log('commentData',commentData)
     const { data: currentUserData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/profile`, fetcherAccessToken); // 현재 유저 데이터
     console.log('currentUserData',currentUserData)
@@ -55,7 +55,7 @@ const CommunityDetail = () => {
     
     const handlePostDelete = async (postId) => { // 게시글 삭제
         try{
-            const response = await axios.delete(`${apiUrl}/api/posts/${postId}`)
+            const response = await axios.delete(`${apiUrl}/posts/${postId}`)
             console.log('게시글 삭제가 완료되었습니다.');
             alert('게시글 삭제가 완료되었습니다.')
         }
@@ -79,7 +79,7 @@ const CommunityDetail = () => {
             const req = {
                     comment: comment,
             }
-            const response = await axios.post(`${apiUrl}/api/posts/${postId}/comments`, req, config);
+            const response = await axios.post(`${apiUrl}/posts/${postId}/comments`, req, config);
             console.log('댓글 생성 완료', response.data)
             setComment('')
         } catch (error){
@@ -117,7 +117,7 @@ const CommunityDetail = () => {
             const req = {
                 comment: updatingComment
             }
-            const response = await axios.put(`${apiUrl}/api/posts/${postsId}/comments/${id}`, req, config)
+            const response = await axios.put(`${apiUrl}/posts/${postsId}/comments/${id}`, req, config)
 
             console.log('댓글 수정이 완료되었습니다.');
             alert('댓글 수정이 완료되었습니다.');
@@ -133,7 +133,7 @@ const CommunityDetail = () => {
     const handleCommentDelete = async (id) => { // 댓글 삭제
         const postsId = postId 
         try{
-            const response = await axios.delete(`${apiUrl}/api/posts/${postsId}/comments/${id}`, {
+            const response = await axios.delete(`${apiUrl}/posts/${postsId}/comments/${id}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },
@@ -163,7 +163,7 @@ const CommunityDetail = () => {
                     Authorization : `Bearer ${accessToken}`
                 }
             }
-            const response = await axios.post(`${apiUrl}/api/subcomment`, req, config);
+            const response = await axios.post(`${apiUrl}/subcomment`, req, config);
             console.log('대댓글 생성 완료', response.data)
             setReplyingCommentId(null) // 대댓글 생성 진행 중 x
             setReplyComment('') // 대댓글 초기화
@@ -203,7 +203,7 @@ const CommunityDetail = () => {
                 commentId: commentId,
                 subComment: updatingReplyComment
             }
-            const response = await axios.put(`${apiUrl}/api/subcomment/${subCommentId}`, req, config)
+            const response = await axios.put(`${apiUrl}/subcomment/${subCommentId}`, req, config)
 
             console.log('대댓글 수정이 완료되었습니다.');
             alert('대댓글 수정이 완료되었습니다.');
@@ -218,7 +218,7 @@ const CommunityDetail = () => {
     
     const handleReplyCommentDelete = async (subCommentId) => { // 대댓글 삭제
         try{
-            const response = await axios.delete(`${apiUrl}/api/subcomment/${subCommentId}`, {
+            const response = await axios.delete(`${apiUrl}/subcomment/${subCommentId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }

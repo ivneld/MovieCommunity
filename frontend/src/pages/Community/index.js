@@ -1,10 +1,17 @@
 import React, { useCallback, useState, useContext, useRef } from 'react';
 import useSWR, { mutate } from 'swr';
 import fetcher from '../../utils/fetcher';
+
 import { Link } from 'react-router-dom';
 
 const Community = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
+    
+    const [currentPage, setCurrentPage] = useState({ // 객체 상태관리 (효율적)
+        newest: 1, // 최신순
+        viewOrder: 1, // 조회순
+        likeOrder: 1, // 좋아요순
+    });
 
     const { data: postNewestData, error1 } = useSWR(`${apiUrl}/posts/new`, fetcher); // 게시글 최신순
     console.log("postNewestData",postNewestData)
@@ -12,6 +19,20 @@ const Community = () => {
     console.log("postViewOrderData",postViewOrderData)
     const { data: postLikeOrderData, error3 } = useSWR(`${apiUrl}/posts/like`, fetcher); // 게시글 좋아요순
     console.log("postLikeOrderData",postLikeOrderData)
+
+    // const { data: postNewestData, error1 } = useSWR(`${apiUrl}/posts/new?page=${currentPage.newest}`, fetcher); // 게시글 최신순
+    // console.log("postNewestData",postNewestData)
+    // const { data: postViewOrderData, error2 } = useSWR(`${apiUrl}/posts/view?page=${currentPage.viewOrder}`, fetcher); // 게시글 조회순
+    // console.log("postViewOrderData",postViewOrderData)
+    // const { data: postLikeOrderData, error3 } = useSWR(`${apiUrl}/posts/like?page=${currentPage.likeOrder}`, fetcher); // 게시글 좋아요순
+    // console.log("postLikeOrderData",postLikeOrderData)
+
+    const handlePageChange = (page, category) => {
+        setCurrentPage((prevPages) => ({
+          ...prevPages,
+          [category]: page,
+        }));
+      };
 
     return(
         <>
@@ -43,6 +64,11 @@ const Community = () => {
                             )
                         })}
                     </div>
+                    <div style={{display:"flex", justifyContent:"center"}}>
+                        <button onClick={() => handlePageChange(currentPage.newest-1)}>&lt;</button>
+                        <span>{currentPage.newest}페이지</span>
+                        <button onClick={() => handlePageChange(currentPage.newest+1)}>&gt;</button>
+                    </div>
                 </>
             }
             {postViewOrderData &&
@@ -70,6 +96,11 @@ const Community = () => {
                             )
                         })}
                 </div>
+                <div style={{display:"flex", justifyContent:"center"}}>
+                    <button onClick={() => handlePageChange(currentPage.viewOrder-1)}>&lt;</button>
+                    <span>{currentPage.viewOrder}페이지</span>
+                    <button onClick={() => handlePageChange(currentPage.viewOrder+1)}>&gt;</button>
+                </div>
             </>
             }
             {postLikeOrderData &&
@@ -96,6 +127,11 @@ const Community = () => {
                                 </div>
                             )
                         })}
+                </div>
+                <div style={{display:"flex", justifyContent:"center"}}>
+                    <button onClick={() => handlePageChange(currentPage.likeOrder-1)}>&lt;</button>
+                    <span>{currentPage.likeOrder}페이지</span>
+                    <button onClick={() => handlePageChange(currentPage.likeOrder+1)}>&gt;</button>
                 </div>
             </>
             }

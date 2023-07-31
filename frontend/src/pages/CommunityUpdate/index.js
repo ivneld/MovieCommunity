@@ -59,7 +59,7 @@ const CommunityUpdate = () => {
                 galleryIds: galleryId ? [galleryId] : [], // galleryId가 null이면 빈 배열로 설정
                 movieId: movieId
             }
-            const response = await axios.put(`${apiUrl}/api/posts/${postId}`, req)
+            const response = await axios.put(`${apiUrl}/posts/${postId}`, req)
 
             console.log('게시글 수정이 완료되었습니다.');
             alert('게시글 수정이 완료되었습니다.');
