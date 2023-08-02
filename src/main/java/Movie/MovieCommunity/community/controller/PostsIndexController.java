@@ -103,7 +103,7 @@ public class PostsIndexController {
 
     @Operation(method = "get", summary = "좋아요 많은순 게시글 가져오기")
     @GetMapping("/posts/like")                 /* default page = 0, size = 10  */
-    public ListDto indexByLike(@RequestBody PageRequestDto requestDto){
+    public ListDto indexByLike(PageRequestDto requestDto){
         int totalPageCount = postsRepository.findAll().size();
         if (totalPageCount % requestDto.getSize() == 0){
         totalPageCount = totalPageCount /requestDto.getSize();
@@ -128,8 +128,8 @@ public class PostsIndexController {
 
 
     @Operation(method = "get", summary = "최신순 게시글 가져오기")
-    @GetMapping("/posts/new")                 /* default page = 0, size = 10  */
-    public ListDto indexByNew(@RequestBody PageRequestDto requestDto) {
+    @GetMapping("/posts/new")
+    public ListDto indexByNew( PageRequestDto requestDto) {
         int totalPageCount = postsRepository.findAll().size();
         if (totalPageCount % requestDto.getSize() == 0){
             totalPageCount = totalPageCount /requestDto.getSize();
@@ -152,7 +152,7 @@ public class PostsIndexController {
 
     @Operation(method = "get", summary = "조회수 많은순 게시글 가져오기")
     @GetMapping("/posts/view")                 /* default page = 0, size = 10  */
-    public ListDto indexByView(@RequestBody PageRequestDto requestDto) {
+    public ListDto indexByView(PageRequestDto requestDto) {
 
         int totalPageCount = postsRepository.findAll().size();
         if (totalPageCount % requestDto.getSize() == 0){

@@ -1,10 +1,8 @@
 package Movie.MovieCommunity.community.dto;
 
-import Movie.MovieCommunity.community.domain.Posts;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -18,15 +16,15 @@ public class ListDto {
     private int NextPageNumber;
     private boolean hasPreviousPage;
     private boolean hasNextPage;
-    private int totalPostsCount;
+    private int totalPagesCount;
 
 
-    public ListDto( List<PostsDto.Total> postsList, int totalPostsCount, int previousPageNumber, int nextPageNumber, boolean hasPreviousPage, boolean hasNextPage) {
+    public ListDto(List<PostsDto.Total> postsList, int totalPagesCount, int previousPageNumber, int nextPageNumber, boolean hasPreviousPage, boolean hasNextPage) {
         this.postsList = postsList;
         PreviousPageNumber = previousPageNumber;
         NextPageNumber = nextPageNumber;
         this.hasPreviousPage = hasPreviousPage;
         this.hasNextPage = hasNextPage;
-        this.totalPostsCount = totalPostsCount;
+        this.totalPagesCount = totalPagesCount;
     }
 }

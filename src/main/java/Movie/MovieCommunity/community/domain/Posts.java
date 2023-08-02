@@ -4,6 +4,7 @@ import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPADomain.Movie;
 import Movie.MovieCommunity.awsS3.domain.entity.GalleryEntity;
 import Movie.MovieCommunity.awsS3.domain.repository.GalleryRepository;
+import Movie.MovieCommunity.community.dto.GalleryDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -65,11 +67,10 @@ public class Posts extends BaseTimeEntity {
     private List<GalleryEntity> galleries;
 
     /* 게시글 수정 */
-    public void update(String title, Movie movie, String content,List<GalleryEntity> galleries) {
+    public void update(String title, Movie movie, String content) {
         this.movie = movie;
         this.title = title;
         this.content = content;
-        this.galleries=galleries;
     }
 
 }
