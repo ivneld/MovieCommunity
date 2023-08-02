@@ -1,17 +1,10 @@
 import styled from '@emotion/styled';
 
 export const InputArea = styled.input`
-  width: 250px;
-  max-width: 250px;
-  height: 30px;
-  max-height: 30px;
+  min-width: 220px;
 `;
+
 export const Form = styled.form`
-  margin: 0 auto;
-  width: 250px;
-  max-width: 250px;
-  height: 30px;
-  max-height: 30px;
 
 `;
 

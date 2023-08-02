@@ -62,7 +62,7 @@ const Community = () => {
                     </div>
                     <div style={{display:"flex", justifyContent:"center"}}>
                         <button onClick={() => handlePageChange(currentPage.newest-1,'newest')}>&lt;</button>
-                        <span>{currentPage.newest}페이지</span>
+                        <span>{parseInt(currentPage.newest+1)}페이지</span>
                         <button onClick={() => handlePageChange(currentPage.newest+1,'newest')}>&gt;</button>
                     </div>
                 </>
@@ -95,7 +95,7 @@ const Community = () => {
                 </div>
                 <div style={{display:"flex", justifyContent:"center"}}>
                     <button onClick={() => handlePageChange(currentPage.viewOrder-1,'viewOrder')}>&lt;</button>
-                    <span>{currentPage.viewOrder}페이지</span>
+                    <span>{parseInt(currentPage.viewOrder+1)}페이지</span>
                     <button onClick={() => handlePageChange(currentPage.viewOrder+1,'viewOrder')}>&gt;</button>
                 </div>
             </>
@@ -128,7 +128,7 @@ const Community = () => {
                 </div>
                 <div style={{display:"flex", justifyContent:"center"}}>
                     <button onClick={() => handlePageChange(currentPage.likeOrder-1,'likeOrder')}>&lt;</button>
-                    <span>{currentPage.likeOrder}페이지</span>
+                    <span>{parseInt(currentPage.likeOrder+1)}페이지</span>
                     <button onClick={() => handlePageChange(currentPage.likeOrder+1,'likeOrder')}>&gt;</button>
                 </div>
             </>

@@ -66,10 +66,8 @@ function Nav(props) {
 	return (
 		<nav className="navbar navbar-expand-md navbar-light sticky-top font-weight-bold" style={{ backgroundColor: 'rgb(145, 205, 220)'}}>
 			<div className="container">
-
 				<div className="navbar-collapse collapse justify-content-between" id="navbar-content">
-					<ul className="navbar-nav mr-auto">
-
+					<ul className="navbar-nav mr-auto" style={{minWidth:"55%"}}>
 						{/* 메인 화면 */}
 						<li className="nav-item">
 							<Link className="nav-link" to="/"><i className="fas fa-home"></i> SPRING movies</Link>
@@ -106,9 +104,9 @@ function Nav(props) {
 						</li>
 					</ul>
 
-					<ul>
+					<div style={{display:"flex", alignItems:"center"}}>
 						{/* <Form onSubmit={handleSubmit}> */}
-						<Form className="search-container" onSubmit={handleSearchSubmit}>
+						<Form className="search-container" onSubmit={handleSearchSubmit} style={{}}>
 							<InputArea
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
@@ -130,9 +128,9 @@ function Nav(props) {
 									</ul>
 								)}
 						</Form>
-					</ul>
+					</div>
 
-					<ul className="navbar-nav ml-auto">
+					<ul className="navbar-nav ml-auto" style={{minWidth:"60%"}}>
 
 						{							
 							(currentUserData || props.authenticated) ?

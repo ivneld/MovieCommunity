@@ -22,7 +22,7 @@ export const InterestSpan = styled.span`
   &:hover {
     cursor: pointer;
   }
-`;
+  `;
 
 //여기부터 CommentModal
 export const TextArea = styled.textarea`

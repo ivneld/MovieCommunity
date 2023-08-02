@@ -22,11 +22,6 @@ const CommunityDetail = () => {
     const { data: currentUserData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/profile`, fetcherAccessToken); // 현재 유저 데이터
     console.log('currentUserData',currentUserData)
 
-    const movieId = detailData?.post?.movieId
-    const { data: movieDetailData, error4 } = useSWR(`${apiUrl}/movie/${movieId}`, fetcherAccessToken); // 영화 상세 (포스터 이미지 때문에)
-    // console.log('movieDetailData',movieDetailData)
-    const posterPath = movieDetailData?.posterPath
-
     const [comment, setComment] = useState('') // 댓글
     const [replyComment, setReplyComment] = useState('') // 대댓글
 
@@ -240,8 +235,9 @@ const CommunityDetail = () => {
                     <div>{detailData.post?.writer}</div>
                     <div>{detailData.post?.createdDate}</div>
                 </div>
-                <img src={posterPath} width="266.66px" height="400px" alt="포스터주소"/><br/>
+                {detailData.post?.galleries?.length!==0 && // 사용자가 첨부한 이미지가 존재할 경우에만 이미지 보여줌
                 <img src={`https://`+detailData.post?.galleries[0]?.filePath} width="266.66px" height="400px" alt="이미지주소"/>
+                }
                
                 <div>{detailData.post?.content}</div>
                 <div style={{display:"flex"}}>

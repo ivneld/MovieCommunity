@@ -82,7 +82,7 @@ const Detail = () => {
 
     const moveRef = useRef(null)
     const handleScroll = () => {
-        const yOffset = -60; // 원하는 만큼의 위쪽 여백을 설정합니다.
+        const yOffset = -60; // 원하는 만큼의 위쪽 여백을 설정한다.
         const y = moveRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: 'smooth' });
     }
@@ -130,18 +130,19 @@ const Detail = () => {
         }
     }
     // optimistic UI 관련 설명
-    // 1. onClickInterest 함수 내에서 updatedData를 생성하여 가정된 성공에 따라 interest 값을 업데이트합니다.
-    // 2. mutate 함수를 호출할 때 revalidate 매개변수를 false로 설정하여 SWR 캐시를 갱신하지 않습니다.
-    // 3. axios.post를 통해 서버로 요청을 보내고, 성공적인 응답을 받았을 경우에는 console.log를 통해 성공 메시지를 출력하고, mutate 함수를 호출하여 SWR 캐시를 갱신하여 UI를 업데이트합니다.
-    // 4. catch 블록에서 예외가 발생한 경우에도 mutate 함수를 호출하여 SWR 캐시를 갱신하여 UI를 업데이트합니다.
-    // 결론 : 이렇게 OPTIMISTIC UI를 적용하면, 좋아요 등록 및 취소를 할 때 서버 응답을 기다리지 않고 UI를 먼저 업데이트할 수 있습니다.
-    //        그러나 만약 서버 응답이 예상과 다른 경우에는 UI가 업데이트되어 일시적인 불일치가 발생할 수 있습니다.
-    //        이를 해결하기 위해 서버 응답에 따라 SWR 캐시를 다시 갱신하여 정확한 데이터를 받아올 수 있도록 처리되어 있습니다.
+    // 1. onClickInterest 함수 내에서 updatedData를 생성하여 가정된 성공에 따라 interest 값을 업데이트한다.
+    // 2. mutate 함수를 호출할 때 revalidate 매개변수를 false로 설정하여 SWR 캐시를 갱신하지 않는다.
+    // 3. axios.post를 통해 서버로 요청을 보내고, 성공적인 응답을 받았을 경우에는 console.log를 통해 성공 메시지를 출력하고, mutate 함수를 호출하여 SWR 캐시를 갱신하여 UI를 업데이트한다.
+    // 4. catch 블록에서 예외가 발생한 경우에도 mutate 함수를 호출하여 SWR 캐시를 갱신하여 UI를 업데이트한다.
+    // 결론 : 이렇게 OPTIMISTIC UI를 적용하면, 좋아요 등록 및 취소를 할 때 서버 응답을 기다리지 않고 UI를 먼저 업데이트할 수 있다.
+    //        그러나 만약 서버 응답이 예상과 다른 경우에는 UI가 업데이트되어 일시적인 불일치가 발생할 수 있다.
+    //        이를 해결하기 위해 서버 응답에 따라 SWR 캐시를 다시 갱신하여 정확한 데이터를 받아올 수 있도록 처리되어 있다.
     return(
         <>
             {detailData && 
                 <div style={{marginBottom:"100px"}}>
                     <div style={{backgroundColor:"black",height:"9vh"}}></div>
+                    
                     <div style={{display: "flex", backgroundImage:`url(${backgroundPoster})`, backgroundSize:"cover", backgroundRepeat: 'no-repeat', backgroundPosition: 'center', width: '100%', height:'75vh'}}>
                         <div style={{fontWeight:"bold", fontSize:"72px", textShadow:"4px 2px 4px black", color:"white", marginTop:"auto", marginLeft:"100px", marginBottom:"80px"}}>{detailData.movieNm}</div>
                 
@@ -250,6 +251,12 @@ const Detail = () => {
                                             </div>
                                         )
                                     })}
+                                    {communityData?.posts.length===0 && 
+                                        <div>
+                                            <div>해당 영화에 대한 리뷰가 없습니다!</div>
+                                            <Link to="/community">리뷰 작성하러 가기</Link>
+                                        </div>
+                                    }
                                 </div>
                             </TabPanel>
                         </Tabs>
@@ -483,70 +490,79 @@ function Comment(){
     
     return(
         <>
-            {/* <div style={{fontSize:"18px", fontWeight:"bold"}}>오래된순, 최신순, 추천순</div> */}
 
-            {/* 코멘트 8개만 */}
-            <div style={{display:"flex", justifyContent:"center"}}>
-                <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
-                    {!isMoreData &&
-                    commentData?.map((obj, index) => {
-                        if(obj.movieId == detail){
-                        return (
-                            <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
-                                <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
-                                    <div style={{marginLeft:"20px"}}>{obj.username}</div>
-                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
-                                </div>
-                                <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
-                                <div style={{display:"flex", fontSize:"24px"}}>
-                                    <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
-                                    <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
-                                </div>
-                            </div>
-                        )
-                        }
-                    return null;
-                    })}
-                </div>
+            {commentData?.length === 0 && // 코멘트 존재하지 않을 경우
+            <div>
+                <div>해당 영화에 대한 코멘트가 없습니다!</div>
+                <div>첫 코멘트의 주인공이 되어보세요!</div>
             </div>
+            }
 
-            {/* 코멘트 전체 */}
-            <div style={{display:"flex", justifyContent:"center"}}>
-                <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
-                    {isMoreData &&
-                     moreData?.map((obj, index) => {
-                        if(obj.movieId == detail){
-                        return (
-                            <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
-                                <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
-                                    <div style={{marginLeft:"20px"}}>{obj.username}</div>
-                                    <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+            {commentData?.length !== 0 && // 코멘트 존재할 경우
+            <>
+                {/* 코멘트 8개만 */}
+                <div style={{display:"flex", justifyContent:"center"}}>
+                    <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
+                        {!isMoreData &&
+                        commentData?.map((obj, index) => {
+                            if(obj.movieId == detail){
+                            return (
+                                <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
+                                    <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
+                                        <div style={{marginLeft:"20px"}}>{obj.username}</div>
+                                        <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+                                    </div>
+                                    <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
+                                    <div style={{display:"flex", fontSize:"24px"}}>
+                                        <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
+                                        <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
+                                    </div>
                                 </div>
-                                <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
-                                <div style={{display:"flex", fontSize:"24px"}}>
-                                    <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
-                                    <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
-                                </div>
-                            </div>
-                        )
-                        }
-                    return null;
-                    })}
+                            )
+                            }
+                        return null;
+                        })}
+                    </div>
                 </div>
-            </div>
-            {!isMoreData &&
-                <div onClick={() => (setIsMoreData(true))} style={{cursor:"pointer", fontSize:"24px"}}>🔻더보기</div>
-            }
-            {isMoreData &&
-                <div onClick={() => (setIsMoreData(false))} style={{cursor:"pointer", fontSize:"24px"}}>🔺닫기</div>
-            }
-            <UpdateModal
-                show={showMovieDetailModal2}
-                onCloseModal={onCloseModal2}
-                setShowMovieDetailModal={setShowMovieDetailModal2}
-                commentId={updateCommentId}
-                detail={detail}
-            />
+                {/* 코멘트 전체 */}
+                <div style={{display:"flex", justifyContent:"center"}}>
+                    <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
+                        {isMoreData &&
+                         moreData?.map((obj, index) => {
+                            if(obj.movieId == detail){
+                            return (
+                                <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
+                                    <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
+                                        <div style={{marginLeft:"20px"}}>{obj.username}</div>
+                                        <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
+                                    </div>
+                                    <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
+                                    <div style={{display:"flex", fontSize:"24px"}}>
+                                        <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
+                                        <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
+                                    </div>
+                                </div>
+                            )
+                            }
+                        return null;
+                        })}
+                    </div>
+                </div>
+                {!isMoreData &&
+                    <div onClick={() => (setIsMoreData(true))} style={{cursor:"pointer", fontSize:"24px"}}>🔻더보기</div>
+                }
+                {isMoreData &&
+                    <div onClick={() => (setIsMoreData(false))} style={{cursor:"pointer", fontSize:"24px"}}>🔺닫기</div>
+                }
+                <UpdateModal
+                    show={showMovieDetailModal2}
+                    onCloseModal={onCloseModal2}
+                    setShowMovieDetailModal={setShowMovieDetailModal2}
+                    commentId={updateCommentId}
+                    detail={detail}
+                />
+            </>
+            }   
         </>
     )
 }

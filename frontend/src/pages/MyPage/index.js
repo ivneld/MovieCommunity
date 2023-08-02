@@ -5,6 +5,7 @@ import fetcherAccessToken from '../../utils/fetcherAccessToken';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import { Link } from 'react-router-dom';
 
 import { ChartContainer } from './styles';
 import { Doughnut, Bar } from 'react-chartjs-2';
@@ -21,7 +22,7 @@ const MyPage = () => {
     const decodedToken = jwt_decode(accessToken);
     const memberId = decodedToken.sub
     console.log('memberId',memberId)
-    const { data: currentUserData, error4 } = useSWR(`${apiUrl}/auth/`, fetcherAccessToken);
+    const { data: currentUserData, error4 } = useSWR(`${apiUrl}/mypage/${memberId}/profile`, fetcherAccessToken);
     console.log('currentUserData',currentUserData)
     const { data : interestData, error } = useSWR(`${apiUrl}/mypage/${memberId}/movie`, fetcherAccessToken, {
         dedupingInterval: 100000,
@@ -237,7 +238,8 @@ const MyPage = () => {
                   commentId: commentId
               }
           })
-          mutate(`${apiUrl}/mypage/${memberId}/comment`); // 코멘트 가져오기 업데이트
+          mutate(`${apiUrl}/mypage/${memberId}/comment?page=${page}`); // 코멘트 가져오기 업데이트
+
           console.log('댓글 삭제가 완료되었습니다.');
           alert('댓글 삭제가 완료되었습니다.')
       }
@@ -283,10 +285,12 @@ const MyPage = () => {
                                 <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
                                     {interestData?.content?.map((obj, idx) => {
                                         return(
+                                          <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}} style={{color:"black", textDecoration:"none"}}>
                                             <div key={idx}>
                                                 <img src={obj.posterPath} width="266.66px" height="400px" alt="포스터주소" />
                                                 <div style={{display:"flex", justifyContent:"center", fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</div>
                                             </div>
+                                          </Link>
                                         )
                                     })}
                                 </div>

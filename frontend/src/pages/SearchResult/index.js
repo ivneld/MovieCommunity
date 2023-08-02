@@ -9,7 +9,9 @@ function SearchResult() {
     const search = location.state.search;
     const apiUrl = process.env.REACT_APP_API_URL;
     const { data: searchResults } = useSWR(`${apiUrl}/movie/search/detail?search=${search}`, fetcher);
-    console.log(searchResults?.movies)
+    console.log('searchResults',searchResults)
+    const { data: communityData } = useSWR(`${apiUrl}/posts/search?keyword=${search}`, fetcher); // 검색 (리뷰)
+    console.log("communityData",communityData)
 
     const [activeTab, setActiveTab] = useState(0);
     const handleTabChange = (index) => {
@@ -58,8 +60,26 @@ function SearchResult() {
                             )
                         })}
                 </div>
-                <div>
-                    커뮤니티 내용 뭐시기뭐시기
+                <hr/>
+                <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>리뷰 <span style={{fontWeight:"normal"}}>{communityData?.searchList?.content?.length}</span></div>
+                    <div style={{display: "flex", flexWrap: "wrap"}}>
+                        {communityData?.searchList?.content?.map((obj, idx)=>{
+                            return(
+                                <div key={idx}>
+                                <Link to="/communitydetail" state={{postId : obj.id}}>
+                                    <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                        {/* <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/> */}
+                                        <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
+                                            <div>제목 : {obj.title}</div>
+                                            <div>내용 : {obj.content}</div>
+                                            <div>좋아요 {obj.likeCount}</div>
+                                            <div>댓글 {obj.comments.length}</div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                            )
+                        })}
                 </div>
             </TabPanel>
 
@@ -100,8 +120,25 @@ function SearchResult() {
             </TabPanel>
 
             <TabPanel>
-                <div>
-                    커뮤니티 내용 뭐시기뭐시기
+            <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>리뷰 <span style={{fontWeight:"normal"}}>{communityData?.searchList?.content?.length}</span></div>
+                    <div style={{display: "flex", flexWrap: "wrap"}}>
+                        {communityData?.searchList?.content?.map((obj, idx)=>{
+                            return(
+                                <div key={idx}>
+                                <Link to="/communitydetail" state={{postId : obj.id}}>
+                                    <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                        {/* <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/> */}
+                                        <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
+                                            <div>제목 : {obj.title}</div>
+                                            <div>내용 : {obj.content}</div>
+                                            <div>좋아요 {obj.likeCount}</div>
+                                            <div>댓글 {obj.comments.length}</div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            </div>
+                            )
+                        })}
                 </div>
             </TabPanel>
         </Tabs>
