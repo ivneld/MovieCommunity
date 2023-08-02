@@ -14,6 +14,7 @@ import 'react-tabs/style/react-tabs.css';
 import { AuthContext } from "../../context/AuthProvider";
 import axios from "axios";
 import Modal2 from '../../components/Modal2';
+import { Link } from 'react-router-dom';
 
 const Detail = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -28,6 +29,12 @@ const Detail = () => {
     if (!detailData) console.log('데이터를 불러오는 중입니다...')
     console.log(detailData)
     const backgroundPoster = detailData?.posterPath?.replace('w500', 'w1280');
+
+    const { data : communityData, error2 } = useSWR(`${apiUrl}/postByMovie/${id}`, fetcher, { 
+        dedupingInterval: 100000,
+    });
+    console.log("communityData",communityData)
+
     const prevArrow = (
         <button className="slick-prev" aria-label="Previous" type="button"/>
     );
@@ -223,7 +230,27 @@ const Detail = () => {
                                 <Comment/>
                                 <hr/>
                                 <CustomDiv>리뷰</CustomDiv>
-                                <div>아직 x</div>
+                                <div style={{display:"flex"}}>
+                                    {communityData?.posts?.map((obj,idx)=>{
+                                        return(
+                                            <div key={idx}>
+                                                <Link to="/communitydetail" state={{postId : obj.id}}>
+                                                    <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                                        {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
+                                                        <div style={{position:"absolute", top:0, width:'100%', color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>{obj.writer}</div>
+                                                        <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
+                                                        <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
+                                                            <div>제목 : {obj.title}</div>
+                                                            <div>내용 : {obj.content}</div>
+                                                            <div>좋아요 {obj.likeCount}</div>
+                                                            <div>댓글 {obj.commentsCount}</div>
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             </TabPanel>
                         </Tabs>
                     </div>

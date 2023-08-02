@@ -29,6 +29,11 @@ const MyPage = () => {
     const { data : genreData, error2 } = useSWR(`${apiUrl}/mypage/${memberId}/genre`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
+    const { data : communityData, error5 } = useSWR(`${apiUrl}/postByMember/nickname`, fetcherAccessToken, {
+        dedupingInterval: 100000,
+    });
+    console.log('communityData',communityData)
+
     const [ page, SetPage ] = useState(1);
     const handlePrevYear = () => {
       if(page===1){
@@ -319,8 +324,24 @@ const MyPage = () => {
                               <button onClick={handleNextYear}>&gt;</button>
                             </div>
                             <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{currentUserData?.nickName}님이 쓴 리뷰</div>
-                            <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
-                            <div>ㅇㅇㅇ</div>
+                            <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px",}}/>
+                            <div >
+                              {communityData?.posts?.map((obj,idx)=>{
+                                return(
+                                  <div style={{display:"flex", borderBottom:"1px solid black", padding:"20px 0"}}>
+                                    <div>
+                                      <div style={{display:"flex", alignItems:"center"}}>
+                                        <div style={{fontSize:"30px", fontWeight:"bold", marginRight:"20px"}}>{obj.title}</div>
+                                        <div style={{fontSize:"14px", marginRight:"20px"}}>조회수 {obj.view}</div>
+                                      </div>
+                                      <div>{obj.content}</div>
+                                    </div>
+
+                                    <img src={obj.moviePosterPath} style={{marginLeft:"auto", marginRight:"20px"}} width="133.33px" height="200px" alt="포스터주소"/>
+                                  </div>
+                                )
+                              })}
+                            </div>
                         </div>
                         <hr/>
                         <div ref={moveRef4} style={{marginLeft:"100px"}}>

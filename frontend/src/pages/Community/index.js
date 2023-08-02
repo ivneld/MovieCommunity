@@ -8,28 +8,23 @@ const Community = () => {
     const apiUrl = process.env.REACT_APP_API_URL;
     
     const [currentPage, setCurrentPage] = useState({ // 객체 상태관리 (효율적)
-        newest: 1, // 최신순
-        viewOrder: 1, // 조회순
-        likeOrder: 1, // 좋아요순
+        newest: 0, // 최신순
+        viewOrder: 0, // 조회순
+        likeOrder: 0, // 좋아요순
     });
 
-    const { data: postNewestData, error1 } = useSWR(`${apiUrl}/posts/new`, fetcher); // 게시글 최신순
+    const { data: postNewestData, error1 } = useSWR(`${apiUrl}/posts/new?page=${currentPage.newest}&size=${5}`, fetcher); // 게시글 최신순
     console.log("postNewestData",postNewestData)
-    const { data: postViewOrderData, error2 } = useSWR(`${apiUrl}/posts/view`, fetcher); // 게시글 조회순
+    const { data: postViewOrderData, error2 } = useSWR(`${apiUrl}/posts/view?page=${currentPage.viewOrder}&size=${5}`, fetcher); // 게시글 조회순
     console.log("postViewOrderData",postViewOrderData)
-    const { data: postLikeOrderData, error3 } = useSWR(`${apiUrl}/posts/like`, fetcher); // 게시글 좋아요순
+    const { data: postLikeOrderData, error3 } = useSWR(`${apiUrl}/posts/like?page=${currentPage.likeOrder}&size=${5}`, fetcher); // 게시글 좋아요순
     console.log("postLikeOrderData",postLikeOrderData)
 
-    // const { data: postNewestData, error1 } = useSWR(`${apiUrl}/posts/new?page=${currentPage.newest}`, fetcher); // 게시글 최신순
-    // console.log("postNewestData",postNewestData)
-    // const { data: postViewOrderData, error2 } = useSWR(`${apiUrl}/posts/view?page=${currentPage.viewOrder}`, fetcher); // 게시글 조회순
-    // console.log("postViewOrderData",postViewOrderData)
-    // const { data: postLikeOrderData, error3 } = useSWR(`${apiUrl}/posts/like?page=${currentPage.likeOrder}`, fetcher); // 게시글 좋아요순
-    // console.log("postLikeOrderData",postLikeOrderData)
-
     const handlePageChange = (page, category) => {
+
+  
         setCurrentPage((prevPages) => ({
-          ...prevPages,
+          ...prevPages, // 예를 들어, 최신순 페이지 넘겼을 경우, 조회순이랑 좋아요순이 그대로 있어야 하기 떄문! ...prevPages 없으면 최신순 페이지 넘기면 조회순, 좋아요순 사라짐!
           [category]: page,
         }));
       };
@@ -43,7 +38,7 @@ const Community = () => {
                 <>
                     <div style={{fontSize:"40px", fontWeight:"bold"}}>최근 작성된 리뷰</div>
                     <div style={{display:"flex"}}>
-                        {postNewestData?.postsList?.content?.map((obj,idx)=>{
+                        {postNewestData?.postsList?.map((obj,idx)=>{
                             return(
                                 <div key={idx}>
                                     <div style={{display:"flex"}}>
@@ -51,12 +46,13 @@ const Community = () => {
                                     </div>
                                     <Link to="/communitydetail" state={{postId : obj.id}}>
                                         <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
-                                            <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/>
+                                            {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
+                                            <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                                 <div>제목 : {obj.title}</div>
                                                 <div>내용 : {obj.content}</div>
                                                 <div>좋아요 {obj.likeCount}</div>
-                                                <div>댓글 {obj.comments.length}</div>
+                                                <div>댓글 {obj.commentsCount}</div>
                                             </div>
                                         </div>
                                     </Link>
@@ -65,9 +61,9 @@ const Community = () => {
                         })}
                     </div>
                     <div style={{display:"flex", justifyContent:"center"}}>
-                        <button onClick={() => handlePageChange(currentPage.newest-1)}>&lt;</button>
+                        <button onClick={() => handlePageChange(currentPage.newest-1,'newest')}>&lt;</button>
                         <span>{currentPage.newest}페이지</span>
-                        <button onClick={() => handlePageChange(currentPage.newest+1)}>&gt;</button>
+                        <button onClick={() => handlePageChange(currentPage.newest+1,'newest')}>&gt;</button>
                     </div>
                 </>
             }
@@ -75,7 +71,7 @@ const Community = () => {
             <>
                 <div style={{fontSize:"40px", fontWeight:"bold"}}>조회순</div>
                 <div style={{display:"flex"}}>
-                {postViewOrderData?.postsList?.content?.map((obj,idx)=>{
+                {postViewOrderData?.postsList?.map((obj,idx)=>{
                             return(
                                 <div key={idx}>
                                     <div style={{display:"flex"}}>
@@ -83,12 +79,13 @@ const Community = () => {
                                     </div>
                                     <Link to="/communitydetail" state={{postId : obj.id}}>
                                         <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
-                                            <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/>
+                                            {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
+                                            <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                                 <div>제목 : {obj.title}</div>
                                                 <div>내용 : {obj.content}</div>
                                                 <div>좋아요 {obj.likeCount}</div>
-                                                <div>댓글 {obj.comments.length}</div>
+                                                <div>댓글 {obj.commentsCount}</div>
                                             </div>
                                         </div>
                                     </Link>
@@ -97,9 +94,9 @@ const Community = () => {
                         })}
                 </div>
                 <div style={{display:"flex", justifyContent:"center"}}>
-                    <button onClick={() => handlePageChange(currentPage.viewOrder-1)}>&lt;</button>
+                    <button onClick={() => handlePageChange(currentPage.viewOrder-1,'viewOrder')}>&lt;</button>
                     <span>{currentPage.viewOrder}페이지</span>
-                    <button onClick={() => handlePageChange(currentPage.viewOrder+1)}>&gt;</button>
+                    <button onClick={() => handlePageChange(currentPage.viewOrder+1,'viewOrder')}>&gt;</button>
                 </div>
             </>
             }
@@ -107,7 +104,7 @@ const Community = () => {
             <>
                 <div style={{fontSize:"40px", fontWeight:"bold"}}>좋아요순</div>
                 <div style={{display:"flex"}}>
-                {postLikeOrderData?.postsList?.content?.map((obj,idx)=>{
+                {postLikeOrderData?.postsList?.map((obj,idx)=>{
                             return(
                                 <div key={idx}>
                                     <div style={{display:"flex"}}>
@@ -115,12 +112,13 @@ const Community = () => {
                                     </div>
                                     <Link to="/communitydetail" state={{postId : obj.id}}>
                                         <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
-                                            <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/>
+                                            {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
+                                            <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                                 <div>제목 : {obj.title}</div>
                                                 <div>내용 : {obj.content}</div>
                                                 <div>좋아요 {obj.likeCount}</div>
-                                                <div>댓글 {obj.comments.length}</div>
+                                                <div>댓글 {obj.commentsCount}</div>
                                             </div>
                                         </div>
                                     </Link>
@@ -129,9 +127,9 @@ const Community = () => {
                         })}
                 </div>
                 <div style={{display:"flex", justifyContent:"center"}}>
-                    <button onClick={() => handlePageChange(currentPage.likeOrder-1)}>&lt;</button>
+                    <button onClick={() => handlePageChange(currentPage.likeOrder-1,'likeOrder')}>&lt;</button>
                     <span>{currentPage.likeOrder}페이지</span>
-                    <button onClick={() => handlePageChange(currentPage.likeOrder+1)}>&gt;</button>
+                    <button onClick={() => handlePageChange(currentPage.likeOrder+1,'likeOrder')}>&gt;</button>
                 </div>
             </>
             }
