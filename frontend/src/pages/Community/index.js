@@ -21,8 +21,6 @@ const Community = () => {
     console.log("postLikeOrderData",postLikeOrderData)
 
     const handlePageChange = (page, category) => {
-
-  
         setCurrentPage((prevPages) => ({
           ...prevPages, // 예를 들어, 최신순 페이지 넘겼을 경우, 조회순이랑 좋아요순이 그대로 있어야 하기 떄문! ...prevPages 없으면 최신순 페이지 넘기면 조회순, 좋아요순 사라짐!
           [category]: page,

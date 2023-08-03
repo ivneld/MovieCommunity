@@ -65,7 +65,7 @@ const CommunityPost = () => {
             }
             const response = await axios.post(`${apiUrl}/posts`, req, config);
             console.log('게시글 생성 완료', response.data)
-            navigate(`${apiUrl}/community`)
+            navigate(`/community`)
         } catch (error){
             console.log('게시글 생성 실패', error)
         }
