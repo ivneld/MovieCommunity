@@ -2,16 +2,12 @@ package Movie.MovieCommunity.community.controller;
 
 
 import Movie.MovieCommunity.JPADomain.Member;
-import Movie.MovieCommunity.JPARepository.CommentRepository;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.community.domain.Comment;
 import Movie.MovieCommunity.community.domain.SubComment;
 import Movie.MovieCommunity.community.dto.*;
 import Movie.MovieCommunity.community.dto.util.PageRequestDto;
-import Movie.MovieCommunity.community.repository.CommunityCommentRepository;
 import Movie.MovieCommunity.community.repository.PostsRepository;
-import Movie.MovieCommunity.community.repository.SubCommentRepository;
-import Movie.MovieCommunity.community.response.SubCommentResponseDto;
 import Movie.MovieCommunity.community.service.HeartService;
 import Movie.MovieCommunity.community.service.PostsService;
 
@@ -23,15 +19,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.module.FindException;
@@ -54,51 +45,44 @@ public class PostsIndexController {
 
     @Operation(method = "get", summary = "상세페이지 커뮤니티 리뷰 가져오기")
     @GetMapping("/postByMovie/{movieId}")
-    public DetailPageDto read(@PathVariable("movieId") Long movieId) {
-        List<PostsDto.Total> postArray = new ArrayList<>();
-        Optional<List<Posts>> byMovie = postsRepository.findByMovieId(movieId);
-        Integer postsCount;
-        if(byMovie.isPresent()){
-            List<Posts> posts = byMovie.get();
-            for (Posts post : posts) {
-                PostsDto.Total total = new PostsDto.Total(post);
-                postArray.add(total);
-            }
-            postsCount = postsRepository.findByMovieId(movieId).get().size();
+    public ListDto read(@PathVariable("movieId") Long movieId,PageRequestDto requestDto ) {
+        Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getSize(), Sort.Direction.DESC, "id");
+        Page<Posts> postsList = postsRepository.findByMovieId(movieId, pageable);
+
+        int totalPostsCount = postsRepository.findByMovieId(movieId).size();
+        int totalPageCount = postsList.getTotalPages();
+
+        List<PostsDto.Total> postInfo = new ArrayList<>();
+        for (Posts posts : postsList) {
+            PostsDto.Total response=new PostsDto.Total(posts);
+            postInfo.add(response);
         }
-        else{
-            postsCount = null;
-        }
-        DetailPageDto detailPageDtos= new DetailPageDto(postArray,postsCount);
-        return detailPageDtos;
+        return new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),totalPostsCount);
+
     }
 
 
     @Operation(method = "get", summary = "마이페이지 리뷰 검색 API")
     @GetMapping("/postByMember/nickname")
-    public DetailPageDto read(@CurrentUser UserPrincipal member) {
+    public ListDto read(@CurrentUser UserPrincipal member ,PageRequestDto requestDto) {
 
         if(member==null){
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
-        Integer postsCount;
-        Long memberId = member.getId();
-        Member member1 = memberRepository.findById(memberId).get();
-        List<PostsDto.Total> MyPagePostsDto= new ArrayList<>();
-        Optional<List<Posts>> byMember = postsRepository.findByUser(member1);
-        if(byMember.isPresent()){
-            List<Posts> posts = byMember.get();
-            for (Posts post : posts) {
-                PostsDto.Total dto = new PostsDto.Total(post);
-                MyPagePostsDto.add(dto);
-            }
-            postsCount = postsRepository.findByUser(member1).get().size();
+        Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getSize(), Sort.Direction.DESC, "id");
+        Member member1 = memberRepository.findById(member.getId()).get();
+        Page<Posts> postsList = postsRepository.findByUser(member1, pageable);
+
+        List<PostsDto.Total> postInfo = new ArrayList<>();
+        int totalPostsCount = postsRepository.findByUser(member1).size();
+        int totalPageCount = postsList.getTotalPages();
+
+        for (Posts posts : postsList) {
+            PostsDto.Total response=new PostsDto.Total(posts);
+            postInfo.add(response);
         }
-        else{
-            postsCount = null;
-        }
-        DetailPageDto detailPageDtos= new DetailPageDto(MyPagePostsDto,postsCount);
-        return detailPageDtos;
+        return new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),totalPostsCount);
+
     }
 
     @Operation(method = "get", summary = "좋아요 많은순 게시글 가져오기")
@@ -114,12 +98,13 @@ public class PostsIndexController {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getSize(), Sort.Direction.DESC, "likeCount");
         List<PostsDto.Total> postInfo = new ArrayList<>();
         Page<Posts> list = postsRepository.findAll(pageable);
-            for (Posts posts : list) {
+        int totalPostsCount = list.getTotalPages();
+        for (Posts posts : list) {
             PostsDto.Total response=new PostsDto.Total(posts);
             postInfo.add(response);
         }
 
-        ListDto dto = new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        ListDto dto = new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),totalPostsCount);
 
         return dto;
     }
@@ -130,12 +115,13 @@ public class PostsIndexController {
     @Operation(method = "get", summary = "최신순 게시글 가져오기")
     @GetMapping("/posts/new")
     public ListDto indexByNew( PageRequestDto requestDto) {
-        int totalPageCount = postsRepository.findAll().size();
-        if (totalPageCount % requestDto.getSize() == 0){
-            totalPageCount = totalPageCount /requestDto.getSize();
+        int totalPostsCount = postsRepository.findAll().size();
+        int totalPageCount;
+        if (totalPostsCount % requestDto.getSize() == 0){
+            totalPageCount = totalPostsCount /requestDto.getSize();
         }
         else{
-            totalPageCount = totalPageCount / requestDto.getSize() +1;
+            totalPageCount = totalPostsCount / requestDto.getSize() +1;
         }
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getSize(), Sort.Direction.DESC, "id");
         List<PostsDto.Total> postInfo = new ArrayList<>();
@@ -145,7 +131,7 @@ public class PostsIndexController {
             postInfo.add(response);
         }
 
-        ListDto dto = new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        ListDto dto = new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),totalPostsCount);
 
         return dto;
     }
@@ -164,12 +150,13 @@ public class PostsIndexController {
         Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getSize(), Sort.Direction.DESC, "view");
         List<PostsDto.Total> postInfo = new ArrayList<>();
         Page<Posts> list = postsRepository.findAll(pageable);
+        int totalPostsCount = list.getTotalPages();
         for (Posts posts : list) {
             PostsDto.Total response=new PostsDto.Total(posts);
             postInfo.add(response);
         }
 
-        ListDto dto = new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),list.hasNext(),list.hasPrevious());
+        ListDto dto = new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(), totalPostsCount);
 
         return dto;
     }
@@ -290,20 +277,21 @@ public class PostsIndexController {
 
     @GetMapping("/posts/search")
     @Operation(method = "get", summary = "게시글 검색 페이지")
-    public SearchPageDto search(String keyword, @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-            Pageable pageable) {
+    public ListDto search(String keyword, PageRequestDto requestDto) {
 
-        SearchPageDto searchPageDto= new SearchPageDto();
-        Page<Posts> searchList = postsService.search(keyword, pageable);
+        Pageable pageable = PageRequest.of(requestDto.getPage(), requestDto.getSize(), Sort.Direction.DESC, "id");
+        Page<Posts> postsList = postsService.search(keyword, pageable);
 
-        searchPageDto.setSearchList(searchList);
-        searchPageDto.setKeyword(keyword);
-        searchPageDto.setPreviousPageNumber(pageable.previousOrFirst().getPageNumber());
-        searchPageDto.setNextPageNumber(pageable.next().getPageNumber());
-        searchPageDto.setHasNextPage(searchList.hasNext());
-        searchPageDto.setHasPreviousPage(searchList.hasPrevious());
+        int totalPostsCount = postsRepository.findByTitleContaining(keyword).size();
+        int totalPageCount = postsList.getTotalPages();
 
-        return searchPageDto;
+        List<PostsDto.Total> postInfo = new ArrayList<>();
+        for (Posts posts : postsList) {
+            PostsDto.Total response=new PostsDto.Total(posts);
+            postInfo.add(response);
+        }
+        return new ListDto(postInfo,totalPageCount,pageable.previousOrFirst().getPageNumber(),pageable.next().getPageNumber(),totalPostsCount);
+
     }
 }
 

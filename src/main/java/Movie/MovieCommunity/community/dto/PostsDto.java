@@ -123,8 +123,8 @@ public class PostsDto {
         private final String title;
         private final String writer;
         private final String content;
-        private final int view;
-        private final int likeCount;
+        private final Integer view;
+        private final Integer likeCount;
         private final String moviePosterPath;
         private final Long commentsCount;
 

@@ -100,7 +100,7 @@ public class PostsService {
 
     /* search */
     @Transactional(readOnly = true)
-    public Page<Posts> search(String keyword, Pageable pageable) {
+    public Page<Posts> search(String keyword,Pageable pageable) {
         Page<Posts> postsList = postsRepository.findByTitleContaining(keyword, pageable);
         return postsList;
     }

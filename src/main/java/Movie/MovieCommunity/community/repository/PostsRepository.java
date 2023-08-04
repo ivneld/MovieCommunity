@@ -29,9 +29,12 @@ public interface PostsRepository extends JpaRepository<Posts, Long> {
 
 
     Page<Posts> findByTitleContaining(String keyword, Pageable pageable);
+    List<Posts> findByTitleContaining(String keyword);
 
-    Optional<List<Posts>> findByMovieId(Long movieId);
+    Page<Posts> findByMovieId(Long movieId,  Pageable pageable);
+    List<Posts> findByMovieId(Long movieId);
 
 
-    Optional<List<Posts>> findByUser(Member user);
+    Page<Posts> findByUser(Member user, Pageable pageable);
+    List<Posts> findByUser(Member user);
 }
