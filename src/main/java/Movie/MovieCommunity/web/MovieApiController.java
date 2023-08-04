@@ -32,7 +32,7 @@ import java.util.List;
 @Tag(name="movie", description="영화 api")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/movie")
+@RequestMapping("/api/movie")
 public class MovieApiController {
     private final MovieService movieService;
 

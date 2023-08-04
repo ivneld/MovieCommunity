@@ -3,23 +3,16 @@ package Movie.MovieCommunity.community.service;
 import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.JPARepository.MemberRepository;
 import Movie.MovieCommunity.community.domain.*;
-import Movie.MovieCommunity.community.dto.HeartRequestDTO;
-import Movie.MovieCommunity.community.dto.LikeRequestDto;
-import Movie.MovieCommunity.community.repository.CommentLikeRepository;
-import Movie.MovieCommunity.community.repository.PostsLikeRepository;
-import Movie.MovieCommunity.community.repository.PostsRepository;
-import Movie.MovieCommunity.community.repository.SubCommentLikeRepository;
-import Movie.MovieCommunity.community.response.ResponseDto;
-import Movie.MovieCommunity.config.security.token.CurrentUser;
-import Movie.MovieCommunity.config.security.token.UserPrincipal;
+import Movie.MovieCommunity.community.dto.HeartRequestDto.CommentHeartRequestDTO;
+import Movie.MovieCommunity.community.dto.HeartRequestDto.HeartRequestDTO;
+import Movie.MovieCommunity.community.dto.HeartRequestDto.SubCommentHeartRequestDTO;
+import Movie.MovieCommunity.community.repository.*;
 import Movie.MovieCommunity.service.auth.CustomTokenProviderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,23 +22,40 @@ public class HeartService {
     private final CommentLikeRepository commentLikeRepository;
     private final MemberRepository memberRepository;
     private final PostsRepository postsRepository;
-    private final CustomTokenProviderService tokenProvider;
+    private final CommunityCommentRepository commentRepository;
+    private final SubCommentRepository subCommentRepository;
     private final SubCommentLikeRepository subCommentLikeRepository;
-    private final CommunityCommentService commentService;
-    private final SubCommentService subCommentService;
+
+
+    @Transactional
+    public boolean check(Long postId,Long memberId) {
+
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("멤버 정보가 없습니다"));
+
+        Posts posts = postsRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("게시글 정보가 없습니다."));
+
+        // 이미 좋아요되어있으면 true 반환
+        if (postsLikeRepository.findByMemberAndPosts(member, posts).isPresent()){
+            return true;
+        }
+        return false;
+    }
 
     @Transactional
     public void insert(HeartRequestDTO heartRequestDTO) throws Exception {
 
         Member member = memberRepository.findById(heartRequestDTO.getMemberId())
-                .orElseThrow(() -> new NotFoundException("Could not found member id : " + heartRequestDTO.getMemberId()));
+                .orElseThrow(() -> new NotFoundException("멤버 id를 찾을 수 없습니다. : " + heartRequestDTO.getMemberId()));
 
         Posts posts = postsRepository.findById(heartRequestDTO.getPostsId())
-                .orElseThrow(() -> new NotFoundException("Could not found board id : " + heartRequestDTO.getPostsId()));
+                .orElseThrow(() -> new NotFoundException("게시판 id를 찾을 수 없습니다. : " + heartRequestDTO.getPostsId()));
 
         // 이미 좋아요되어있으면 에러 반환
         if (postsLikeRepository.findByMemberAndPosts(member, posts).isPresent()){
-            throw new Exception();
+            throw new Exception("이미 좋아요 누르셨습니다.");
         }
 
 
@@ -61,13 +71,13 @@ public class HeartService {
     public void delete(HeartRequestDTO heartRequestDTO) {
 
         Member member = memberRepository.findById(heartRequestDTO.getMemberId())
-                .orElseThrow(() -> new NotFoundException("Could not found member id : " + heartRequestDTO.getMemberId()));
+                .orElseThrow(() -> new NotFoundException("멤버 id를 찾을 수 없습니다.: " + heartRequestDTO.getMemberId()));
 
         Posts posts = postsRepository.findById(heartRequestDTO.getPostsId())
-                .orElseThrow(() -> new NotFoundException("Could not found board id : " + heartRequestDTO.getPostsId()));
+                .orElseThrow(() -> new NotFoundException("게시판 id를 찾을 수 없습니다." + heartRequestDTO.getPostsId()));
 
         PostsLike postsLike = postsLikeRepository.findByMemberAndPosts(member, posts)
-                .orElseThrow(() -> new NotFoundException("Could not found heart id"));
+                .orElseThrow(() -> new NotFoundException("하트 정보를 찾을 수 없습니다."));
         postsRepository.updateSubtractCount(posts);
         postsLikeRepository.delete(postsLike);
     }
@@ -75,169 +85,127 @@ public class HeartService {
 
 
     /**
-     * 댓글, 대댓글 좋아요 서비스
+     * 댓글 좋아요 서비스
      * */
 
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> doCommentLike(LikeRequestDto requestDto,  @CurrentUser UserPrincipal member) {
-        if (null ==member.getId()) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+    @Transactional
+    public boolean commentCheck(Long commentId,Long memberId) {
+
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("멤버 정보가 없습니다"));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException("댓글 정보가 없습니다."));
+
+        // 이미 좋아요되어있으면 true 반환
+        if (commentLikeRepository.findByMemberAndComment(member, comment).isPresent()){
+            return true;
         }
-        /**
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
+        return false;
+    }
+
+    @Transactional
+    public void CommentHeartInsert(CommentHeartRequestDTO heartRequestDTO) throws Exception {
+
+        Member member = memberRepository.findById(heartRequestDTO.getMemberId())
+                .orElseThrow(() -> new NotFoundException("멤버 id를 찾을 수 없습니다. : " + heartRequestDTO.getMemberId()));
+
+        Comment comment = commentRepository.findById(heartRequestDTO.getCommentId())
+                .orElseThrow(() -> new NotFoundException("댓글 id를 찾을 수 없습니다. : " + heartRequestDTO.getCommentId()));
+
+        // 이미 좋아요되어있으면 에러 반환
+        if (commentLikeRepository.findByMemberAndComment(member, comment).isPresent()){
+            throw new Exception("이미 좋아요 누르셨습니다.");
         }
 
-        Member member = validateMember(request);
 
-
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-         */
-
-        Comment comment = commentService.isPresentComment(requestDto.getCommentId());
-        if (null == comment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 id 입니다.");
-        }
-
-        CommentLike checkLike = commentLikeRepository.findByCommentIdAndMemberId(comment.getId(), member.getId());
-        if(null!=checkLike) {
-            return ResponseDto.fail("ALREADY_DONE", "이미 좋아요를 하셨습니다.");
-        }
-
-        Member member1 = memberRepository.findById(member.getId()).get();
         CommentLike commentLike = CommentLike.builder()
-                .member(member1)
                 .comment(comment)
+                .member(member)
                 .build();
-
+        commentRepository.updateAddCount(comment);
         commentLikeRepository.save(commentLike);
-        return ResponseDto.success("success");     //좋아요 개수 넣기
     }
 
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> cancelCommentLike(Long id,  @CurrentUser UserPrincipal member) {
-        if (null == member.getId()) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
+    @Transactional
+    public void CommentHeartDelete(CommentHeartRequestDTO heartRequestDTO) {
 
-        /**
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
+        Member member = memberRepository.findById(heartRequestDTO.getMemberId())
+                .orElseThrow(() -> new NotFoundException("멤버 id를 찾을 수 없습니다.: " + heartRequestDTO.getMemberId()));
 
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-        */
-        CommentLike commentLike = isPresentCommentLike(id);
-        if (null == commentLike) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 좋아요 id 입니다.");
-        }
+        Comment comment = commentRepository.findById(heartRequestDTO.getCommentId())
+                .orElseThrow(() -> new NotFoundException("댓글 id를 찾을 수 없습니다.: " + heartRequestDTO.getCommentId()));
 
-        if (!(commentLike.getMember().getId().equals(member.getId()))) {       // 이 내용을 수행하기 전에 이미 사용자 검증... 프론트 단에서 좋아요 취소 버튼 활성화
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 취소할 수 있습니다.");
-        }
-
+        CommentLike commentLike = commentLikeRepository.findByMemberAndComment(member, comment)
+                .orElseThrow(() -> new NotFoundException("하트 id를 찾을 수 없습니다."));
+        commentRepository.updateSubtractCount(comment);
         commentLikeRepository.delete(commentLike);
-        return ResponseDto.success("success");      //좋아요 개수 넣기
     }
 
 
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> subCommentLike(LikeRequestDto requestDto,@CurrentUser UserPrincipal member) {
-        if (null == member.getId()) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
-        /**
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-         */
-
-        SubComment subComment = subCommentService.isPresentSubComment(requestDto.getCommentId());
-        if (null == subComment) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 댓글 id 입니다.");
-        }
-
-        SubCommentLike checkLike = subCommentLikeRepository.findBySubCommentIdAndMemberId(subComment.getId(), member.getId());
-        if(null!=checkLike) {
-            return ResponseDto.fail("ALREADY_DONE", "이미 좋아요를 하셨습니다.");
-        }
-        Member member1 = memberRepository.findById(member.getId()).get();
-        SubCommentLike subCommentLike = SubCommentLike.builder()
-                .member(member1)
-                .subComment(subComment)
-                .build();
-        subCommentLikeRepository.save(subCommentLike);
-        return ResponseDto.success("success");     //좋아요 개수 넣기
-    }
-
-    @org.springframework.transaction.annotation.Transactional
-    public ResponseDto<?> cancelSubCommentLike(Long id, @CurrentUser UserPrincipal member) {
-        if (null == member.getId()) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
-        /**
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
-
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-
-         */
-        SubCommentLike subCommentLike = isPresentSubCommentLike(id);
-        if (null == subCommentLike) {
-            return ResponseDto.fail("NOT_FOUND", "존재하지 않는 좋아요 id 입니다.");
-        }
-
-        if (!(subCommentLike.getMember().getId().equals(member.getId()))) {       // 이 내용을 수행하기 전에 이미 사용자 검증... 프론트 단에서 좋아요 취소 버튼 활성화
-            return ResponseDto.fail("BAD_REQUEST", "작성자만 취소할 수 있습니다.");
-        }
-
-        subCommentLikeRepository.delete(subCommentLike);
-        return ResponseDto.success("success");      //좋아요 개수 넣기
-    }
-
-
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
-    public CommentLike isPresentCommentLike(Long id) {
-        Optional<CommentLike> optionalLike = commentLikeRepository.findById(id);
-        return optionalLike.orElse(null);
-    }
-
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
-    public SubCommentLike isPresentSubCommentLike(Long id) {
-        Optional<SubCommentLike> optionalLike = subCommentLikeRepository.findById(id);
-        return optionalLike.orElse(null);
-    }
 
     /**
-    @org.springframework.transaction.annotation.Transactional
-    public Member validateMember(HttpServletRequest request) {
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return null;
+     *    대댓글 좋아요 서비스
+     * */
+
+    @Transactional
+    public boolean subCommentLikeCheck(Long subCommentId,Long memberId) {
+
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("멤버 정보가 없습니다"));
+
+        SubComment subComment = subCommentRepository.findById(subCommentId)
+                .orElseThrow(() -> new NotFoundException("대댓글 정보가 없습니다."));
+
+        // 이미 좋아요되어있으면 1반환
+        if (subCommentLikeRepository.findByMemberAndSubComment(member, subComment).isPresent()){
+            return true;
         }
-        return tokenProvider.getMemberFromAuthentication();
+        return false;
     }
-     */
+
+    @Transactional
+    public void subcommentLikeInsert(SubCommentHeartRequestDTO heartRequestDTO) throws Exception {
+
+        Member member = memberRepository.findById(heartRequestDTO.getMemberId())
+                .orElseThrow(() -> new NotFoundException("멤버 id를 찾을 수 없습니다. : " + heartRequestDTO.getMemberId()));
+
+        SubComment subComment = subCommentRepository.findById(heartRequestDTO.getSubCommentId())
+                .orElseThrow(() -> new NotFoundException("대댓글 id를 찾을 수 없습니다. : " + heartRequestDTO.getSubCommentId()));
+
+        // 이미 좋아요되어있으면 에러 반환
+        if (subCommentLikeRepository.findByMemberAndSubComment(member, subComment).isPresent()){
+            throw new Exception("이미 좋아요 누르셨습니다.");
+        }
+
+
+        SubCommentLike subCommentLike = SubCommentLike.builder()
+                .subComment(subComment)
+                .member(member)
+                .build();
+        subCommentRepository.updateAddCount(subComment);
+        subCommentLikeRepository.save(subCommentLike);
+    }
+
+    @Transactional
+    public void subCommentLikeDelete(SubCommentHeartRequestDTO heartRequestDTO) {
+
+        Member member = memberRepository.findById(heartRequestDTO.getMemberId())
+                .orElseThrow(() -> new NotFoundException("멤버 id를 찾을 수 없습니다. : " + heartRequestDTO.getMemberId()));
+
+        SubComment subComment = subCommentRepository.findById(heartRequestDTO.getSubCommentId())
+                .orElseThrow(() -> new NotFoundException("대댓글 id를 찾을 수 없습니다. : " + heartRequestDTO.getSubCommentId()));
+
+        SubCommentLike subCommentLike = subCommentLikeRepository.findByMemberAndSubComment(member, subComment)
+                .orElseThrow(() -> new NotFoundException("하트 id를 찾을 수 없습니다."));
+
+
+        subCommentRepository.updateSubtractCount(subComment);
+        subCommentLikeRepository.delete(subCommentLike);
+    }
+
+
 
 }

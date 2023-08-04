@@ -10,15 +10,13 @@ import Movie.MovieCommunity.JPARepository.MovieRepository;
 import Movie.MovieCommunity.JPARepository.MovieWithGenreRepository;
 import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.web.apiDto.comment.MyCommentDto;
+import Movie.MovieCommunity.web.apiDto.member.MemberProfileResponse;
 import Movie.MovieCommunity.web.apiDto.member.UpdateMemberProfile;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.LikeGenreDto;
-import Movie.MovieCommunity.web.apiDto.movie.response.MovieLikeGenreResponse;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieLikeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,8 +64,12 @@ public class MemberService {
     @Transactional
     public void updateName(Long id, UpdateMemberProfile updateMemberProfile){
         Member member = memberRepository.findById(id).orElseThrow();
-        member.setName(updateMemberProfile.getName());
+        member.setNickname(updateMemberProfile.getName());
     }
 
+    public MemberProfileResponse findProfile(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow();
+        return new MemberProfileResponse(member.getName(), member.getNickname(), member.getEmail());
+    }
 }
 

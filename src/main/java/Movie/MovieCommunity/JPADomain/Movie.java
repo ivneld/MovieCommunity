@@ -215,7 +215,7 @@ public class Movie {
     /**
      * tmdb entity
      */
-    private int tmId;
+    private Integer tmId;
     @Lob
     private String overview;
     @Column()

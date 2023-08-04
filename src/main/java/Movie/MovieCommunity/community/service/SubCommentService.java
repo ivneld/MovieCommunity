@@ -43,17 +43,11 @@ public class SubCommentService {
     @Transactional
     public ResponseDto<?> createReComment(SubCommentRequestDto requestDto, @CurrentUser UserPrincipal member) {
 
-        if (null == member.getId()) {
+        if (null == member) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
-/**
-        Member member = validateMember(request);
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
 
- */
         Comment comment = commentService.isPresentComment(requestDto.getCommentId());
 
         if (null == comment) {
@@ -67,8 +61,6 @@ public class SubCommentService {
                 .comment(comment)
                 .subComment(requestDto.getSubComment())
                 .build();
-
-        System.out.println(subComment.getComment());
 
         subCommentRepository.save(subComment);
 
@@ -92,7 +84,6 @@ public class SubCommentService {
         List<SubComment> subCommentList = subCommentRepository.findAllByComment(comment);
         List<SubCommentResponseDto> subCommentResponseDtoList = new ArrayList<>();
 
-        //대댓글 조회까진 되는데 좋아요 추가 미완성
         List<SubCommentLike> subCommentForLike = new ArrayList<>();
 
         for (SubComment subCommentEach : subCommentList) {
@@ -115,16 +106,12 @@ public class SubCommentService {
     //대댓글 수정하기
     @Transactional
     public ResponseDto<?> updateSubComment(Long id, SubCommentRequestDto subCommentRequestDto,  @CurrentUser UserPrincipal member) {
-        if (null == member.getId()) {
+        if (null == member) {
             return ResponseDto.fail("MEMBER_NOT_FOUND",
                     "로그인이 필요합니다.");
         }
 
-/**
-        if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
-        }
-*/
+
         SubComment subComment = isPresentSubComment(id);
         if (null == subComment) {
             return ResponseDto.fail("NOT_FOUND", "존재하지 않는 대댓글 id 입니다.");
@@ -150,20 +137,10 @@ public class SubCommentService {
     //대댓글 삭제하기
     @Transactional
     public ResponseDto<?> deleteSubComment(Long id, @CurrentUser UserPrincipal member) {
-        if (null == member.getId()) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
-        /**
-        if (null == request.getHeader("Authorization")) {
-            return ResponseDto.fail("MEMBER_NOT_FOUND",
-                    "로그인이 필요합니다.");
-        }
-        Member member = validateMember(request);
         if (null == member) {
-            return ResponseDto.fail("INVALID_TOKEN", "Token이 유효하지 않습니다.");
+            return ResponseDto.fail("MEMBER_NOT_FOUND",
+                    "로그인이 필요합니다.");
         }
-         */
 
         SubComment subComment = isPresentSubComment(id);
         if (null == subComment) {
@@ -185,13 +162,4 @@ public class SubCommentService {
     }
 
 
-    /**
-    @Transactional
-    public Member validateMember(HttpServletRequest request){
-        if (!tokenProvider.validateToken(request.getHeader("Refresh-Token"))) {
-            return null;
-        }
-        return tokenProvider.getMemberFromAuthentication();
-    }
-    */
 }

@@ -66,7 +66,7 @@ public class UserDto {
     public static class Response implements Serializable {
 
         private final Long id;
-        private final String username;
+        private final String nickname;
 //        private final String nickname;
 //        private final Authority role;
 

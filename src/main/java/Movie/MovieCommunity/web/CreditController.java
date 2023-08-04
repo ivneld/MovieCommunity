@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name="credit", description="크레딧 api")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/credit")
+@RequestMapping("/api/credit")
 public class CreditController {
     private final CreditService creditService;
     @Operation(method = "get", summary = "크레딧 상세 검색")

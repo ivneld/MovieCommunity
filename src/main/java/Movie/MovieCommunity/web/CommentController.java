@@ -1,6 +1,5 @@
 package Movie.MovieCommunity.web;
 
-import Movie.MovieCommunity.annotation.CurrentMember;
 import Movie.MovieCommunity.config.security.token.CurrentUser;
 import Movie.MovieCommunity.config.security.token.UserPrincipal;
 import Movie.MovieCommunity.service.CommentService;
@@ -32,7 +31,7 @@ import java.util.List;
  * genre : genre_id, genre_nm
  */
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/api/comment")
 @RequiredArgsConstructor
 @Slf4j
 @CrossOrigin("http://localhost:3000")

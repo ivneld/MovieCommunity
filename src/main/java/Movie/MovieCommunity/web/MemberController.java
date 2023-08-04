@@ -7,6 +7,7 @@ import Movie.MovieCommunity.service.MovieService;
 import Movie.MovieCommunity.util.CustomPageImpl;
 import Movie.MovieCommunity.util.CustomPageRequest;
 import Movie.MovieCommunity.web.apiDto.comment.MyCommentDto;
+import Movie.MovieCommunity.web.apiDto.member.MemberProfileResponse;
 import Movie.MovieCommunity.web.apiDto.member.UpdateMemberProfile;
 import Movie.MovieCommunity.web.apiDto.movie.entityDto.LikeGenreDto;
 import Movie.MovieCommunity.web.apiDto.movie.response.MovieLikeGenreResponse;
@@ -35,7 +36,7 @@ import java.util.List;
 @Tag(name="member", description="사용자 api")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/mypage")
+@RequestMapping("/api/mypage")
 public class MemberController {
     private final MemberService memberService;
     @Operation(method = "get", summary = "관심 영화 조회")
@@ -61,6 +62,7 @@ public class MemberController {
         if(memberId != member.getId()){
             throw new RuntimeException("권한이 없습니다.");
         }
+
         List<LikeGenreDto> response = memberService.findLikeMovieGenre(memberId);
         return new ResponseEntity(response, HttpStatus.OK);
     }
@@ -93,4 +95,16 @@ public class MemberController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @Operation(method = "get", summary = "프로필 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "프로필 조회 성공", useReturnTypeSchema = true)
+    })
+    @GetMapping("/{memberId}/profile")
+    public ResponseEntity<MemberProfileResponse> findProfile(@PathVariable Long memberId , @CurrentUser UserPrincipal member){
+        if(memberId != member.getId()){
+            throw new RuntimeException("권한이 없습니다.");
+        }
+        MemberProfileResponse response = memberService.findProfile(memberId);
+        return new ResponseEntity(response, HttpStatus.OK);
+    }
 }

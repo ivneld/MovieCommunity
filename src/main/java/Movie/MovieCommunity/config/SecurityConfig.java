@@ -22,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -59,7 +61,7 @@ public class SecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(customUserDetailsService);
         authenticationManager = authenticationManagerBuilder.build();
-
+        http.cors(withDefaults());
         http
                 .cors()
                 .and()
@@ -77,15 +79,16 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .authorizeRequests()
+                .antMatchers("/api/movie/**", "/api/genre/**","/api/comment/**","/api/credit/**")
                 .antMatchers("/","/community/**","/heart/**","/posts/**","/api/subcomment/**","/api/auth/**","/api/posts/**","/postByMovie/**","/postByMember/**","/posts/read/**", "/posts/search/**", "/error","/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/movie/**", "/genre/**","/comment/**","/credit/**","/tv/**","/gallery/**")
                 .permitAll()
-                .antMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                .antMatchers("/api/swagger-ui/**", "/api/docs/**")
                 .permitAll()
-                .antMatchers("/login/**","/auth/**", "/oauth2/**")
+                .antMatchers("/api/login/**","/api/auth/**", "/api/oauth2/**")
                 .permitAll()
-                .antMatchers("/community/**","/heart/**","/posts/**","/api/subcomment/**","/api/auth/**","/api/posts/**","/postByMovie/**","/postByMember/**","/posts/read/**", "/posts/search/**","/tv/**","/gallery/**")
+                .antMatchers("/api/community/**","/api/heart/**","/api/posts/**","/api/subcomment/**","/api/auth/**","/api/posts/**","/api/postByMovie/**","/api/postByMember/**","/api/posts/read/**", "/api/posts/search/**","/api/tv/**","/api/gallery/**")
                 .permitAll()
-                .antMatchers("/blog/**")
+                .antMatchers("/api/blog/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

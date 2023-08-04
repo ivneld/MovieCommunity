@@ -7,6 +7,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import java.util.*;
 
 @Slf4j
@@ -15,15 +20,21 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     private Long id;
     private String email;
     private String name;
+    private String nickName;
     private String password;
+
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Long id, String email, String name, String password, Collection<? extends GrantedAuthority> authorities) {
+    private Member member;
+
+    public UserPrincipal(Long id, String email, String name, String password,
+                         String nickName, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.password = password;
+        this.nickName = nickName;
         this.authorities = authorities;
     }
 
@@ -34,6 +45,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
                 member.getEmail(),
                 member.getName(),
                 member.getPassword(),
+                member.getNickname(),
                 authorities
         );
     }
@@ -51,7 +63,7 @@ public class UserPrincipal implements OAuth2User, UserDetails {
 
     public static UserPrincipal create(Member member, Map<String, Object> attributes) {
         log.info("사용자 정보 세팅");
-        log.info("member = {}" , member);
+        log.info("member = {}", member);
         UserPrincipal userPrincipal = UserPrincipal.create(member);
         userPrincipal.setAttributes(attributes);
         log.info("userPrincipal = " + userPrincipal);
@@ -94,6 +106,10 @@ public class UserPrincipal implements OAuth2User, UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public String getNickName() {
+        return nickName;
     }
 
     @Override

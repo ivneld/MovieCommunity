@@ -37,10 +37,10 @@ public class SubCommentController {
     }
 
     //대댓글 조회
-    @Operation(method = "get", summary = "커뮤니티 대댓글 조회")
-    @RequestMapping(value = "/api/subcomment/{subCommentId}", method = RequestMethod.GET)
-    public ResponseDto<?> getAllSubComments(@PathVariable Long subCommentId){
-        return subCommentService.getAllSubcommentsByComment(subCommentId);
+    @Operation(method = "get", summary = "해당 댓글의 모든 커뮤니티 대댓글 조회")
+    @RequestMapping(value = "/api/subcomment/{commentId}", method = RequestMethod.GET)
+    public ResponseDto<?> getAllSubComments(@PathVariable Long commentId){
+        return subCommentService.getAllSubcommentsByComment(commentId);
     }
 
     // 수정 / 로그인 필요 ( 여기서 id는 수정하고 싶은 대댓글 id ) auth 추가
@@ -53,9 +53,9 @@ public class SubCommentController {
 
     // 삭제 / 로그인 필요
     @Operation(method = "delete", summary = "커뮤니티 대댓글 삭제")
-    @RequestMapping(value = "/api/subcomment/{id}", method = RequestMethod.DELETE)
-    public ResponseDto<?> deleteComment(@PathVariable Long id,
+    @RequestMapping(value = "/api/subcomment/{subCommentId}", method = RequestMethod.DELETE)
+    public ResponseDto<?> deleteComment(@PathVariable Long subCommentId,
                                         @CurrentUser UserPrincipal member) {
-        return subCommentService.deleteSubComment(id, member);
+        return subCommentService.deleteSubComment(subCommentId, member);
     }
 }

@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.community.domain;
 
 import Movie.MovieCommunity.JPADomain.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,10 +21,12 @@ public class PostsLike {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "member_id")
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "id")
     private Posts posts;
 

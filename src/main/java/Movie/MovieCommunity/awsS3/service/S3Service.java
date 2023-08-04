@@ -11,6 +11,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,9 +57,12 @@ public class S3Service {
         // 고유한 key 값을 갖기위해 현재 시간을 postfix로 붙여줌
         SimpleDateFormat date = new SimpleDateFormat("yyyymmddHHmmss");
         String fileName = file.getOriginalFilename() + "-" + date.format(new Date());
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
 
         // 파일 업로드
-        s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null)
+        s3Client.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), metadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 
         return fileName;

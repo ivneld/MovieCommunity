@@ -36,7 +36,7 @@ import java.util.*;
 @Tag(name = "ott", description = "ott 순위 api")
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping("/api")
 @Service
 @RequiredArgsConstructor
 public class TvDataService {

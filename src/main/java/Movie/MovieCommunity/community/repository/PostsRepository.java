@@ -1,6 +1,7 @@
 package Movie.MovieCommunity.community.repository;
 
 
+import Movie.MovieCommunity.JPADomain.Member;
 import Movie.MovieCommunity.community.domain.Posts;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,8 +29,12 @@ public interface PostsRepository extends JpaRepository<Posts, Long> {
 
 
     Page<Posts> findByTitleContaining(String keyword, Pageable pageable);
+    List<Posts> findByTitleContaining(String keyword);
 
-    Optional<List<Posts>> findByMovieId(Long movieId);
+    Page<Posts> findByMovieId(Long movieId,  Pageable pageable);
+    List<Posts> findByMovieId(Long movieId);
 
-    Optional<List<Posts>> findByWriter(String nickname);
+
+    Page<Posts> findByUser(Member user, Pageable pageable);
+    List<Posts> findByUser(Member user);
 }

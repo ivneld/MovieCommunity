@@ -15,10 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 public class DetailPageDto {
 
-    private String nickname;
-    private String title;
-    private String content;
-    private List<GalleryEntity> gallery;
-    private int likeCount;
-    private int commentCount;
+    private List<PostsDto.Total> posts;
+    private Integer totalPostCount;
+    public DetailPageDto(List<PostsDto.Total> posts, Integer totalPostCount){
+        this.posts = posts;
+        this.totalPostCount = totalPostCount;
+    }
 }

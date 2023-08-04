@@ -27,7 +27,7 @@ import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @CrossOrigin
 @Tag(name="user", description = "사용자 API")
