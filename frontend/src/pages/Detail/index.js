@@ -30,7 +30,12 @@ const Detail = () => {
     console.log(detailData)
     const backgroundPoster = detailData?.posterPath?.replace('w500', 'w1280');
 
-    const { data : communityData, error2 } = useSWR(`${apiUrl}/postByMovie/${id}`, fetcher, { 
+    const [page, setPage] = useState(0)
+    const [size, setSize] = useState(5)
+    const handlePageChange = (page) => {
+        setPage(page)
+        };
+    const { data : communityData, error2 } = useSWR(`${apiUrl}/postByMovie/${id}?page=${page}&size=${size}`, fetcher, { 
         dedupingInterval: 100000,
     });
     console.log("communityData",communityData)
@@ -140,7 +145,7 @@ const Detail = () => {
     return(
         <>
             {detailData && 
-                <div style={{marginBottom:"100px"}}>
+                <div style={{marginBottom:"200px"}}>
                     <div style={{backgroundColor:"black",height:"9vh"}}></div>
                     
                     <div style={{display: "flex", backgroundImage:`url(${backgroundPoster})`, backgroundSize:"cover", backgroundRepeat: 'no-repeat', backgroundPosition: 'center', width: '100%', height:'75vh'}}>
@@ -227,14 +232,16 @@ const Detail = () => {
 
                             <TabPanel>
                                 <CustomDiv>한줄 코멘트</CustomDiv>
+                                <hr/>
                                 <div onClick={() => (onClickModal())} style={{cursor:"pointer", fontSize:"24px", fontWeight:"bold"}}>✏️코멘트 남기기</div>
                                 <Comment/>
-                                <hr/>
+                                <hr style={{border:"1px solid black"}}/>
                                 <CustomDiv>리뷰</CustomDiv>
-                                <div style={{display:"flex"}}>
-                                    {communityData?.posts?.map((obj,idx)=>{
+                                <hr/>
+                                <div style={{display:"flex", justifyContent:"center"}}>
+                                    {communityData?.postsList?.map((obj,idx)=>{
                                         return(
-                                            <div key={idx}>
+                                            <div key={idx} style={{ margin:"0 15px 20px"}}>
                                                 <Link to="/communitydetail" state={{postId : obj.id}}>
                                                     <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
                                                         {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
@@ -250,13 +257,19 @@ const Detail = () => {
                                                 </Link>
                                             </div>
                                         )
-                                    })}
-                                    {communityData?.posts.length===0 && 
+                                    })
+                                    }
+                                    {communityData?.postsList.length===0 && 
                                         <div>
                                             <div>해당 영화에 대한 리뷰가 없습니다!</div>
                                             <Link to="/community">리뷰 작성하러 가기</Link>
                                         </div>
                                     }
+                                </div>
+                                <div style={{display:"flex", justifyContent:"center",}}>
+                                    <button onClick={() => handlePageChange(page-1)}>&lt;</button>
+                                    <span>{parseInt(page)+1}페이지</span>
+                                    <button onClick={() => handlePageChange(page+1)}>&gt;</button>
                                 </div>
                             </TabPanel>
                         </Tabs>
@@ -287,6 +300,10 @@ const CommentModal = ({show, onCloseModal, data}) => {
             setComment('');
             alert('로그인이 필요한 기능입니다.')
             return;
+        }
+        if (comment.length > 22){
+            alert('코멘트 제한길이를 지켜주세요!')
+            return
         }
         try{
             const accessToken = localStorage.getItem('accessToken');
@@ -330,6 +347,7 @@ const CommentModal = ({show, onCloseModal, data}) => {
 
                         <div style={{display:"flex"}}>
                             <button type="submit">등록</button>
+                            <div>{comment.length}/22</div>
                         </div>
           
                 </Form>
@@ -352,6 +370,10 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
             setComment('');
             alert('로그인이 필요한 기능입니다.')
             return;
+        }
+        if (comment.length > 22){
+            alert('코멘트 제한길이를 지켜주세요!')
+            return
         }
         try{
             const accessToken = localStorage.getItem('accessToken');
@@ -395,6 +417,7 @@ const UpdateModal = ({show, onCloseModal, commentId, detail}) => {
 
                         <div style={{display:"flex"}}>
                             <button type="submit">등록</button>
+                            <div>{comment.length}/22</div>
                         </div>
                 </Form>
             </Modal2>
@@ -419,8 +442,7 @@ function Comment(){
     const { data: moreData, error2 } = useSWR(isMoreData ? `${apiUrl}/comment/more/${detailOrId}` : null, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-
-    console.log('zz',moreData)
+    console.log('moreData',moreData)
     const [showMovieDetailModal2,setShowMovieDetailModal2] = useState(false); // 댓글 수정
     const [updateCommentId, setUpdateCommentId] = useState(null)
     const onCloseModal2 = useCallback(() => {
@@ -452,8 +474,6 @@ function Comment(){
             console.error('댓글 삭제 실패!', error);
         }
     }
-    console.log('commentData:',commentData)
-    console.log('updateCommentId:',updateCommentId)
 
     const commentLike = async(commentId, likeCount, myLike) => { // 댓글 좋아요 
         if (!currentUserData){
@@ -502,18 +522,18 @@ function Comment(){
             <>
                 {/* 코멘트 8개만 */}
                 <div style={{display:"flex", justifyContent:"center"}}>
-                    <div style={{ maxWidth:"1150px", display: "flex", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", width:"1150px", flexWrap:"wrap" }}>
                         {!isMoreData &&
                         commentData?.map((obj, index) => {
-                            if(obj.movieId == detail){
+                            if(obj.movieId === detail){
                             return (
-                                <div key={index} style={{ width:"25%", marginBottom:"20px", border:"1px solid black" }}>
+                                <div key={index} style={{ width:"25%", minWidth:"287.5px", minHeight:"145px", marginBottom:"20px", border:"1px solid black" }}>
                                     <div style={{display:"flex", fontSize:"24px", fontWeight:"bold"}}>
                                         <div style={{marginLeft:"20px"}}>{obj.username}</div>
                                         <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                     </div>
-                                    <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
-                                    <div style={{display:"flex", fontSize:"24px"}}>
+                                    <div style={{marginLeft:"20px", fontSize:"24px", minHeight:"72px"}}>{obj.content}</div>
+                                    <div style={{display:"flex", fontSize:"24px",}}>
                                         <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
                                         <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>
                                     </div>
@@ -536,7 +556,7 @@ function Comment(){
                                         <div style={{marginLeft:"20px"}}>{obj.username}</div>
                                         <div onClick={() => (commentLike(obj.commentId, obj.likeCount, obj.myLike))} style={{marginLeft:"auto", marginRight:"20px", cursor:"pointer"}}>👍 {obj.likeCount}</div>
                                     </div>
-                                    <div style={{marginLeft:"20px", fontSize:"24px"}}>{obj.content}</div>
+                                    <div style={{marginLeft:"20px", fontSize:"24px", minHeight:"72px"}}>{obj.content}</div>
                                     <div style={{display:"flex", fontSize:"24px"}}>
                                         <div onClick={() => (onClickModal2(obj.commentId))} style={{cursor:"pointer", marginLeft:"20px"}}>수정</div>
                                         <div onClick={() => (handleDelete(obj.commentId))} style={{cursor:"pointer", marginLeft:"auto", marginRight:"20px"}}>삭제</div>

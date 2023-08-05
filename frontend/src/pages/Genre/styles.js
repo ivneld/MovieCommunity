@@ -9,5 +9,12 @@ export const FlexDiv = styled.div`
     display: flex;
     justify-content: center; 
     align-items: center;
-    background-color: #63CFDE;
+    background-color: rgb(145, 205, 220);
+    transition: all 0.25s;
+
+    &:hover {
+    transform: scale(1.05);
+    background-color: RGB(255, 215, 0);
+    transition: all 0.5s; 
+    }
 `;

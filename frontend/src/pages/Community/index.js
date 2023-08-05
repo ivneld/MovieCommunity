@@ -35,10 +35,10 @@ const Community = () => {
             {postNewestData && 
                 <>
                     <div style={{fontSize:"40px", fontWeight:"bold"}}>최근 작성된 리뷰</div>
-                    <div style={{display:"flex"}}>
+                    <div style={{display:"flex", justifyContent:"center"}}>
                         {postNewestData?.postsList?.map((obj,idx)=>{
                             return(
-                                <div key={idx}>
+                                <div key={idx} style={{ margin:"0 15px 20px"}}>
                                     <div style={{display:"flex"}}>
                                         <div>{obj.view} views</div>
                                     </div>
@@ -68,10 +68,10 @@ const Community = () => {
             {postViewOrderData &&
             <>
                 <div style={{fontSize:"40px", fontWeight:"bold"}}>조회순</div>
-                <div style={{display:"flex"}}>
+                <div style={{display:"flex", justifyContent:"center"}}>
                 {postViewOrderData?.postsList?.map((obj,idx)=>{
                             return(
-                                <div key={idx}>
+                                <div key={idx} style={{ margin:"0 15px 20px"}}>
                                     <div style={{display:"flex"}}>
                                         <div>{obj.view} views</div>
                                     </div>
@@ -101,10 +101,10 @@ const Community = () => {
             {postLikeOrderData &&
             <>
                 <div style={{fontSize:"40px", fontWeight:"bold"}}>좋아요순</div>
-                <div style={{display:"flex"}}>
+                <div style={{display:"flex", justifyContent:"center"}}>
                 {postLikeOrderData?.postsList?.map((obj,idx)=>{
                             return(
-                                <div key={idx}>
+                                <div key={idx} style={{ margin:"0 15px 20px"}}>
                                     <div style={{display:"flex"}}>
                                         <div>{obj.view} views</div>
                                     </div>
@@ -124,7 +124,7 @@ const Community = () => {
                             )
                         })}
                 </div>
-                <div style={{display:"flex", justifyContent:"center"}}>
+                <div style={{display:"flex", justifyContent:"center", marginBottom:"30px"}}>
                     <button onClick={() => handlePageChange(currentPage.likeOrder-1,'likeOrder')}>&lt;</button>
                     <span>{parseInt(currentPage.likeOrder+1)}페이지</span>
                     <button onClick={() => handlePageChange(currentPage.likeOrder+1,'likeOrder')}>&gt;</button>

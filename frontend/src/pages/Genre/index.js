@@ -15,9 +15,9 @@ const Genre = () => {
         <>
             <div style={{fontSize:"24px", fontWeight:"bold", margin: "20px"}}>장르별 보고싶은 영화를 찾아보세요</div>
             <div style={{color:"black", fontWeight:"bold", display:"flex", justifyContent:"center"}}>
-                <div style={{ maxWidth:"1700px", display: "flex", flexWrap: "wrap" }}>
+                <div style={{ maxWidth:"1200px", display: "flex", flexWrap: "wrap" }}>
                     {genreData?.map((data, index) => (
-                        <Link to={`/genre/${data.genreId}`} state={{genreId : data.genreId, genreNm: data.genreNm, count: data.count}} style={{width:"12.5%", marginBottom:"20px"}}>
+                        <Link to={`/genre/${data.genreId}`} state={{genreId : data.genreId, genreNm: data.genreNm, count: data.count}} style={{width:"20%", marginBottom:"50px", textDecoration:"none"}}>
                             <FlexDiv key={data.genreId}>
                                 <div>{data.genreNm} </div>
                                 {/* <span>{data.count}</span> */}

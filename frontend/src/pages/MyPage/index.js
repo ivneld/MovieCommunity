@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { Link } from 'react-router-dom';
 
-import { ChartContainer } from './styles';
+import { ChartContainer, MyHr } from './styles';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import {  Chart as ChartJS, registerables  } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -22,41 +22,47 @@ const MyPage = () => {
     const decodedToken = jwt_decode(accessToken);
     const memberId = decodedToken.sub
     console.log('memberId',memberId)
+
+    const [page, setPage] = useState({
+      movie: 1, // 영화
+      comment: 1, // 댓글
+      review: 0 // 리뷰
+  })
+  const [size, setSize] = useState({
+      movie: 4, // 영화
+      comment: 3, // 댓글
+      review: 1 // 리뷰
+  })
+  const handlePageChange = (page, category) => {
+  setPage((prevPages) => ({
+      ...prevPages, // 예를 들어, 영화 넘겼을 경우, 영화인이 그대로 있어야 하기 떄문! ...prevPages 없으면 영화 넘기면 영화인 사라짐!
+      [category]: page,
+  }));
+  };
+
     const { data: currentUserData, error4 } = useSWR(`${apiUrl}/mypage/${memberId}/profile`, fetcherAccessToken);
     console.log('currentUserData',currentUserData)
-    const { data : interestData, error } = useSWR(`${apiUrl}/mypage/${memberId}/movie`, fetcherAccessToken, {
-        dedupingInterval: 100000,
-    });
+
     const { data : genreData, error2 } = useSWR(`${apiUrl}/mypage/${memberId}/genre`, fetcherAccessToken, {
+      dedupingInterval: 100000,
+    });
+    console.log('genreData',genreData)
+
+    const { data : interestData, error } = useSWR(`${apiUrl}/mypage/${memberId}/movie?page=${page.movie}&size=${size.movie}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-    const { data : communityData, error5 } = useSWR(`${apiUrl}/postByMember/nickname`, fetcherAccessToken, {
+    console.log('interestData',interestData)
+
+    const { data : communityData, error5 } = useSWR(`${apiUrl}/postByMember/nickname?page=${page.review}&size=${size.review}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
     console.log('communityData',communityData)
-
-    const [ page, SetPage ] = useState(1);
-    const handlePrevYear = () => {
-      if(page===1){
-        alert('페이지 이동 불가!')
-        return
-      }
-      SetPage(page - 1);
-    };
-    const handleNextYear = () => {
-      if(page===3){
-        alert('페이지 이동 불가!')
-        return
-      }
-      SetPage(page + 1);
-    };
-    const { data : commentData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/comment?page=${page}`, fetcherAccessToken, {
+   
+    const { data : commentData, error3 } = useSWR(`${apiUrl}/mypage/${memberId}/comment?page=${page.comment}&size=${size.comment}`, fetcherAccessToken, {
         dedupingInterval: 100000,
     });
-    
-    console.log('interestData',interestData)
-    console.log('genreData',genreData)
     console.log('commentdata',commentData)
+
     const moveRef1 = useRef(null)
     const moveRef2 = useRef(null)
     const moveRef3 = useRef(null)
@@ -278,28 +284,33 @@ const MyPage = () => {
                                 <Bar data={barData} options={options2} style={{maxWidth:"800px", width:"800px", maxHeight:"340px", height:"340px"}}/>
                             </ChartContainer>
                         </div>
-                        <hr/>
-                        <div ref={moveRef2}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px"}}>{currentUserData?.nickName}님이 좋아요 한 영화</div>
-                            <div style={{display:"flex", justifyContent:"center"}}>
-                                <div style={{ maxWidth:"1150px", marginTop:"20px", display: "flex", flexWrap: "wrap" }}>
-                                    {interestData?.content?.map((obj, idx) => {
-                                        return(
-                                          <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}} style={{color:"black", textDecoration:"none"}}>
-                                            <div key={idx}>
-                                                <img src={obj.posterPath} width="266.66px" height="400px" alt="포스터주소" />
-                                                <div style={{display:"flex", justifyContent:"center", fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</div>
-                                            </div>
-                                          </Link>
-                                        )
-                                    })}
-                                </div>
-                            </div>
+                        <MyHr/>
+                        <div ref={moveRef2} style={{marginLeft:"100px"}}>
+                          <div style={{fontSize:"30px", fontWeight:"bold", marginBottom:"20px"}}>{currentUserData?.nickName}님이 좋아요 한 영화</div>
+                          <div style={{ display: "flex", justifyContent:"center" }}>
+                              {interestData?.content?.map((obj, idx) => {
+                                  return(
+                                    <div key={idx} style={{ margin:"0 15px 20px"}}>
+                                      <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}} style={{color:"black", textDecoration:"none"}}>
+                                        <div key={idx}>
+                                            <img src={obj.posterPath} width="266.66px" height="400px" alt="포스터주소" />
+                                            <div style={{display:"flex", justifyContent:"center", fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</div>
+                                        </div>
+                                      </Link>
+                                    </div>
+                                  )
+                              })}
+                          </div>
+                          <div style={{display:"flex", justifyContent:"center"}}>
+                            <button onClick={() => handlePageChange(page.movie-1,'movie')}>&lt;</button>
+                            <span>{parseInt(page.movie)}페이지</span>
+                            <button onClick={() => handlePageChange(page.movie+1,'movie')}>&gt;</button>
+                          </div>
                         </div>
-                        <hr/>
+                        <MyHr/>
                         <div ref={moveRef3} style={{marginLeft:"100px"}}>
                             <span style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.nickName}님이 쓴 코멘트</span>
-                            <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px", marginBottom:"30px"}}/>
+                            <hr style={{borderWidth:"2px", borderColor: "#000000",}}/>
                             <div>
                               {commentData?.content?.map((obj,idx)=>{
                                   const modifiedDt = new Date(obj.modifiedDt);
@@ -307,8 +318,11 @@ const MyPage = () => {
                                   const month = String(modifiedDt.getMonth() + 1).padStart(2, '0');
                                   const day = String(modifiedDt.getDate()).padStart(2, '0');
                                   const formattedDt = `${year}.${month}.${day}`;
+
+                                   // 마지막 요소인지 확인하는 조건을 추가 (마지막 코멘트 아래에는 borderBottom : "1px solid black" 적용 x)
+                                   const isLastElement = idx === commentData.content.length - 1;
                                   return(
-                                  <div key={idx}>
+                                  <div key={idx} style={{ borderBottom: isLastElement ? "none" : "1px solid black" }}>
                                     <div style={{display:"flex"}}>
                                       <div style={{fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</div>
                                       <div style={{fontSize:"14px", marginLeft:"15px"}}>{formattedDt}</div>
@@ -317,40 +331,48 @@ const MyPage = () => {
                                     <div>
                                       {obj.content}
                                     </div>
-                                    <hr style={{borderColor:"#000000", marginTop:"3px", marginBottom:"3px"}}/>
                                   </div>
                                 )
                               })}
                             </div>
-                            <div style={{display:"flex", justifyContent:"center"}}>
-                              <button onClick={handlePrevYear}>&lt;</button>
-                              <span>{page}페이지</span>
-                              <button onClick={handleNextYear}>&gt;</button>
-                            </div>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginTop:"30px"}}>{currentUserData?.nickName}님이 쓴 리뷰</div>
-                            <hr style={{borderWidth:"2px", borderColor: "#000000", marginTop:"30px",}}/>
-                            <div >
-                              {communityData?.posts?.map((obj,idx)=>{
-                                return(
-                                  <div style={{display:"flex", borderBottom:"1px solid black", padding:"20px 0"}}>
-                                    <div>
-                                      <div style={{display:"flex", alignItems:"center"}}>
-                                        <div style={{fontSize:"30px", fontWeight:"bold", marginRight:"20px"}}>{obj.title}</div>
-                                        <div style={{fontSize:"14px", marginRight:"20px"}}>조회수 {obj.view}</div>
+                              <div style={{display:"flex", justifyContent:"center"}}>
+                                <button onClick={() => handlePageChange(page.comment-1,'comment')}>&lt;</button>
+                                <span>{parseInt(page.comment)}페이지</span>
+                                <button onClick={() => handlePageChange(page.comment+1,'comment')}>&gt;</button>
+                              </div>
+                           </div>
+                           <MyHr/>
+                            <div style={{marginLeft:"100px"}}>
+                              <div style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.nickName}님이 쓴 리뷰</div>
+                              <hr style={{borderWidth:"2px", borderColor: "#000000", marginBottom:"-5px"}}/>
+                              <div >
+                                {communityData?.postsList?.map((obj,idx)=>{
+                                  return(
+                                    <div style={{display:"flex", padding:"20px 0"}}>
+                                      <div>
+                                        <div style={{display:"flex", alignItems:"center"}}>
+                                          <div style={{fontSize:"20px", fontWeight:"bold", marginRight:"20px"}}>{obj.title}</div>
+                                          <div style={{fontSize:"14px", marginRight:"20px"}}>좋아요 {obj.likeCount}</div>
+                                          <div style={{fontSize:"14px", marginRight:"20px"}}>조회수 {obj.view}</div>
+                                        </div>
+                                        <div>{obj.content}</div>
                                       </div>
-                                      <div>{obj.content}</div>
+                                      <img src={obj.moviePosterPath} style={{marginLeft:"auto", marginRight:"20px"}} width="133.33px" height="200px" alt="포스터주소"/>
                                     </div>
-
-                                    <img src={obj.moviePosterPath} style={{marginLeft:"auto", marginRight:"20px"}} width="133.33px" height="200px" alt="포스터주소"/>
-                                  </div>
-                                )
-                              })}
+                                  )
+                                })}
+                              </div>
+                              <div style={{display:"flex", justifyContent:"center"}}>
+                                <button onClick={() => handlePageChange(page.review-1,'review')}>&lt;</button>
+                                <span>{parseInt(page.review)+1}페이지</span>
+                                <button onClick={() => handlePageChange(page.review+1,'review')}>&gt;</button>
+                              </div>
                             </div>
-                        </div>
-                        <hr/>
-                        <div ref={moveRef4} style={{marginLeft:"100px"}}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginBottom:"20px"}}>프로필 수정</div>
-                            <form onSubmit={handleSubmit}>
+                       
+                            <MyHr/>
+                        <div ref={moveRef4} style={{marginLeft:"100px", marginBottom:"30px"}}>
+                            <div style={{fontSize:"30px", fontWeight:"bold", }}>프로필 수정</div>
+                            <form onSubmit={handleSubmit} style={{display:"flex", justifyContent:"center"}}>
                               <input
                               value={comment}
                               onChange={handleChange}
@@ -358,7 +380,7 @@ const MyPage = () => {
                               />
 
                               <div style={{display:"flex"}}>
-                                  <button type="submit" style={{margin: "20px 0px 20px 140px"}}>완료</button>
+                                  <button type="submit" style={{marginLeft:"10px"}}>완료</button>
                               </div>
                             </form>
                         </div>

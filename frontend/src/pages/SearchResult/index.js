@@ -16,12 +16,12 @@ function SearchResult() {
     const [page, setPage] = useState({
         movie: 1, // 영화
         credit: 1, // 영화인
-        review: 0
+        review: 0 // 리뷰
     })
     const [size, setSize] = useState({
         movie: 5, // 영화
         credit: 5, // 영화인
-        review: 5
+        review: 5 // 리뷰
     })
     const handlePageChange = (page, category) => {
     setPage((prevPages) => ({
@@ -51,7 +51,7 @@ function SearchResult() {
                 <Tab>영화인</Tab>
                 <Tab>커뮤니티</Tab>
             </TabList>
-            <hr/>
+          
             <TabPanel>
                 <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>영화 <span style={{fontWeight:"normal"}}>{movieDetailData?.totalElements}</span></div>
                     <div style={{display: "flex", flexWrap: "wrap"}}>
@@ -95,19 +95,19 @@ function SearchResult() {
                         <button onClick={() => handlePageChange(page.credit+1,'credit')}>&gt;</button>
                     </div>
                 <hr/>
-                <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>리뷰 <span style={{fontWeight:"normal"}}>{communityData?.totalElements}</span></div>
+                <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>리뷰 <span style={{fontWeight:"normal"}}>{communityData?.totalPostsCount}</span></div>
                     <div style={{display: "flex", flexWrap: "wrap"}}>
-                        {communityData?.searchList?.content?.map((obj, idx)=>{
+                        {communityData?.postsList?.map((obj, idx)=>{
                             return(
                                 <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
                                 <Link to="/communitydetail" state={{postId : obj.id}}>
                                     <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
-                                        {/* <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/> */}
+                                        <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                         <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                             <div>제목 : {obj.title}</div>
                                             <div>내용 : {obj.content}</div>
                                             <div>좋아요 {obj.likeCount}</div>
-                                            <div>댓글 {obj.comments.length}</div>
+                                            <div>댓글 {obj.commentsCount}</div>
                                         </div>
                                     </div>
                                 </Link>
@@ -169,31 +169,31 @@ function SearchResult() {
             </TabPanel>
 
             <TabPanel>
-            <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>리뷰 <span style={{fontWeight:"normal"}}>{communityData?.totalElements}</span></div>
-                    <div style={{display: "flex", flexWrap: "wrap"}}>
-                        {communityData?.searchList?.content?.map((obj, idx)=>{
-                            return(
-                                <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>리뷰 <span style={{fontWeight:"normal"}}>{communityData?.totalPostsCount}</span></div>
+                <div style={{display: "flex", flexWrap: "wrap"}}>
+                    {communityData?.postsList?.map((obj, idx)=>{
+                        return(
+                            <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
                                 <Link to="/communitydetail" state={{postId : obj.id}}>
                                     <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
-                                        {/* <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/> */}
+                                        <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                         <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                             <div>제목 : {obj.title}</div>
                                             <div>내용 : {obj.content}</div>
                                             <div>좋아요 {obj.likeCount}</div>
-                                            <div>댓글 {obj.comments.length}</div>
+                                            <div>댓글 {obj.commentsCount}</div>
                                         </div>
                                     </div>
                                 </Link>
                             </div>
                             )
                         })}
-                    </div>
-                    <div style={{display:"flex", justifyContent:"center"}}>
-                        <button onClick={() => handlePageChange(page.review-1,'review')}>&lt;</button>
-                        <span>{parseInt(page.review)+1}페이지</span>
-                        <button onClick={() => handlePageChange(page.review+1,'review')}>&gt;</button>
-                    </div>
+                </div>
+                <div style={{display:"flex", justifyContent:"center"}}>
+                    <button onClick={() => handlePageChange(page.review-1,'review')}>&lt;</button>
+                    <span>{parseInt(page.review)+1}페이지</span>
+                    <button onClick={() => handlePageChange(page.review+1,'review')}>&gt;</button>
+                </div>
             </TabPanel>
         </Tabs>
     </div>

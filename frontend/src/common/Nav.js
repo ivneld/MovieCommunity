@@ -55,7 +55,8 @@ function Nav(props) {
 	};
 
 	// 검색목록 클릭 시
-	const clickSearchSubmit = () => {
+	const clickSearchSubmit = (movieNm) => {
+		const searchQuery = movieNm
 		if (searchQuery && searchResults && searchResults.length > 0) {
 			// navigate(`/movie/${id}`, { state: { detail: id } });
 			navigate('/movie/search/detail', {state: {search: searchQuery}})
@@ -115,7 +116,7 @@ function Nav(props) {
 							  {searchResults && searchResults.length > 0 && searchQuery && (
 									<ul className="autocomplete-results">
 									{searchResults.map((result) => (
-										<li key={result.id} onClick={() => (clickSearchSubmit())}>
+										<li key={result.id} onClick={() => (clickSearchSubmit(result.movieNm))}>
 											<div style={{display:"flex"}}>
 												<div>
 													<div>{result.movieNm}</div>
