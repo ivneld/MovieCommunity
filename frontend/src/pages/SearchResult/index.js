@@ -19,9 +19,9 @@ function SearchResult() {
         review: 0 // 리뷰
     })
     const [size, setSize] = useState({
-        movie: 5, // 영화
-        credit: 5, // 영화인
-        review: 5 // 리뷰
+        movie: 8, // 영화
+        credit: 8, // 영화인
+        review: 8 // 리뷰
     })
     const handlePageChange = (page, category) => {
     setPage((prevPages) => ({
@@ -54,12 +54,12 @@ function SearchResult() {
           
             <TabPanel>
                 <div style={{fontWeight:"bold", fontSize:"24px", marginBottom:"20px"}}>영화 <span style={{fontWeight:"normal"}}>{movieDetailData?.totalElements}</span></div>
-                    <div style={{display: "flex", flexWrap: "wrap"}}>
+                    <div style={{display: "flex", flexWrap: "wrap", margin: ""}}>
                         {movieDetailData?.content?.map((obj, idx)=>{
                             return(
-                                <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                                <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
                                     <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}}>
-                                        <img src={obj.posterPath} width="266.66px" height="400px" alt={obj.movieNm} />
+                                        <img src={obj.posterPath} width="133.33px" height="200px" alt={obj.movieNm} />
                                     </Link>
                                     <div style={{marginLeft:"20px"}}>
                                         <span style={{fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</span>
@@ -79,8 +79,8 @@ function SearchResult() {
                     <div style={{display: "flex", flexWrap: "wrap"}}>
                         {creditDetailData?.content?.map((obj, idx)=>{
                             return(
-                                <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
-                                    <img src={obj.profileUrl} width="266.66px" height="400px" alt={obj.actorNm} />
+                                <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                                    <img src={obj.profileUrl} width="133.33px" height="200px" alt={obj.actorNm} />
                                     <div style={{marginLeft:"20px"}}>
                                         <span style={{fontWeight:"bold", fontSize:"20px"}}>{obj.actorNm}</span>
                                         <div>{obj.creditCategory}</div>
@@ -99,15 +99,17 @@ function SearchResult() {
                     <div style={{display: "flex", flexWrap: "wrap"}}>
                         {communityData?.postsList?.map((obj, idx)=>{
                             return(
-                                <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                                <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
                                 <Link to="/communitydetail" state={{postId : obj.id}}>
-                                    <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                    <div style={{ position: 'relative', border:"2px solid black", width:"133.33px", height:"200px" }}>
                                         <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                         <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                            <div>제목 : {obj.title}</div>
-                                            <div>내용 : {obj.content}</div>
-                                            <div>좋아요 {obj.likeCount}</div>
-                                            <div>댓글 {obj.commentsCount}</div>
+                                            <div style={{fontSize:"20px"}}>{obj.title}</div>
+                                            <div>{obj.content}</div>
+                                            <div style={{display:"flex"}}>
+                                                <div style={{marginLeft:"10%"}}>🤍 {obj.likeCount}</div>
+                                                <div style={{marginLeft:"auto", marginRight:"15%"}}>🗨️ {obj.commentsCount}</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>
@@ -127,9 +129,9 @@ function SearchResult() {
                 <div style={{display: "flex", flexWrap: "wrap"}}>
                     {movieDetailData?.content?.map((obj, idx)=>{
                         return(
-                            <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                            <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
                                 <Link to={`/movie/${obj.id}`} key={obj.id} state={{detail : obj.id}}>
-                                    <img src={obj.posterPath} width="266.66px" height="400px" alt={obj.movieNm} />
+                                    <img src={obj.posterPath} width="133.33px" height="200px" alt={obj.movieNm} />
                                 </Link>
                                 <div style={{marginLeft:"20px"}}>
                                     <span style={{fontWeight:"bold", fontSize:"20px"}}>{obj.movieNm}</span>
@@ -151,8 +153,8 @@ function SearchResult() {
                     <div style={{display: "flex", flexWrap: "wrap"}}>
                         {creditDetailData?.content?.map((obj, idx)=>{
                             return(
-                                <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
-                                    <img src={obj.profileUrl} width="266.66px" height="400px" alt={obj.actorNm} />
+                                <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                                    <img src={obj.profileUrl} width="133.33px" height="200px" alt={obj.actorNm} />
                                     <div style={{marginLeft:"20px"}}>
                                         <span style={{fontWeight:"bold", fontSize:"20px"}}>{obj.actorNm}</span>
                                         <div>{obj.creditCategory}</div>
@@ -173,9 +175,9 @@ function SearchResult() {
                 <div style={{display: "flex", flexWrap: "wrap"}}>
                     {communityData?.postsList?.map((obj, idx)=>{
                         return(
-                            <div key={idx} style={{ width: "20%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
+                            <div key={idx} style={{ width: "25%", marginBottom:"20px", display:"flex", alignItems:"center" }}>
                                 <Link to="/communitydetail" state={{postId : obj.id}}>
-                                    <div style={{ position: 'relative', border:"2px solid black", width:"266.66px", height:"400px" }}>
+                                    <div style={{ position: 'relative', border:"2px solid black", width:"133.33px", height:"200px" }}>
                                         <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                         <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
                                             <div>제목 : {obj.title}</div>

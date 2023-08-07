@@ -71,7 +71,7 @@ function Nav(props) {
 					<ul className="navbar-nav mr-auto" style={{minWidth:"55%"}}>
 						{/* 메인 화면 */}
 						<li className="nav-item">
-							<Link className="nav-link" to="/"><i className="fas fa-home"></i> SPRING movies</Link>
+							<Link className="nav-link" to="/"><i className="fas"></i> SPRING movies</Link>
 						</li>
 
 						{/* 랭킹  */}

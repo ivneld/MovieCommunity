@@ -352,8 +352,8 @@ const MyPage = () => {
                                       <div>
                                         <div style={{display:"flex", alignItems:"center"}}>
                                           <div style={{fontSize:"20px", fontWeight:"bold", marginRight:"20px"}}>{obj.title}</div>
-                                          <div style={{fontSize:"14px", marginRight:"20px"}}>좋아요 {obj.likeCount}</div>
-                                          <div style={{fontSize:"14px", marginRight:"20px"}}>조회수 {obj.view}</div>
+                                          <div style={{fontSize:"14px", marginRight:"20px"}}>🤍 {obj.likeCount}</div>
+                                          <div style={{fontSize:"14px", marginRight:"20px"}}>🗨️ {obj.view}</div>
                                         </div>
                                         <div>{obj.content}</div>
                                       </div>

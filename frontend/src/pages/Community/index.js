@@ -47,10 +47,12 @@ const Community = () => {
                                             {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
                                             <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                                <div>제목 : {obj.title}</div>
-                                                <div>내용 : {obj.content}</div>
-                                                <div>좋아요 {obj.likeCount}</div>
-                                                <div>댓글 {obj.commentsCount}</div>
+                                                <div style={{fontSize:"30px"}}>{obj.title}</div>
+                                                <div>{obj.content}</div>
+                                                <div style={{display:"flex", marginLeft:"65%"}}>
+                                                    <div>🤍 {obj.likeCount}</div>
+                                                    <div style={{marginLeft:"10%"}}>🗨️ {obj.commentsCount}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </Link>
@@ -80,10 +82,12 @@ const Community = () => {
                                             {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
                                             <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                                <div>제목 : {obj.title}</div>
-                                                <div>내용 : {obj.content}</div>
-                                                <div>좋아요 {obj.likeCount}</div>
-                                                <div>댓글 {obj.commentsCount}</div>
+                                                <div style={{fontSize:"30px"}}>{obj.title}</div>
+                                                <div>{obj.content}</div>
+                                                <div style={{display:"flex", marginLeft:"65%"}}>
+                                                    <div>🤍 {obj.likeCount}</div>
+                                                    <div style={{marginLeft:"10%"}}>🗨️ {obj.commentsCount}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </Link>
@@ -113,10 +117,12 @@ const Community = () => {
                                             {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
                                             <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                                <div>제목 : {obj.title}</div>
-                                                <div>내용 : {obj.content}</div>
-                                                <div>좋아요 {obj.likeCount}</div>
-                                                <div>댓글 {obj.commentsCount}</div>
+                                                <div style={{fontSize:"30px"}}>{obj.title}</div>
+                                                <div>{obj.content}</div>
+                                                <div style={{display:"flex", marginLeft:"65%"}}>
+                                                    <div>🤍 {obj.likeCount}</div>
+                                                    <div style={{marginLeft:"10%"}}>🗨️ {obj.commentsCount}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </Link>
