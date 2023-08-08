@@ -108,54 +108,66 @@ public class MovieApiController {
 
     @Operation(method = "get", summary = "이번주 영화 랭킹")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "주간 행킹 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
+            @ApiResponse(responseCode = "200",description = "오늘 날짜 기준으로 주간 랭킹 조회", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = YearRankingResponse.class))})
     })
     @GetMapping("/weekly")
-    public List<YearRankingResponse> weeklyRankingThisWeek() {
+    public List<WeeklyResponse> weeklyRankingThisWeek(@CurrentUser UserPrincipal member) {
         LocalDate date = LocalDate.now();
 //        LocalDate date1 = LocalDate.of(2023, 5, 1);
-        return movieService.weeklyRanking(date);
-    }
-
-    @Operation(method = "get", summary = "이번주 추천 영화")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
-    })
-    @GetMapping("/weekly/propose")
-    public List<ProposeMovieResponse> weeklyProposeMovie() {
-        LocalDate date = LocalDate.now();
-//        LocalDate date1 = LocalDate.of(2023, 5, 1);
-        return movieService.proposeByNowDayMovie(date);
-    }
-
-    @Operation(method = "get", summary = "추천 영화")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
-    })
-    @GetMapping("/propose")
-    public List<ProposeMovieResponse> proposeMovie(@CurrentUser UserPrincipal member) {
-        return movieService.proposeMovie(member.getId());
+        return movieService.weeklyRankingByDate(date, member.getId());
     }
 
     @Operation(method = "post", summary = "이번주 영화 랭킹 테스트")
-    @ApiResponse(responseCode = "200", description = "추천 랭킹 테스트", content = {@Content(mediaType = "application/json")})
+    @ApiResponse(responseCode = "200", description = "원하는 날짜의 주간 랭킹으로 테스트", content = {@Content(mediaType = "application/json")})
     @PostMapping("/weeklytest")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public List<YearRankingResponse> weeklyRankingThisWeekTest(@Valid @RequestBody WeeklyTestDto dto) {
+    public List<WeeklyResponse> weeklyRankingThisWeekTest(@Valid @RequestBody WeeklyTestDto dto, @CurrentUser UserPrincipal member) {
 
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
-        return movieService.weeklyRanking(date);
+        return movieService.weeklyRankingByDate(date, member.getId());
     }
-
-    @Operation(method = "post", summary = "추천 영화 테스트")
+    @Operation(method = "get", summary = "추천 영화")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+            @ApiResponse(responseCode = "200",description = "회원의 좋아요 한 영화 개수가 5개 이상일 경우 좋아요 영화로, 5개 미만일 경우에는 주간 랭킹의 영화들로 영화 추천 조회", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
     })
-    @PostMapping("/weeklytest/propose")
-    public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
-        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
-        return movieService.proposeByNowDayMovie(date);
+    @GetMapping("/propose")
+    public List<ProposeMovieResponse> proposeMovie(@CurrentUser UserPrincipal member) {
+        LocalDate date = LocalDate.now();
+        return movieService.proposeMovie(date, member.getId());
     }
+
+
+    @Operation(method = "post", summary = "추천 영화")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",description = "좋아요 한 영화의 개수가 5개 미만일 경우 원하는 날짜의 주간 랭킹으로 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+    })
+    @GetMapping("/proposetest")
+    public List<ProposeMovieResponse> proposeMovieTest(@Valid @RequestBody WeeklyTestDto dto, @CurrentUser UserPrincipal member) {
+        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
+
+        return movieService.proposeMovie(date, member.getId());
+    }
+//    @Operation(method = "get", summary = "이번주 추천 영화")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+//    })
+//    @GetMapping("/weekly/propose")
+//    public List<ProposeMovieResponse> weeklyProposeMovie() {
+//        LocalDate date = LocalDate.now();
+////        LocalDate date1 = LocalDate.of(2023, 5, 1);
+//        return movieService.proposeByNowDayMovie(date);
+//    }
+//
+//
+//    @Operation(method = "post", summary = "추천 영화 테스트")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
+//    })
+//    @PostMapping("/weeklytest/propose")
+//    public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
+//        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
+//        return movieService.proposeByNowDayMovie(date);
+//    }
 
     @Operation(method = "get", summary = "개봉예정 영화 조회")
     @ApiResponses(value = {

@@ -1,5 +1,6 @@
 package Movie.MovieCommunity.JPADomain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Video {
     private String videoType;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "movie_id")
+    @JsonBackReference
     private Movie movie;
     @Builder
     public Video(String name, String siteName, String url, String videoType, Movie movie) {

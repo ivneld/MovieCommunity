@@ -1,7 +1,10 @@
 package Movie.MovieCommunity.JPARepository;
 
+import Movie.MovieCommunity.JPADomain.QJpaWeeklyBoxOffice;
 import Movie.MovieCommunity.JPARepository.dao.MovieDao;
+import Movie.MovieCommunity.JPARepository.dao.MovieWithWeeklyDao;
 import Movie.MovieCommunity.JPARepository.dao.QMovieDao;
+import Movie.MovieCommunity.JPARepository.dao.QMovieWithWeeklyDao;
 import Movie.MovieCommunity.JPARepository.searchCond.MovieSearchCond;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -14,6 +17,7 @@ import javax.persistence.EntityManager;
 
 import java.util.List;
 
+import static Movie.MovieCommunity.JPADomain.QJpaWeeklyBoxOffice.*;
 import static Movie.MovieCommunity.JPADomain.QMovie.movie;
 import static org.thymeleaf.util.StringUtils.isEmpty;
 
@@ -59,6 +63,16 @@ public class MovieRepositoryImpl implements QuerydslMovieRepository{
                 .fetchFirst();
 
         return new PageImpl<>(content, pageable, count);
+    }
+
+    @Override
+    public List<MovieWithWeeklyDao> findByShowRange(String showRange) {
+        return jpaQueryFactory.select(new QMovieWithWeeklyDao(jpaWeeklyBoxOffice.ranking, movie.id, movie.movieNm, movie.showTm, movie.openDt, movie.prdtStatNm, movie.watchGradeNm, movie.overview, movie.posterPath, movie.voteAverage))
+                .from(movie)
+                .join(jpaWeeklyBoxOffice)
+                .on(movie.movieCd.eq(jpaWeeklyBoxOffice.movieCd))
+                .where(jpaWeeklyBoxOffice.showRange.eq(showRange))
+                .fetch();
     }
 
 

@@ -1,7 +1,12 @@
 package Movie.MovieCommunity.web.apiDto.movie.response;
 
+import Movie.MovieCommunity.JPADomain.Movie;
+import Movie.MovieCommunity.JPADomain.Video;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class YearRankingResponse {
@@ -20,6 +25,8 @@ public class YearRankingResponse {
     private boolean myInterest;
     private String topComment;
     private String url;
+//    주간랭킹에서 사용
+    private List<Video> videos = new ArrayList<>();
 
     @Builder
     public YearRankingResponse(int rank, Long id, String movieNm, Integer showTm, Integer openDt,String prdtStatNm, String watchGradeNm, String overview, String posterPath, float voteAverage, int interest, String url, boolean myInterest) {
@@ -36,5 +43,14 @@ public class YearRankingResponse {
         this.interest = interest;
         this.url = url;
         this.myInterest = myInterest;
+    }
+
+//    주간랭킹
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    public void setInterest(int interest) {
+        this.interest = interest;
     }
 }

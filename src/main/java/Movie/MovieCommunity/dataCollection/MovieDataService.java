@@ -98,7 +98,7 @@ public class MovieDataService {
 //        int day = Integer.parseInt(getDate.substring(6, 8));
 //        String startDate = LocalDate.of(year, month, day).plusWeeks(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        yearWeeklyBoxOfficeData(startDate);
-//        yearWeeklyBoxOfficeData("20230101");
+        yearWeeklyBoxOfficeData("20230101");
         ///////////////////////////////////////////
 
 //        countEtc();         // 실행 전 메서드 주석 참고!

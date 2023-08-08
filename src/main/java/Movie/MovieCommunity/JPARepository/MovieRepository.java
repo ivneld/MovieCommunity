@@ -44,5 +44,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query(value = "select m from movie m where m.prdtStatNm = :prdtStatNm and m.openDt > :openDt",
     countQuery = "select count(m) from movie m where m.prdtStatNm = :prdtStatNm and m.openDt > :openDt")
     Page<Movie> findComingMovieByPrdtStatNmAndOpenDt(@Param("prdtStatNm")String prdtStatNm, @Param("openDt")Integer openDt, Pageable pageable);
+
+
 }
 

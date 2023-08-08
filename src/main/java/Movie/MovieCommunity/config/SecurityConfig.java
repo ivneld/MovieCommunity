@@ -80,6 +80,7 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/movie/**", "/api/genre/**","/api/comment/**","/api/credit/**")
+                .permitAll()
                 .antMatchers("/","/community/**","/heart/**","/posts/**","/api/subcomment/**","/api/auth/**","/api/posts/**","/postByMovie/**","/postByMember/**","/posts/read/**", "/posts/search/**", "/error","/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js", "/movie/**", "/genre/**","/comment/**","/credit/**","/tv/**","/gallery/**")
                 .permitAll()
                 .antMatchers("/api/swagger-ui/**", "/api/docs/**")

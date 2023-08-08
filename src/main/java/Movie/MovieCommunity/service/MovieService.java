@@ -4,6 +4,7 @@ import Movie.MovieCommunity.JPADomain.*;
 import Movie.MovieCommunity.JPARepository.*;
 import Movie.MovieCommunity.JPADomain.Comment;
 import Movie.MovieCommunity.JPADomain.JpaWeeklyBoxOffice;
+import Movie.MovieCommunity.JPARepository.dao.MovieWithWeeklyDao;
 import Movie.MovieCommunity.advice.assertThat.DefaultAssert;
 import Movie.MovieCommunity.dataCollection.MovieDataService;
 import Movie.MovieCommunity.naverApi.ApiExamTranslateNmt;
@@ -32,6 +33,8 @@ import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static Movie.MovieCommunity.JPADomain.QMember.member;
+
 @Slf4j
 @Service
 @Transactional
@@ -44,6 +47,8 @@ public class MovieService {
     private final ApiExamTranslateNmt apiExamTranslateNmt;
     private final LikeMovieRepository likeMovieRepository;
     private final ActorRepository actorRepository;
+    private final QuerydslMovieRepository querydslMovieRepository;
+
     public List<YearRankingResponse> yearRanking(int openDt, Long memberId){
         Member member;
         if(memberId != null){
@@ -158,43 +163,55 @@ public class MovieService {
     }
 
 
-    public List<YearRankingResponse> weeklyRanking(LocalDate date) {
-        List<JpaWeeklyBoxOffice> weeklyBoxOffices = getWeeklyMovieByDateOrderByRanking(date);
-
-        List<YearRankingResponse> result = new ArrayList<>();
-
-        for (JpaWeeklyBoxOffice weeklyBoxOffice : weeklyBoxOffices) {
-            if (movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).isPresent()) {
-                Movie movie = movieRepository.findByMovieCd(weeklyBoxOffice.getMovieCd()).get();
-
-                result.add(YearRankingResponse.builder()
-                        .rank(weeklyBoxOffice.getRanking())
-                        .id(movie.getId())
-                        .movieNm(movie.getMovieNm())
-                        .showTm(movie.getShowTm())
-                        .openDt(movie.getOpenDt())
-                        .prdtStatNm(movie.getPrdtStatNm())
-                        .watchGradeNm(movie.getWatchGradeNm())
-                        .overview(movie.getOverview())
-                        .posterPath(movie.getPosterPath())
-                        .voteAverage(movie.getVoteAverage())
-                        .interest(movie.getLikeMovies().size())
-                        .build());
-            }
-        }
-        return result;
-    }
-
     /**
      * date 기준 주간 랭킹 영화들의 keyword 를 제목, 줄거리에 포함하고 있는 영화들을 반환
-     *
+     * <p>
      * key : keyword(String)
      * value : Movie List
+     *
      * @param date
      * @return
      */
+    public List<WeeklyResponse> weeklyRankingByDate(LocalDate date, Long memberId) {
+        List<WeeklyResponse> weeklyResponses = new ArrayList<>();
+
+        String weekOfDay = getWeekOfDay(date);
+        List<MovieWithWeeklyDao> byShowRange = querydslMovieRepository.findByShowRange(weekOfDay);
+        for (MovieWithWeeklyDao movieWithWeeklyDao : byShowRange) {
+
+            WeeklyResponse response = WeeklyResponse.builder()
+                    .rank(movieWithWeeklyDao.getRank())
+                    .id(movieWithWeeklyDao.getId())
+                    .movieNm(movieWithWeeklyDao.getMovieNm())
+                    .showTm(movieWithWeeklyDao.getShowTm())
+                    .openDt(movieWithWeeklyDao.getOpenDt())
+                    .prdtStatNm(movieWithWeeklyDao.getPrdtStatNm())
+                    .watchGradeNm(movieWithWeeklyDao.getWatchGradeNm())
+                    .overview(movieWithWeeklyDao.getOverview())
+                    .posterPath(movieWithWeeklyDao.getPosterPath())
+                    .voteAverage(movieWithWeeklyDao.getVoteAverage())
+                    .build();
+
+            Movie movie = movieRepository.getById(response.getId());
+            Optional<Member> optionalMember = memberRepository.findById(memberId);
+            if (optionalMember.isPresent()) {
+                Member member = optionalMember.get();
+                long count = movie.getLikeMovies().stream().filter(lm -> lm.getMember() == member).count();
+                response.setMyInterest(count > 0 ? true : false);
+            }
+            if (response.getRank() == 1) {
+                List<Video> videos = movie.getVideos();
+                response.setVideos(videos);
+                response.setInterest(movie.getLikeMovies().size());
+            }
+            weeklyResponses.add(response);
+        }
+        return weeklyResponses;
+    }
     public List<ProposeMovieResponse> proposeByNowDayMovie(LocalDate date) {
-        List<JpaWeeklyBoxOffice> weeklyMovieByDate = getWeeklyMovieByDateOrderByRanking(date);
+        String showRange = getWeekOfDay(date);
+        List<JpaWeeklyBoxOffice> weeklyMovieByDate = weeklyBoxOfficeRepository.findByShowRange(showRange);
+//        List<JpaWeeklyBoxOffice> weeklyMovieByDate1 = getWeeklyMovieByDateOrderByRanking(date);
 
         HashMap<String, List<Movie>> map = new HashMap<>();
 
@@ -216,7 +233,7 @@ public class MovieService {
         return mapToProposeMovieResponseList(map);
     }
 
-    public List<ProposeMovieResponse> proposeMovie(Long memberId) {
+    public List<ProposeMovieResponse> proposeMovie(LocalDate date, Long memberId) {
         List<LikeMovie> likeMovies = likeMovieRepository.findByMemberId(memberId);
 
         if (likeMovies.size() >= 5) {
@@ -237,7 +254,7 @@ public class MovieService {
             return mapToProposeMovieResponseList(map);
         }
         else {
-            return proposeByNowDayMovie(LocalDate.now());
+            return proposeByNowDayMovie(date);
         }
     }
 
@@ -256,22 +273,6 @@ public class MovieService {
     }
 
 
-    private List<JpaWeeklyBoxOffice> getWeeklyMovieByDateOrderByRanking(LocalDate date) {
-        int year = date.getYear();
-        int week = date.get(WeekFields.ISO.weekOfYear());
-
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
-
-        int startWeek = startDate.get(weekOfYear);
-        int targetWeek = startWeek + week - 1;
-
-        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek);
-        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
-
-        List<JpaWeeklyBoxOffice> weeklyBoxOffices = weeklyBoxOfficeRepository.findByOpenDtBetweenOrderByRankingAsc(firstDayOfWeek, lastDayOfWeek);
-        return weeklyBoxOffices;
-    }
 
 
     private List<WeeklyRankingResponse> getWeeklyRankingResponses(Movie movie) {
@@ -386,5 +387,20 @@ public class MovieService {
         LocalDate yyyyMMdd = LocalDate.parse(String.valueOf(date),
                 DateTimeFormatter.ofPattern("yyyyMMdd"));
         return yyyyMMdd;
+    }
+
+    private String getWeekOfDay(LocalDate date) {
+        int year = date.getYear();
+        int week = date.get(WeekFields.ISO.weekOfYear());
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        TemporalField weekOfYear = WeekFields.of(Locale.KOREA).weekOfYear();
+        int startWeek = startDate.get(weekOfYear);
+        int targetWeek = startWeek + week - 1;
+
+        LocalDate firstDayOfWeek = startDate.with(weekOfYear, targetWeek).plusDays(1);
+        LocalDate lastDayOfWeek = firstDayOfWeek.plusDays(6);
+
+        String showRange = firstDayOfWeek.format(DateTimeFormatter.ofPattern("YYYYMMdd")) + "~" + lastDayOfWeek.format(DateTimeFormatter.ofPattern("YYYYMMdd"));
+        return showRange;
     }
 }
