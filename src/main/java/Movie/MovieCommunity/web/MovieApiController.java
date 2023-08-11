@@ -126,48 +126,22 @@ public class MovieApiController {
         LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
         return movieService.weeklyRankingByDate(date, member.getId());
     }
-    @Operation(method = "get", summary = "추천 영화")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "회원의 좋아요 한 영화 개수가 5개 이상일 경우 좋아요 영화로, 5개 미만일 경우에는 주간 랭킹의 영화들로 영화 추천 조회", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
-    })
+
+    @Operation(method = "post", summary = "영화 추천 테스트")
+    @ApiResponse(responseCode = "200", description = "좋아요 한 영화가 5개 미만일 경우 해당 날짜의 주간랭킹 영화들의 키워드로 추천, 원하는 날짜로 테스트", content = {@Content(mediaType = "application/json")})
+    @PostMapping("/proposetest")
+    public List<ProposeMovieResponse> proposeMovieTest(@Valid @RequestBody WeeklyTestDto dto, @CurrentUser UserPrincipal member) {
+        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
+        return movieService.proposeMovie(date, member.getId());
+    }
+
+    @Operation(method = "Get", summary = "영화 추천")
+    @ApiResponse(responseCode = "200", description = "좋아요 한 영화가 5개 미만일 경우 해당 날짜의 주간랭킹 영화들의 키워드로 추천", content = {@Content(mediaType = "application/json")})
     @GetMapping("/propose")
     public List<ProposeMovieResponse> proposeMovie(@CurrentUser UserPrincipal member) {
         LocalDate date = LocalDate.now();
         return movieService.proposeMovie(date, member.getId());
     }
-
-
-    @Operation(method = "post", summary = "추천 영화")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",description = "좋아요 한 영화의 개수가 5개 미만일 경우 원하는 날짜의 주간 랭킹으로 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
-    })
-    @GetMapping("/proposetest")
-    public List<ProposeMovieResponse> proposeMovieTest(@Valid @RequestBody WeeklyTestDto dto, @CurrentUser UserPrincipal member) {
-        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
-
-        return movieService.proposeMovie(date, member.getId());
-    }
-//    @Operation(method = "get", summary = "이번주 추천 영화")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200",description = "추천 영화 조회 성공", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
-//    })
-//    @GetMapping("/weekly/propose")
-//    public List<ProposeMovieResponse> weeklyProposeMovie() {
-//        LocalDate date = LocalDate.now();
-////        LocalDate date1 = LocalDate.of(2023, 5, 1);
-//        return movieService.proposeByNowDayMovie(date);
-//    }
-//
-//
-//    @Operation(method = "post", summary = "추천 영화 테스트")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "203",description = "추천 영화 조회 테스트", content={@Content(mediaType = MediaType.APPLICATION_JSON_VALUE ,schema = @Schema(implementation = ProposeMovieResponse.class))})
-//    })
-//    @PostMapping("/weeklytest/propose")
-//    public List<ProposeMovieResponse> proposeMovieTest(@RequestBody WeeklyTestDto dto) {
-//        LocalDate date = LocalDate.of(dto.getYear(), dto.getMonth(), dto.getDay());
-//        return movieService.proposeByNowDayMovie(date);
-//    }
 
     @Operation(method = "get", summary = "개봉예정 영화 조회")
     @ApiResponses(value = {

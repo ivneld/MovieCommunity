@@ -72,6 +72,7 @@ public class MovieRepositoryImpl implements QuerydslMovieRepository{
                 .join(jpaWeeklyBoxOffice)
                 .on(movie.movieCd.eq(jpaWeeklyBoxOffice.movieCd))
                 .where(jpaWeeklyBoxOffice.showRange.eq(showRange))
+                .orderBy(jpaWeeklyBoxOffice.ranking.asc())
                 .fetch();
     }
 
