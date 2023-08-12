@@ -215,75 +215,12 @@ public class MovieService {
 
     public List<ProposeMovieResponse> proposeMovie(LocalDate date, Long memberId) {
 
-        HashMap<String, ProposeMovieResponse> map = proposeByDateOrLikeMovie(date, memberId);
+        HashMap<String, ProposeMovieResponse> map = proposeByDateWithLikeMovie(date, memberId);
         return map.values()
                 .stream()
                 .filter(i -> i.getMovies().size() > 0)
                 .collect(Collectors.toList());
     }
-//    public List<ProposeMovieResponse> proposeByNowDayMovie(LocalDate date) {
-//        String showRange = getWeekOfDay(date);
-//        List<JpaWeeklyBoxOffice> weeklyMovieByDate = weeklyBoxOfficeRepository.findByShowRange(showRange);
-////        List<JpaWeeklyBoxOffice> weeklyMovieByDate1 = getWeeklyMovieByDateOrderByRanking(date);
-//
-//        HashMap<String, List<Movie>> map = new HashMap<>();
-//
-//        for (JpaWeeklyBoxOffice movie : weeklyMovieByDate) {
-//            Optional<Movie> byMovieCd = movieRepository.findByMovieCd(movie.getMovieCd());
-////            DefaultAssert.isOptionalPresent(byMovieCd);
-//            if (byMovieCd.isPresent()) {
-//                List<Keyword> keywords = movieDataService.searchKeyWord(byMovieCd.get());
-//
-//                for (Keyword keyword : keywords) {
-//                    List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
-//                    if (!map.containsKey(keyword.getName())) {  // 키워드 중복 제거
-//                        map.put(keyword.getName(), movies);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return mapToProposeMovieResponseList(map);
-//    }
-//
-//    public List<ProposeMovieResponse> proposeMovie(LocalDate date, Long memberId) {
-//        List<LikeMovie> likeMovies = likeMovieRepository.findByMemberId(memberId);
-//
-//        if (likeMovies.size() >= 5) {
-//            HashMap<String, List<Movie>> map = new HashMap<>();
-//
-//            for (LikeMovie likeMovie : likeMovies) {
-//                Optional<Movie> findMovie = movieRepository.findById(likeMovie.getId());
-//                DefaultAssert.isOptionalPresent(findMovie);
-//
-//                List<Keyword> keywords = movieDataService.searchKeyWord(findMovie.get());
-//                for (Keyword keyword : keywords) {
-//                    List<Movie> movies = movieRepository.findByKeyword(keyword.getName());
-//                    if (!map.containsKey(keyword.getName())) {
-//                        map.put(keyword.getName(), movies);
-//                    }
-//                }
-//            }
-//            return mapToProposeMovieResponseList(map);
-//        }
-//        else {
-//            return proposeByNowDayMovie(date);
-//        }
-//    }
-//
-//    private static List<ProposeMovieResponse> mapToProposeMovieResponseList(HashMap<String, List<Movie>> map) {
-//        List<ProposeMovieResponse> result = new ArrayList<>();
-//        ArrayList<String> keyList = new ArrayList<>(map.keySet());
-//        for (String s : keyList) {
-//            if (!map.get(s).isEmpty()) {
-//                result.add(ProposeMovieResponse.builder()
-//                        .keyword(s)
-//                        .movies(map.get(s))
-//                        .build());
-//            }
-//        }
-//        return result;
-//    }
 
 
     private List<WeeklyRankingResponse> getWeeklyRankingResponses(Movie movie) {
