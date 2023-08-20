@@ -269,7 +269,7 @@ const MyPage = () => {
                     </div>
                     <div id='2' style={{backgroundColor:"rgb(230,230,230)", overflowY: 'auto', flex: '1', position: 'relative',  marginLeft: '250px' }}>
                         <div ref={moveRef1}>
-                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{currentUserData?.nickName}님의 취향 분석 결과</div>
+                            <div style={{fontSize:"30px", fontWeight:"bold", marginLeft:"100px", marginTop:"50px"}}>{currentUserData?.name}님의 취향 분석 결과</div>
                             <ChartContainer>
                                 <Doughnut data={pieData} options={options} style={{maxWidth:"450px", width:"450px", maxHeight:"450px", height:"450px"}}/>
                                 <div>
@@ -286,7 +286,7 @@ const MyPage = () => {
                         </div>
                         <MyHr/>
                         <div ref={moveRef2} style={{marginLeft:"100px"}}>
-                          <div style={{fontSize:"30px", fontWeight:"bold", marginBottom:"20px"}}>{currentUserData?.nickName}님이 좋아요 한 영화</div>
+                          <div style={{fontSize:"30px", fontWeight:"bold", marginBottom:"20px"}}>{currentUserData?.name}님이 좋아요 한 영화</div>
                           <div style={{ display: "flex", justifyContent:"center" }}>
                               {interestData?.content?.map((obj, idx) => {
                                   return(
@@ -309,7 +309,7 @@ const MyPage = () => {
                         </div>
                         <MyHr/>
                         <div ref={moveRef3} style={{marginLeft:"100px"}}>
-                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.nickName}님이 쓴 코멘트</span>
+                            <span style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.name}님이 쓴 코멘트</span>
                             <hr style={{borderWidth:"2px", borderColor: "#000000",}}/>
                             <div>
                               {commentData?.content?.map((obj,idx)=>{
@@ -343,7 +343,7 @@ const MyPage = () => {
                            </div>
                            <MyHr/>
                             <div style={{marginLeft:"100px"}}>
-                              <div style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.nickName}님이 쓴 리뷰</div>
+                              <div style={{fontSize:"30px", fontWeight:"bold"}}>{currentUserData?.name}님이 쓴 리뷰</div>
                               <hr style={{borderWidth:"2px", borderColor: "#000000", marginBottom:"-5px"}}/>
                               <div >
                                 {communityData?.postsList?.map((obj,idx)=>{
@@ -376,7 +376,7 @@ const MyPage = () => {
                               <input
                               value={comment}
                               onChange={handleChange}
-                              placeholder={currentUserData?.nickName}
+                              placeholder={currentUserData?.name}
                               />
 
                               <div style={{display:"flex"}}>

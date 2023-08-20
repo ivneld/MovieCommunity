@@ -13,48 +13,135 @@ import './index.css';
 import axios from 'axios';
 
 const Main = () => {
-    const [postingBoardMovieId, setPostingBoardMovieId] = useState('');
-
-	const [searchParams, setSearchParams] = useSearchParams(); // 쿼리 스트링을 searchParams 형태로 가져오고
-	const movienm = searchParams.get('movienm'); // movienm 값 변수에 저장
-    const [posts, setPosts] = useState([]);
     const apiUrl = process.env.REACT_APP_API_URL;
-    const { data : mainData } = useSWR(`${apiUrl}`, fetcher, {
-        dedupingInterval: 100000,
-    });
-    if (movienm){ // 게시판에서 영화 제목 검색 O 경우
-        const result = mainData.filter(data => data.movieNm === `${movienm}`) // 검색한 영화 제목 filter해서 해당 영화 정보만 불러오기
-        return (
-            <div>
-                {result.length === 1 && result.map((data)=>{ // 검색한 영화가 존재 O 경우
-                        return(
-                            <>
-                                <div>{data.movieNm}</div>
-                                <div>{data.ranking}</div>
-                                <div>{data.rankInten}</div>
-                                <div>{data.openDt}</div>
-                                <div>{data.audiAcc}</div>
-                            </>
-                        )}
-                    )
-                }
-                {result.length !== 1 && // 검색한 영화가 존재 X 경우
-                    <div>검색하신 영화가 존재하지 않습니다.</div>
-                }
-            </div>
-        )
+    const [movieRanking, setMovieRanking] = useState([]); // 영화 월간랭킹
+    const [moviePropose, setMoviePropose] = useState([]); // 영화 추천
+
+    const [showMovieDetailModal,setShowMovieDetailModal] = useState(false);
+    const [modalData, setModalData] = useState(null);
+
+    
+    const onCloseModal = useCallback(() => {
+        setShowMovieDetailModal(false);
+    }, []);
+    const onClickModal = useCallback((e) => {
+        setShowMovieDetailModal(true);
+        setModalData(e);
+    }, []);
+
+    const handleMonthMovieRanking = async ()=>{ // 영화 월간랭킹 테스트 
+        try{
+            const req = {
+                    year: 2023,
+                    month: 6,
+                    day: 1,
+            }
+            const response = await axios.post(`${apiUrl}/movie/weeklytest/member4`, req);
+            console.log('월간 영화 랭킹 성공', response.data)
+            setMovieRanking(response.data);
+        } catch (error){
+            console.log('월간 영화 랭킹 실패', error)
+        }
     }
-    if (!mainData){
-        return <div>데이터가 없거나, 불러올 수 없습니다</div>
-    }   
+
+    const handleMoviePropse = async ()=>{ // 영화 추천
+        try{
+            const accessToken = localStorage.getItem('accessToken');
+            const config = {
+                headers:{
+                    Authorization : `Bearer ${accessToken}`
+                }
+            }
+            const req = {
+                    year: 2023,
+                    month: 6,
+                    day: 1,
+            }
+            const response = await axios.post(`${apiUrl}/movie/proposetest`, req, config);
+            console.log('영화 추천 성공', response.data)
+            setMoviePropose(response.data);
+        } catch (error){
+            console.log('영화 추천 실패', error)
+        }
+    }
+
+    const sliderSettings = {
+        slidesToShow: 7,
+        slidesToScroll: 1,
+        infinite: true,
+        dots: true,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings: {
+              slidesToShow: 2,
+            },
+          },
+          {
+            breakpoint: 480,
+            settings: {
+              slidesToShow: 1,
+            },
+          },
+        ],
+      };
+
+    const url = movieRanking?.[0]?.videos?.[0]?.url // ex) https://www.youtube.com/watch?v=6KCJ7T9yrBc
+    const criteriaIndex = url?.indexOf('=') + 1;
+    const extractedText = url?.substring(criteriaIndex); // 6KCJ7T9yrBc
+    const targetUrl = `https://www.youtube.com/embed/${extractedText}?autoplay=1&controls=0&loop=1&playlist=${extractedText}&mute=1`;
+
     return(
         <>
-            {!movienm && // 메인페이지 (게시판에서 영화 제목 검색 X 경우)
-            <>
-                <OpendtApi/>
-                <hr/>
-            </>
-            }
+            {/* <OpendtApi/> */}
+    
+            <div style={{fontSize:"30px", fontWeight:"bold", padding:"20px 0 0 20px", backgroundColor:"black", color:"white"}}>이번주 인기영화 확인해보세요</div>
+            <PosterContainer1 style={{backgroundColor:'black', position:'relative'}} zIndex="2" >
+                <iframe zIndex="1" width="800" height="450" src={targetUrl} title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, color: 'white', textShadow:"4px 2px 4px black",fontWeight: 'bold', fontSize: '100px', padding: '0 20px' }}>1</span>
+            </PosterContainer1>
+            <Slider {...sliderSettings}>
+            {movieRanking.map((movie, index)=>{
+                if(index >= 1){
+                    return(
+                <div key={movie.id}>
+                        <MovieSpan onClick={() => (onClickModal(movieRanking[index]))}>
+                            <div style={{ position: 'relative' }}>
+                                <img src={movie.posterPath} height="400px" alt='포스터주소' />
+                                <span style={{ position: 'absolute', top: 0, left: 0, zIndex: 1, color: 'white', textShadow:"4px 2px 4px black",fontWeight: 'bold', fontSize: '100px', padding: '0 20px' }}>{movie.rank}</span>
+                            </div>
+                        </MovieSpan>
+                </div>
+                )}
+                return null;
+            })}
+            </Slider>
+            
+            <div style={{fontSize:"30px", fontWeight:"bold", padding:"20px 0 0 20px", backgroundColor:"black", color:"white"}}>이런 영화는 어떠세요?</div>
+            <div style={{display:"flex", justifyContent:"center"}}>
+                {moviePropose.map((obj, index) => (
+                    <div style={{display:"flex"}}>
+                        {obj.movies.map((movie) => (
+                            <div key={movie.movieId}>
+                                <img src={movie.posterPath} height="400px" alt={`${movie.movieNm} Poster`} />
+                                <div>{movie.movieNm}</div>
+                            </div>
+                        ))}
+                    </div>
+                ))}
+            </div>
+            
+            <div onClick={() => (handleMonthMovieRanking())}>영화월간랭킹</div>
+            <div onClick={() => (handleMoviePropse())}>영화추천</div>
+
+            <MovieDetailModal
+                    show={showMovieDetailModal}
+                    onCloseModal={onCloseModal}
+                    setShowMovieDetailModal={setShowMovieDetailModal}
+                    modalData={modalData}
+            />
         </>
     )
 };
@@ -124,7 +211,6 @@ function OpendtApi() {
         }
         fetchData();
     },[])
-
 
     // if (!opendtData) console.log('데이터를 불러오는 중입니다...')
     // const url = opendtData?.[0]?.url; // ex) https://www.youtube.com/watch?v=6KCJ7T9yrBc

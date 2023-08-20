@@ -47,7 +47,7 @@ const Community = () => {
                                             {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
                                             <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                                <div style={{fontSize:"30px"}}>{obj.title}</div>
+                                                <div style={{fontSize:"25px"}}>{obj.title}</div>
                                                 <div>{obj.content}</div>
                                                 <div style={{display:"flex", marginLeft:"65%"}}>
                                                     <div>🤍 {obj.likeCount}</div>
@@ -82,7 +82,7 @@ const Community = () => {
                                             {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
                                             <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                                <div style={{fontSize:"30px"}}>{obj.title}</div>
+                                                <div style={{fontSize:"25px"}}>{obj.title}</div>
                                                 <div>{obj.content}</div>
                                                 <div style={{display:"flex", marginLeft:"65%"}}>
                                                     <div>🤍 {obj.likeCount}</div>
@@ -117,7 +117,7 @@ const Community = () => {
                                             {/* <img src={'https://'+obj.galleries?.[0]?.filePath} width="100%" height="100%" alt="포스터주소"/> */}
                                             <img src={obj.moviePosterPath} width="100%" height="100%" alt="포스터주소"/>
                                             <div style={{ position: 'absolute', bottom:0, width:'100%', zIndex: 1, color: 'white', background:"rgba(0, 0, 0, 0.5", fontWeight: 'bold'}}>
-                                                <div style={{fontSize:"30px"}}>{obj.title}</div>
+                                                <div style={{fontSize:"25px"}}>{obj.title}</div>
                                                 <div>{obj.content}</div>
                                                 <div style={{display:"flex", marginLeft:"65%"}}>
                                                     <div>🤍 {obj.likeCount}</div>

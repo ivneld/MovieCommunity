@@ -15,6 +15,15 @@ const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) 
         },
         [postingBoardMovieId],
       );
+
+    // 텍스트를 제한된 길이로 자르는 함수
+    const limitText = (text, limit) => {
+        if (text.length <= limit) {
+            return text;
+        }
+        return text.slice(0, limit) + "...";
+    };
+
     return(
         <>
         {modalData &&
@@ -37,7 +46,7 @@ const MovieDetailModal = ({show, onCloseModal, modalData, postingBoardMovieId}) 
                                 </div>
                             </div>
                             <div>
-                                <MovieDiv>줄거리 : {modalData.overview}</MovieDiv>
+                                <MovieDiv>줄거리 : {limitText(modalData.overview, 125)}</MovieDiv>
                             </div>
                             {/* <div>
                                 <MovieDiv>{modalData.prdtStatNm}</MovieDiv>

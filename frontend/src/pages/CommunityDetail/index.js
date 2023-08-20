@@ -260,12 +260,18 @@ const CommunityDetail = () => {
                     <InputArea
                         value={comment}
                         onChange={(e) => setComment(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault(); // 이 부분은 엔터 키의 기본 동작인 줄바꿈을 방지
+                                handleSubmit();
+                            }
+                        }}
                         placeholder="영화에 대한 의견을 자유롭게 남겨주세요."
                     />
                     <div>{comment.length}/100</div>
                 </div>
                 <div style={{display:"flex", border:"1px solid gray", height:"30px", alignItems:"center", padding:"0 10px"}}>
-                    <div>{currentUserData?.nickName}</div>
+                    <div>{currentUserData?.name}</div>
                     <div style={{marginLeft:'auto', cursor:"pointer"}} onClick={handleSubmit}>댓글남기기</div>
                 </div>
                 <hr style={{border:"1px solid black"}}/>
